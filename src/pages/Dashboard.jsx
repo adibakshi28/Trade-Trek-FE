@@ -1,44 +1,210 @@
 // src/pages/Dashboard.jsx
-import React, { useContext, useEffect } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { Typography, Container, Paper } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+  Paper,
+  Typography,
+  CircularProgress,
+  Grid,
+  Card,
+  CardContent,
+  Box,
+  Snackbar,
+  Alert,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { styled } from '@mui/system';
+
+// API calls
+import { getUserFunds, getUserPortfolio, getUserSummary } from '../api/userApi';
+
+const GreenText = styled('span')({ color: 'green' });
+const RedText = styled('span')({ color: 'red' });
 
 function Dashboard() {
-  const { accessToken, user, isAuthLoading } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const [funds, setFunds] = useState(null);
+  const [portfolio, setPortfolio] = useState([]);
+  const [summary, setSummary] = useState(null);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [showSnackbar, setShowSnackbar] = useState(false);
 
   useEffect(() => {
-    if (!isAuthLoading) {
-      if (!accessToken) {
-        navigate('/login');
+    (async () => {
+      try {
+        const [fData, pData, sData] = await Promise.all([
+          getUserFunds(),
+          getUserPortfolio(),
+          getUserSummary(),
+        ]);
+        setFunds(fData);
+        setPortfolio(pData);
+        setSummary(sData);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load dashboard data');
+        setShowSnackbar(true);
+      } finally {
+        setLoading(false);
       }
+    })();
+  }, []);
+
+  const handleCloseSnackbar = () => setShowSnackbar(false);
+
+  const formatPL = (plValue = 0) => {
+    if (plValue > 0) {
+      return <GreenText>+{plValue.toFixed(2)}</GreenText>;
     }
-  }, [accessToken, isAuthLoading, navigate]);
+    if (plValue < 0) {
+      return <RedText>{plValue.toFixed(2)}</RedText>;
+    }
+    return plValue.toFixed(2);
+  };
 
-  if (isAuthLoading) {
-    return <div>Loading...</div>;
+  if (loading) {
+    return <CircularProgress />;
   }
 
-  if (!user) {
-    return null;
+  if (!funds || !summary) {
+    return (
+      <Paper sx={{ p: 3 }}>
+        <Typography color="error">No data found</Typography>
+      </Paper>
+    );
   }
+
+  // Extract ticker_summaries from summary
+  const tickerEntries = summary.ticker_summaries
+    ? Object.entries(summary.ticker_summaries)
+    : [];
 
   return (
-    <Container maxWidth="sm">
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h5">
-          Welcome, {user.first_name} {user.last_name}!
+    <Box sx={{ p: 2 }}>
+      {/* Error Snackbar */}
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+          {error}
+        </Alert>
+      </Snackbar>
+
+      <Typography variant="h4" gutterBottom>
+        Dashboard
+      </Typography>
+
+      {/* Top row of cards: Funds, Portfolio Value, Net Unrealized P/L */}
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={4}>
+          <Card>
+            <CardContent>
+              <Typography variant="subtitle1">Available Funds</Typography>
+              <Typography variant="h5">
+                ${funds.cash?.toLocaleString()}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <Card>
+            <CardContent>
+              <Typography variant="subtitle1">Portfolio Value</Typography>
+              <Typography variant="h5">
+                ${summary.portfolio_value?.toLocaleString()}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <Card>
+            <CardContent>
+              <Typography variant="subtitle1">Net Unrealized P/L</Typography>
+              <Typography variant="h5">
+                {formatPL(summary.total_unrealized_pl)}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Current Portfolio Positions */}
+      <Box sx={{ mt: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Current Portfolio Positions
         </Typography>
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          This is a protected page only visible to authenticated users.
-          <br />
-          Your user_id is: {user.user_id}
-          <br />
-          Your username is: {user.username}
+        <Paper sx={{ p: 2 }}>
+          {portfolio.length === 0 ? (
+            <Typography>No positions found.</Typography>
+          ) : (
+            portfolio.map((pos) => (
+              <Box
+                key={pos.id}
+                sx={{
+                  mb: 2,
+                  pb: 1,
+                  borderBottom: '1px solid #ccc',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Box>
+                  <Typography variant="subtitle2" fontWeight="bold">
+                    {pos.stock_ticker} ({pos.direction})
+                  </Typography>
+                </Box>
+                <Box textAlign="right">
+                  <Typography variant="body2">
+                    Qty: {pos.quantity} @ ${pos.execution_price}
+                  </Typography>
+                  <Typography variant="caption">{pos.stock_name}</Typography>
+                </Box>
+                <Box textAlign="right">
+                  <Typography variant="caption">{pos.created_at}</Typography>
+                </Box>
+              </Box>
+            ))
+          )}
+        </Paper>
+      </Box>
+
+      {/* Stock-Level Summaries */}
+      <Box sx={{ mt: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Stock-Level Summary
         </Typography>
-      </Paper>
-    </Container>
+        {tickerEntries.length === 0 ? (
+          <Typography>No ticker summary found.</Typography>
+        ) : (
+          tickerEntries.map(([ticker, info]) => (
+            <Accordion key={ticker} TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>{ticker}</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography>Quantity: {info.quantity}</Typography>
+                <Typography>Avg Cost: ${info.avg_cost?.toFixed(2)}</Typography>
+                <Typography>Current Price: ${info.current_price?.toFixed(2)}</Typography>
+                <Typography>
+                  Unrealized P/L: {formatPL(info.unrealized_pl)}
+                </Typography>
+                <Typography>
+                  Realized P/L: {formatPL(info.realized_pl)}
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+          ))
+        )}
+      </Box>
+    </Box>
   );
 }
 

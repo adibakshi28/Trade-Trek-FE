@@ -53,8 +53,7 @@ function Login() {
           message: 'Login successful! Redirecting...',
           severity: 'success',
         });
-
-        // Redirect to dashboard after success
+        // Go to /dashboard after success
         setTimeout(() => {
           navigate('/dashboard');
         }, 1500);
@@ -72,7 +71,7 @@ function Login() {
 
   return (
     <Container maxWidth="sm">
-      <Paper sx={{ p: 3 }}>
+      <Paper sx={{ p: 3, mt: 4 }}>
         <Typography variant="h5" mb={2}>
           Login
         </Typography>
