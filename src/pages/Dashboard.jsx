@@ -10,17 +10,13 @@ import {
   Box,
   Snackbar,
   Alert,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Button,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 
 // API calls
-import { getUserFunds, getUserPortfolio, getUserSummary } from '../api/userApi';
+import { getUserDashboard } from '../api/userApi';
 import { getStockQuote } from '../api/stockApi';
 
 const GreenText = styled('span')({ color: 'green' });
@@ -51,18 +47,16 @@ function Dashboard() {
       try {
         setLoading(true);
 
-        // 1) fetch funds, portfolio, summary
-        const [fData, pData, sData] = await Promise.all([
-          getUserFunds(),
-          getUserPortfolio(),
-          getUserSummary(),
+        // 1) fetch dashboard (funds, portfolio, summary)
+        const [dData] = await Promise.all([
+          getUserDashboard(),
         ]);
-        setFunds(fData);
-        setPortfolio(pData);
-        setSummary(sData);
+        setFunds(dData.funds);
+        setPortfolio(dData.portfolio);
+        setSummary(dData.summary);
 
         // 2) fetch quotes for each ticker in portfolio
-        const tickers = pData.map((pos) => pos.stock_ticker.toUpperCase());
+        const tickers = dData.portfolio.map((pos) => pos.stock_ticker.toUpperCase());
         const uniqueTickers = [...new Set(tickers)];
         const quotePromises = uniqueTickers.map(async (t) => {
           const q = await getStockQuote(t);
@@ -112,10 +106,6 @@ function Dashboard() {
       </Paper>
     );
   }
-
-  const tickerEntries = summary.ticker_summaries
-    ? Object.entries(summary.ticker_summaries)
-    : [];
 
   return (
     <Box sx={{ p: 2 }}>
@@ -251,29 +241,6 @@ function Dashboard() {
         </Paper>
       </Box>
 
-      <Box sx={{ mt: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Stock-Level Summary
-        </Typography>
-        {tickerEntries.length === 0 ? (
-          <Typography>No ticker summary found.</Typography>
-        ) : (
-          tickerEntries.map(([ticker, info]) => (
-            <Accordion key={ticker}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>{ticker}</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography>Quantity: {info.quantity}</Typography>
-                <Typography>Avg Cost: ${info.avg_cost?.toFixed(2)}</Typography>
-                <Typography>Current Price: ${info.current_price?.toFixed(2)}</Typography>
-                <Typography>Unrealized P/L: {formatPL(info.unrealized_pl)}</Typography>
-                <Typography>Realized P/L: {formatPL(info.realized_pl)}</Typography>
-              </AccordionDetails>
-            </Accordion>
-          ))
-        )}
-      </Box>
     </Box>
   );
 }

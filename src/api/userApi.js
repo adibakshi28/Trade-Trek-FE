@@ -30,3 +30,10 @@ export const getUserSummary = async () => {
   const response = await axiosClient.get('/user/summary');
   return response.data; // e.g. { cash_balance, positions_market_value, portfolio_value, ...}
 };
+
+// /user/dashboard
+export const getUserDashboard = async () => {
+  const response = await axiosClient.get('/user/dashboard');
+  return response.data; // e.g. { user, portfolio, fund, summary }
+};
+
