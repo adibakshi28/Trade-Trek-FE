@@ -13,6 +13,7 @@ function Sidebar() {
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Transactions', path: '/dashboard/transactions' },
     { label: 'Summary', path: '/dashboard/summary' },
+    { label: 'Search Stocks', path: '/dashboard/stocks' },
   ];
 
   return (

@@ -9,8 +9,8 @@ const DashboardLayout = () => {
   const { accessToken, isAuthLoading } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // If no token after loading, navigate to login
   useEffect(() => {
+    // If we've finished loading and have no token, go to /login
     if (!isAuthLoading && !accessToken) {
       navigate('/login');
     }
@@ -18,10 +18,7 @@ const DashboardLayout = () => {
 
   return (
     <Box display="flex" minHeight="100vh">
-      {/* Sidebar on the left */}
       <Sidebar />
-
-      {/* Main content area */}
       <Box component="main" flexGrow={1} p={2} sx={{ backgroundColor: '#f5f5f5' }}>
         <Outlet />
       </Box>
