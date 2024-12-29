@@ -14,6 +14,7 @@ function Sidebar() {
     { label: 'Transactions', path: '/dashboard/transactions' },
     { label: 'Summary', path: '/dashboard/summary' },
     { label: 'Search Stocks', path: '/dashboard/stocks' },
+    { label: 'Trade', path: '/dashboard/trade' },
   ];
 
   return (

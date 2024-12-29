@@ -15,6 +15,7 @@ import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import Summary from './pages/Summary';
 import StockSearch from './pages/StockSearch';
+import TradePage from './pages/TradePage';
 import StockDetail from './pages/StockDetail';
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
             <Route path="transactions" element={<Transactions />} />
             <Route path="summary" element={<Summary />} />
             <Route path="stocks" element={<StockSearch />} />
+            <Route path="trade" element={<TradePage />} />
             <Route path="stocks/:ticker" element={<StockDetail />} />
           </Route>
 

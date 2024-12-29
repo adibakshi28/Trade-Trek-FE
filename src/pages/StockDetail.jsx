@@ -19,10 +19,9 @@ import {
   AccordionDetails,
   Divider,
   Fade,
+  Button,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
-import { getStockInfo, getStockHistorical } from '../api/stockApi';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -35,7 +34,10 @@ import {
   Legend,
 } from 'chart.js';
 
-// Register chart.js components
+import { getStockInfo, getStockHistorical } from '../api/stockApi';
+import TradeDialog from '../components/TradeDialog';
+
+// register chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 function StockDetail() {
@@ -47,9 +49,13 @@ function StockDetail() {
   const [error, setError] = useState('');
   const [showSnackbar, setShowSnackbar] = useState(false);
 
-  // For the fade-in animation
   const [animate, setAnimate] = useState(false);
 
+  // For the trade dialog
+  const [tradeOpen, setTradeOpen] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
+
+  // fetch data
   useEffect(() => {
     (async () => {
       try {
@@ -69,39 +75,23 @@ function StockDetail() {
     })();
   }, [ticker]);
 
-  // Once data loads, trigger the fade-in
+  // fade in
   useEffect(() => {
-    if (!loading) {
-      setAnimate(true);
-    }
+    if (!loading) setAnimate(true);
   }, [loading]);
 
   const handleCloseSnackbar = () => setShowSnackbar(false);
 
-  // Helper to round numeric values to 2 decimals
-  const fmt = (val) => {
-    if (typeof val === 'number') {
-      return val.toFixed(2);
-    }
-    return val;
+  // handle transaction success
+  const handleTransactionSuccess = (response) => {
+    setSuccessMsg(
+      `Transaction successful! ${response.direction} ${response.quantity} shares of ${response.stockTicker} @ $${response.executionPrice} \nCurrent cash balance: $${response.cashBalance}`
+    );
+    setShowSnackbar(true);
   };
 
-  if (loading) return <CircularProgress sx={{ m: 2 }} />;
-
-  if (!stockData) {
-    return (
-      <Container maxWidth="xl" sx={{ mt: 3 }}>
-        <Typography color="error">No data found for {ticker}</Typography>
-      </Container>
-    );
-  }
-
-  // Destructure main fields
-  const { asset_type, quote, profile, financials, news } = stockData;
-
-  // Prepare chart data
+  // chart data
   const chartLabels = historical.map((item) => {
-    // if 't' is a UNIX timestamp in seconds, convert
     if (item.t) {
       const d = new Date(item.t * 1000);
       return d.toLocaleDateString();
@@ -119,11 +109,10 @@ function StockDetail() {
         borderColor: '#2196f3',
         backgroundColor: 'rgba(33,150,243,0.1)',
         fill: true,
-        tension: 0.2, // slight curve
+        tension: 0.2,
       },
     ],
   };
-
   const options = {
     responsive: true,
     plugins: {
@@ -131,39 +120,57 @@ function StockDetail() {
       title: { display: true, text: `${ticker} Historical Price` },
     },
     scales: {
-      y: {
-        beginAtZero: false,
-      },
+      y: { beginAtZero: false },
     },
   };
 
-  // A helper to safely show a financial field, rounding if numeric
-  const fin = (key) => {
-    if (!financials || financials[key] === undefined) return 'N/A';
-    return typeof financials[key] === 'number' ? financials[key].toFixed(2) : financials[key];
-  };
+  // helper to round
+  const fmt = (val) => (typeof val === 'number' ? val.toFixed(2) : val);
 
-  // We can color the daily change:
+  if (loading) return <CircularProgress sx={{ m: 2 }} />;
+
+  if (!stockData) {
+    return (
+      <Container maxWidth="xl" sx={{ mt: 3 }}>
+        <Typography color="error">No data found for {ticker}</Typography>
+      </Container>
+    );
+  }
+
+  const { asset_type, quote, profile, financials, news } = stockData;
+
+  // daily change color
   let changeColor = 'inherit';
   if (quote?.d > 0) changeColor = 'green';
   if (quote?.d < 0) changeColor = 'red';
 
+  // function to safely show financial
+  const fin = (key) =>
+    !financials || financials[key] === undefined
+      ? 'N/A'
+      : typeof financials[key] === 'number'
+      ? financials[key].toFixed(2)
+      : financials[key];
+
   return (
     <Container maxWidth="xl" sx={{ mt: 2 }}>
-      {/* Error Snackbar */}
+      {/* Error / success Snackbar */}
       <Snackbar
         open={showSnackbar}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
       >
-        <Alert onClose={handleCloseSnackbar} severity="error">
-          {error}
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={error ? 'error' : 'success'}
+          sx={{ width: '100%' }}
+        >
+          {error || successMsg}
         </Alert>
       </Snackbar>
 
       <Fade in={animate} timeout={600}>
         <Paper sx={{ p: 3, backgroundColor: '#fafafa' }}>
-          {/* Heading */}
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             {profile?.name} ({ticker})
           </Typography>
@@ -173,7 +180,7 @@ function StockDetail() {
           <Divider sx={{ mb: 3 }} />
 
           <Grid container spacing={2}>
-            {/* Left side: Profile & Chart */}
+            {/* Left: Profile & Chart */}
             <Grid item xs={12} md={6} lg={5}>
               <Card sx={{ mb: 2 }}>
                 <CardContent>
@@ -210,7 +217,7 @@ function StockDetail() {
                 </CardContent>
               </Card>
 
-              {/* Historical chart */}
+              {/* chart */}
               <Card>
                 <CardContent>
                   <Box sx={{ minHeight: 300 }}>
@@ -220,23 +227,34 @@ function StockDetail() {
               </Card>
             </Grid>
 
-            {/* Right side: Quote & Financial highlights */}
+            {/* Right: Quote & Financials */}
             <Grid item xs={12} md={6} lg={7}>
               <Card sx={{ mb: 2 }}>
                 <CardContent>
-                  <Typography variant="h6" fontWeight="bold">
-                    Quote
-                  </Typography>
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" fontWeight="bold">
+                      Quote
+                    </Typography>
+                    {/* Trade button */}
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={() => setTradeOpen(true)}
+                    >
+                      Trade
+                    </Button>
+                  </Box>
+
                   <Box mt={1} ml={1}>
                     <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
                       ${quote?.c ? fmt(quote.c) : 'N/A'}
                     </Typography>
-                    {/* Daily change in color */}
                     <Typography
                       variant="body1"
                       sx={{ color: changeColor, mb: 0.5, fontWeight: 'bold' }}
                     >
-                      Change: {quote?.d ? fmt(quote.d) : 'N/A'} (Daily %: {quote?.dp ? fmt(quote.dp) : 'N/A'})
+                      Change: {quote?.d ? fmt(quote.d) : 'N/A'} (Daily %:{' '}
+                      {quote?.dp ? fmt(quote.dp) : 'N/A'})
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 0.5 }}>
                       <strong>High:</strong> {quote?.h ? fmt(quote.h) : 'N/A'} /{' '}
@@ -299,7 +317,7 @@ function StockDetail() {
             </Grid>
           </Grid>
 
-          {/* News Section in Accordion */}
+          {/* News Section */}
           <Box sx={{ mt: 3 }}>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               Recent News
@@ -311,7 +329,6 @@ function StockDetail() {
                     <Typography fontWeight="bold">{item.headline}</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    {/* Image */}
                     {item.image && (
                       <Box
                         component="img"
@@ -344,6 +361,14 @@ function StockDetail() {
           </Box>
         </Paper>
       </Fade>
+
+      {/* Trade dialog */}
+      <TradeDialog
+        open={tradeOpen}
+        onClose={() => setTradeOpen(false)}
+        ticker={ticker}
+        onTransactionSuccess={handleTransactionSuccess}
+      />
     </Container>
   );
 }

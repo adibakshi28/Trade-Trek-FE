@@ -29,3 +29,20 @@ export const getStockHistorical = async (ticker) => {
   });
   return res.data;
 };
+
+// POST /stock/transaction?ticker=xxx&direction=BUY&quantity=10
+export const placeStockTransaction = async ({ ticker, direction, quantity }) => {
+  const res = await axiosClient.post('/stock/transaction', null, {
+    params: { ticker, direction, quantity },
+  });
+  return res.data;
+};
+
+
+// GET /stock/quote?ticker=xxx
+export const getStockQuote = async (ticker) => {
+  const res = await axiosClient.get('/stock/quote', {
+    params: { ticker },
+  });
+  return res.data; // e.g. { c, d, dp, stock_ticker, stock_name, ... }
+};
