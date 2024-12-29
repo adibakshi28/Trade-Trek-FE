@@ -10,16 +10,28 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If we've finished loading and have no token, go to /login
     if (!isAuthLoading && !accessToken) {
       navigate('/login');
     }
   }, [accessToken, isAuthLoading, navigate]);
 
   return (
-    <Box display="flex" minHeight="100vh">
+    <Box sx={{ display: 'flex' }}>
+      {/* The fixed sidebar */}
       <Sidebar />
-      <Box component="main" flexGrow={1} p={2} sx={{ backgroundColor: '#f5f5f5' }}>
+
+      {/* The main content area, with top & left margin/offset */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          ml: '240px',      // offset for sidebar width
+          mt: '64px',       // offset for navbar height
+          p: 2,
+          backgroundColor: '#f5f5f5',
+          minHeight: '100vh',
+        }}
+      >
         <Outlet />
       </Box>
     </Box>

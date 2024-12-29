@@ -20,10 +20,13 @@ function Sidebar() {
     <Box
       sx={{
         width: 240,
+        position: 'fixed',
+        top: '64px',             // offset below the AppBar
+        left: 0,
+        bottom: 0,
         backgroundColor: '#1976d2',
         color: '#fff',
-        display: 'flex',
-        flexDirection: 'column',
+        overflowY: 'auto',
       }}
     >
       <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
