@@ -45,3 +45,9 @@ export const getStockQuote = async (ticker) => {
   });
   return res.data; // e.g. { c, d, dp, stock_ticker, stock_name, ... }
 };
+
+// GET /stock/universe
+export const getStockUniverse = async () => {
+  const res = await axiosClient.get('/stock/universe');
+  return res.data; // array of { stock_ticker, stock_name, asset_type }
+};
