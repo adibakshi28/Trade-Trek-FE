@@ -1,11 +1,10 @@
 // src/pages/StockDetail.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Container,
   Paper,
   Typography,
-  CircularProgress,
   Box,
   Snackbar,
   Alert,
@@ -20,9 +19,14 @@ import {
   Divider,
   Fade,
   Button,
+  Skeleton,
 } from '@mui/material';
+// API calls
+import { getStockInfo, getStockHistorical } from '../api/stockApi';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Line } from 'react-chartjs-2';
+
+// register chart.js components
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -33,27 +37,19 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-
-import { getStockInfo, getStockHistorical } from '../api/stockApi';
-import TradeDialog from '../components/TradeDialog';
-
-// register chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 function StockDetail() {
   const { ticker } = useParams();
+  const navigate = useNavigate();
+
   const [stockData, setStockData] = useState(null);
   const [historical, setHistorical] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState('');
   const [showSnackbar, setShowSnackbar] = useState(false);
-
   const [animate, setAnimate] = useState(false);
-
-  // For the trade dialog
-  const [tradeOpen, setTradeOpen] = useState(false);
-  const [successMsg, setSuccessMsg] = useState('');
 
   // fetch data
   useEffect(() => {
@@ -62,7 +58,6 @@ function StockDetail() {
         setLoading(true);
         const info = await getStockInfo(ticker);
         const hist = await getStockHistorical(ticker);
-
         setStockData(info);
         setHistorical(hist.historical_price || []);
       } catch (err) {
@@ -75,22 +70,46 @@ function StockDetail() {
     })();
   }, [ticker]);
 
-  // fade in
+  // fade in once data is loaded
   useEffect(() => {
     if (!loading) setAnimate(true);
   }, [loading]);
 
   const handleCloseSnackbar = () => setShowSnackbar(false);
 
-  // handle transaction success
-  const handleTransactionSuccess = (response) => {
-    setSuccessMsg(
-      `Transaction successful! ${response.direction} ${response.quantity} shares of ${response.stockTicker} @ $${response.executionPrice} \nCurrent cash balance: $${response.cashBalance}`
+  // If still loading, show fancy placeholders or skeletons
+  if (loading) {
+    return (
+      <Container maxWidth="xl" sx={{ mt: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
+          <Skeleton variant="rectangular" width={300} height={40} />
+          <Skeleton variant="rectangular" width="80%" height={20} />
+          <Skeleton variant="rectangular" width="100%" height={300} />
+        </Box>
+      </Container>
     );
-    setShowSnackbar(true);
-  };
+  }
 
-  // chart data
+  if (!stockData) {
+    return (
+      <Container maxWidth="xl" sx={{ mt: 3 }}>
+        <Typography color="error">No data found for {ticker}</Typography>
+      </Container>
+    );
+  }
+
+  // Deconstruct the data
+  const { asset_type, quote, profile, financials, news } = stockData;
+
+  // daily change color
+  let changeColor = 'inherit';
+  if (quote?.d > 0) changeColor = 'green';
+  if (quote?.d < 0) changeColor = 'red';
+
+  // helper: format numeric values
+  const fmt = (val) => (typeof val === 'number' ? val.toFixed(2) : val);
+
+  // Prepare chart data
   const chartLabels = historical.map((item) => {
     if (item.t) {
       const d = new Date(item.t * 1000);
@@ -98,14 +117,12 @@ function StockDetail() {
     }
     return '';
   });
-  const chartData = historical.map((item) => item.close);
-
-  const data = {
+  const chartData = {
     labels: chartLabels,
     datasets: [
       {
         label: `${ticker} Price`,
-        data: chartData,
+        data: historical.map((item) => item.close),
         borderColor: '#2196f3',
         backgroundColor: 'rgba(33,150,243,0.1)',
         fill: true,
@@ -113,7 +130,7 @@ function StockDetail() {
       },
     ],
   };
-  const options = {
+  const chartOptions = {
     responsive: true,
     plugins: {
       legend: { display: false },
@@ -124,48 +141,22 @@ function StockDetail() {
     },
   };
 
-  // helper to round
-  const fmt = (val) => (typeof val === 'number' ? val.toFixed(2) : val);
-
-  if (loading) return <CircularProgress sx={{ m: 2 }} />;
-
-  if (!stockData) {
-    return (
-      <Container maxWidth="xl" sx={{ mt: 3 }}>
-        <Typography color="error">No data found for {ticker}</Typography>
-      </Container>
-    );
-  }
-
-  const { asset_type, quote, profile, financials, news } = stockData;
-
-  // daily change color
-  let changeColor = 'inherit';
-  if (quote?.d > 0) changeColor = 'green';
-  if (quote?.d < 0) changeColor = 'red';
-
-  // function to safely show financial
-  const fin = (key) =>
-    !financials || financials[key] === undefined
-      ? 'N/A'
-      : typeof financials[key] === 'number'
-      ? financials[key].toFixed(2)
-      : financials[key];
+  // On "Trade" button click, just navigate to the TradePage with ticker
+  const handleGoTrade = () => {
+    navigate('/dashboard/trade', {
+      state: { defaultTicker: ticker.toUpperCase() },
+    });
+  };
 
   return (
     <Container maxWidth="xl" sx={{ mt: 2 }}>
-      {/* Error / success Snackbar */}
       <Snackbar
         open={showSnackbar}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={error ? 'error' : 'success'}
-          sx={{ width: '100%' }}
-        >
-          {error || successMsg}
+        <Alert severity={error ? 'error' : 'success'} onClose={handleCloseSnackbar} sx={{ width: '100%' }}>
+          {error || ''}
         </Alert>
       </Snackbar>
 
@@ -180,7 +171,7 @@ function StockDetail() {
           <Divider sx={{ mb: 3 }} />
 
           <Grid container spacing={2}>
-            {/* Left: Profile & Chart */}
+            {/* Left column: Profile & chart */}
             <Grid item xs={12} md={6} lg={5}>
               <Card sx={{ mb: 2 }}>
                 <CardContent>
@@ -217,17 +208,16 @@ function StockDetail() {
                 </CardContent>
               </Card>
 
-              {/* chart */}
               <Card>
                 <CardContent>
                   <Box sx={{ minHeight: 300 }}>
-                    <Line data={data} options={options} />
+                    <Line data={chartData} options={chartOptions} />
                   </Box>
                 </CardContent>
               </Card>
             </Grid>
 
-            {/* Right: Quote & Financials */}
+            {/* Right column: Quote & Financials */}
             <Grid item xs={12} md={6} lg={7}>
               <Card sx={{ mb: 2 }}>
                 <CardContent>
@@ -235,11 +225,11 @@ function StockDetail() {
                     <Typography variant="h6" fontWeight="bold">
                       Quote
                     </Typography>
-                    {/* Trade button */}
+                    {/* The new Trade button that redirects */}
                     <Button
                       variant="contained"
                       color="success"
-                      onClick={() => setTradeOpen(true)}
+                      onClick={handleGoTrade}
                     >
                       Trade
                     </Button>
@@ -261,7 +251,8 @@ function StockDetail() {
                       <strong>Low:</strong> {quote?.l ? fmt(quote.l) : 'N/A'}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 0.5 }}>
-                      <strong>Previous Close:</strong> {quote?.pc ? fmt(quote.pc) : 'N/A'}
+                      <strong>Previous Close:</strong>{' '}
+                      {quote?.pc ? fmt(quote.pc) : 'N/A'}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -282,34 +273,34 @@ function StockDetail() {
                     }}
                   >
                     <Typography variant="body2">
-                      <strong>52W High:</strong> {fin('52WeekHigh')}
+                      <strong>52W High:</strong> {fmt(financials?.['52WeekHigh'])}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>52W Low:</strong> {fin('52WeekLow')}
+                      <strong>52W Low:</strong> {fmt(financials?.['52WeekLow'])}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Market Cap:</strong> {fin('marketCapitalization')}
+                      <strong>Market Cap:</strong> {fmt(financials?.marketCapitalization)}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Beta:</strong> {fin('beta')}
+                      <strong>Beta:</strong> {fmt(financials?.beta)}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>PE (TTM):</strong> {fin('peTTM')}
+                      <strong>PE (TTM):</strong> {fmt(financials?.peTTM)}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Dividend Yield:</strong> {fin('currentDividendYieldTTM')}
+                      <strong>Dividend Yield:</strong> {fmt(financials?.currentDividendYieldTTM)}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>EPS Growth 5Y:</strong> {fin('epsGrowth5Y')}
+                      <strong>EPS Growth 5Y:</strong> {fmt(financials?.epsGrowth5Y)}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Revenue Growth 5Y:</strong> {fin('revenueGrowth5Y')}
+                      <strong>Revenue Growth 5Y:</strong> {fmt(financials?.revenueGrowth5Y)}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Gross Margin TTM:</strong> {fin('grossMarginTTM')}
+                      <strong>Gross Margin TTM:</strong> {fmt(financials?.grossMarginTTM)}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>ROA TTM:</strong> {fin('roaTTM')}
+                      <strong>ROA TTM:</strong> {fmt(financials?.roaTTM)}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -343,8 +334,7 @@ function StockDetail() {
                       />
                     )}
                     <Typography variant="subtitle2" gutterBottom>
-                      Source: {item.source} |{' '}
-                      {new Date(item.datetime * 1000).toLocaleString()}
+                      Source: {item.source} | {new Date(item.datetime * 1000).toLocaleString()}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 1 }}>
                       {item.summary}
@@ -361,14 +351,6 @@ function StockDetail() {
           </Box>
         </Paper>
       </Fade>
-
-      {/* Trade dialog */}
-      <TradeDialog
-        open={tradeOpen}
-        onClose={() => setTradeOpen(false)}
-        ticker={ticker}
-        onTransactionSuccess={handleTransactionSuccess}
-      />
     </Container>
   );
 }

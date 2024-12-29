@@ -38,7 +38,6 @@ export const placeStockTransaction = async ({ ticker, direction, quantity }) => 
   return res.data;
 };
 
-
 // GET /stock/quote?ticker=xxx
 export const getStockQuote = async (ticker) => {
   const res = await axiosClient.get('/stock/quote', {

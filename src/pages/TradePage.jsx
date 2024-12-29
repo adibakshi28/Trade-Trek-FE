@@ -8,93 +8,121 @@ import {
   Box,
   Snackbar,
   Alert,
-  CircularProgress,
+  Grid,
+  Grow,
+  Fade,
+  Skeleton,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { useLocation } from 'react-router-dom';
 
 import { getStockQuote, placeStockTransaction } from '../api/stockApi';
 import { getUserPortfolio, getUserFunds } from '../api/userApi';
+import { getTransactionValue } from '../api/transactionApi';
 
-const BuyButton = styled('button')({
+const BigBuyButton = styled('button')({
   backgroundColor: '#2e7d32',
   color: '#fff',
+  fontSize: '1rem',
+  padding: '12px 24px',
+  marginRight: '16px',
   border: 'none',
-  padding: '8px 16px',
-  marginRight: '8px',
   borderRadius: '4px',
   cursor: 'pointer',
+  transition: 'background-color 0.2s ease',
   '&:hover': {
     backgroundColor: '#1b5e20',
   },
+  '&:disabled': {
+    backgroundColor: '#ccc',
+    cursor: 'default',
+  },
 });
-const SellButton = styled('button')({
+
+const BigSellButton = styled('button')({
   backgroundColor: '#c62828',
   color: '#fff',
+  fontSize: '1rem',
+  padding: '12px 24px',
   border: 'none',
-  padding: '8px 16px',
   borderRadius: '4px',
   cursor: 'pointer',
+  transition: 'background-color 0.2s ease',
   '&:hover': {
     backgroundColor: '#b71c1c',
+  },
+  '&:disabled': {
+    backgroundColor: '#ccc',
+    cursor: 'default',
   },
 });
 
 function TradePage() {
   const location = useLocation();
-  // We can read defaultTicker, defaultDirection from location.state if we want
   const defaultTicker = location.state?.defaultTicker || '';
-  const defaultDirection = location.state?.defaultDirection || '';
 
   const [ticker, setTicker] = useState(defaultTicker);
   const [quantity, setQuantity] = useState(1);
 
-  const [quote, setQuote] = useState(null); // { c, stock_ticker, stock_name, ... }
-  const [funds, setFunds] = useState(null);
+  const [quote, setQuote] = useState(null);  
+  const [funds, setFunds] = useState(null);  
   const [portfolio, setPortfolio] = useState([]);
 
-  const [loadingQuote, setLoadingQuote] = useState(false);
-  const [loadingData, setLoadingData] = useState(true);
+  // from /stock/transaction/value
+  const [transactionValue, setTransactionValue] = useState(null);
 
+  // loading states
+  const [loadingUserData, setLoadingUserData] = useState(true);
+  const [loadingQuote, setLoadingQuote] = useState(false);
+  const [loadingValue, setLoadingValue] = useState(false);
+
+  // animations
+  const [showPage, setShowPage] = useState(false);
+  const [showQuote, setShowQuote] = useState(false);
+
+  // snackbar
   const [snackbarMsg, setSnackbarMsg] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
   const [showSnackbar, setShowSnackbar] = useState(false);
 
   useEffect(() => {
-    // load user funds & portfolio on mount
     (async () => {
       try {
-        setLoadingData(true);
-        const [fData, pData] = await Promise.all([getUserFunds(), getUserPortfolio()]);
+        setLoadingUserData(true);
+        const [fData, pData] = await Promise.all([
+          getUserFunds(),
+          getUserPortfolio(),
+        ]);
         setFunds(fData);
         setPortfolio(pData);
       } catch (err) {
         console.error(err);
-        setSnackbarMsg('Failed to load user data');
-        setSnackbarSeverity('error');
-        setShowSnackbar(true);
+        showError('Failed to load user data');
       } finally {
-        setLoadingData(false);
+        setLoadingUserData(false);
+        setShowPage(true);
       }
     })();
   }, []);
 
-  // fetch quote whenever ticker changes
+  // fetch quote
   useEffect(() => {
     if (!ticker) {
       setQuote(null);
+      setTransactionValue(null);
       return;
     }
     (async () => {
       try {
         setLoadingQuote(true);
-        const data = await getStockQuote(ticker);
-        setQuote(data);
+        setShowQuote(false);
+        const q = await getStockQuote(ticker);
+        setQuote(q);
+        // small delay, then show the fade/grow
+        setTimeout(() => setShowQuote(true), 200);
       } catch (err) {
         console.error(err);
-        setSnackbarMsg('Could not fetch quote');
-        setSnackbarSeverity('error');
-        setShowSnackbar(true);
+        showError('Could not fetch quote');
         setQuote(null);
       } finally {
         setLoadingQuote(false);
@@ -102,36 +130,49 @@ function TradePage() {
     })();
   }, [ticker]);
 
-  const handleCloseSnackbar = () => setShowSnackbar(false);
+  // fetch transactionValue
+  useEffect(() => {
+    if (!ticker || !quote?.c || !quantity) {
+      setTransactionValue(null);
+      return;
+    }
+    fetchTransactionValue();
+    // eslint-disable-next-line
+  }, [quantity, quote]);
 
-  // find if we have a position in the typed ticker
-  const existingPosition = portfolio.find(
-    (pos) => pos.stock_ticker?.toUpperCase() === ticker.toUpperCase()
-  );
-  const isLong = existingPosition?.quantity > 0;
-  const positionLabel = isLong ? 'LONG' : 'SHORT';
+  const fetchTransactionValue = async () => {
+    try {
+      setLoadingValue(true);
+      const val = await getTransactionValue({
+        ticker,
+        quantity,
+        current_price: quote.c,
+      });
+      setTransactionValue(val);
+    } catch (err) {
+      console.error(err);
+      showError('Could not fetch transaction value');
+      setTransactionValue(null);
+    } finally {
+      setLoadingValue(false);
+    }
+  };
 
-  // handle trade
   const handleTrade = async (direction) => {
     if (!ticker || !quantity) return;
     try {
       const response = await placeStockTransaction({ ticker, direction, quantity });
-      // Check success
       if (response.success === false) {
-        // show error
         setSnackbarMsg(response.message || 'Transaction failed');
         setSnackbarSeverity('error');
         setShowSnackbar(true);
       } else {
-        // success
         setSnackbarMsg(
-          `Success! ${direction} ${quantity} of ${response.stockTicker} @ ${response.executionPrice.toFixed(
-            2
-          )}`
+          `Success! ${direction} ${quantity} of ${response.stockTicker} @ $${response.executionPrice.toFixed(2)}`
         );
         setSnackbarSeverity('success');
         setShowSnackbar(true);
-        // refresh portfolio & funds
+        // refresh user data
         const [fData, pData] = await Promise.all([getUserFunds(), getUserPortfolio()]);
         setFunds(fData);
         setPortfolio(pData);
@@ -144,89 +185,154 @@ function TradePage() {
     }
   };
 
+  const showError = (msg) => {
+    setSnackbarMsg(msg);
+    setSnackbarSeverity('error');
+    setShowSnackbar(true);
+  };
+
+  const handleCloseSnackbar = () => setShowSnackbar(false);
+
+  // check position
+  const existingPosition = portfolio.find(
+    (pos) => pos.stock_ticker?.toUpperCase() === ticker.toUpperCase()
+  );
+  const positionLabel = existingPosition
+    ? existingPosition.direction === 'BUY'
+      ? 'LONG'
+      : 'SHORT'
+    : '';
+
+  const buyDisabled = !transactionValue?.buy_trade_possible;
+  const sellDisabled = !transactionValue?.sell_trade_possible;
+
   return (
-    <Container sx={{ mt: 2 }}>
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" fontWeight="bold" mb={2}>
-          Trade
-        </Typography>
+    <Fade in={showPage} timeout={500}>
+      <Container maxWidth="md" sx={{ mb: 4 }}>
+        <Paper sx={{ p: 3, margin: '0 auto', maxWidth: 600 }}>
+          <Typography variant="h5" fontWeight="bold" mb={2}>
+            Trade
+          </Typography>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 400 }}>
-          {/* Ticker input */}
-          <TextField
-            label="Ticker"
-            value={ticker}
-            onChange={(e) => setTicker(e.target.value.toUpperCase())}
-          />
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              {/* Ticker input */}
+              <TextField
+                label="Ticker"
+                value={ticker}
+                onChange={(e) => setTicker(e.target.value.toUpperCase())}
+                sx={{ width: 150, mb: 2 }}
+              />
 
-          {/* Stock name + Current Price */}
-          {loadingQuote ? (
-            <CircularProgress size={24} />
-          ) : quote ? (
-            <Box>
-              <Typography variant="body1" fontWeight="bold">
-                {quote.stock_name} ({quote.stock_ticker})
-              </Typography>
-              <Typography variant="body2">
-                Current Price: {quote.c ? `$${quote.c.toFixed(2)}` : 'N/A'}
-              </Typography>
-            </Box>
-          ) : (
-            <Typography variant="caption" color="text.secondary">
-              Enter ticker to see price & name
-            </Typography>
-          )}
+              {/* Show quote or skeleton */}
+              {loadingQuote ? (
+                // Instead of a spinner, use a skeleton
+                <Skeleton variant="rectangular" width={200} height={50} />
+              ) : quote && (
+                <Grow in={showQuote} timeout={500}>
+                  <Box>
+                    <Typography variant="body1" fontWeight="bold" sx={{ color: 'primary.main' }}>
+                      {quote.stock_name} ({quote.stock_ticker})
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                      Current Price: ${quote.c?.toFixed(2)}
+                    </Typography>
+                  </Box>
+                </Grow>
+              )}
 
-          {/* Available Funds */}
-          {loadingData ? (
-            <CircularProgress size={24} />
-          ) : (
-            <Typography variant="body2" fontWeight="bold">
-              Available Funds: {funds?.cash ? `$${funds.cash.toFixed(2)}` : 'N/A'}
-            </Typography>
-          )}
+              {/* Existing position */}
+              {existingPosition ? (
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  You have {existingPosition.quantity} shares: {positionLabel} @ $
+                  {existingPosition.execution_price.toFixed(2)}
+                </Typography>
+              ) : (
+                ticker && (
+                  <Typography variant="body2" color="text.secondary">
+                    No current position in {ticker}
+                  </Typography>
+                )
+              )}
+            </Grid>
 
-          {/* Existing position */}
-          {existingPosition ? (
-            <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-              You have {Math.abs(existingPosition.quantity)} shares,{' '}
-              {positionLabel} @ ${existingPosition.execution_price.toFixed(2)}
-            </Typography>
-          ) : (
-            <Typography variant="body2" sx={{ color: 'gray' }}>
-              No current position in {ticker || 'this ticker'}
-            </Typography>
-          )}
+            <Grid item xs={12} sm={6}>
+              {/* Funds or skeleton */}
+              {loadingUserData ? (
+                <Skeleton variant="rectangular" width={150} height={20} />
+              ) : funds && (
+                <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
+                  Available Funds: ${funds.cash?.toFixed(2)}
+                </Typography>
+              )}
 
-          {/* Quantity input */}
-          <TextField
-            type="number"
-            label="Quantity"
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            sx={{ width: 120 }}
-          />
+              {/* Quantity */}
+              <TextField
+                type="number"
+                label="Quantity"
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                sx={{ width: 100, mb: 2 }}
+              />
 
-          {/* BUY / SELL buttons */}
-          <Box>
-            <BuyButton onClick={() => handleTrade('BUY')}>BUY</BuyButton>
-            <SellButton onClick={() => handleTrade('SELL')}>SELL</SellButton>
+              {/* Transaction Value Info (with skeleton) */}
+              {loadingValue ? (
+                <Skeleton variant="rectangular" width="80%" height={40} />
+              ) : transactionValue ? (
+                <Box
+                  sx={{
+                    backgroundColor: '#f8f9fa',
+                    p: 2,
+                    borderRadius: 1,
+                    transition: 'background-color 0.3s',
+                    '&:hover': { backgroundColor: '#f1f3f5' },
+                  }}
+                >
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    Transaction Fee: $
+                    {transactionValue.transaction_fee?.toFixed(2) ?? '0.00'}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    Required Funds (BUY): $
+                    {transactionValue.required_funds_buy?.toFixed(2) || '0.00'}
+                  </Typography>
+                  <Typography variant="body2">
+                    Required Funds (SELL): $
+                    {transactionValue.required_funds_sell?.toFixed(2) || '0.00'}
+                  </Typography>
+                </Box>
+              ) : (
+                <Typography variant="caption" color="text.secondary">
+                  Enter quantity to see required funds
+                </Typography>
+              )}
+            </Grid>
+          </Grid>
+
+          {/* Buttons */}
+          <Box sx={{ mt: 3 }}>
+            <BigBuyButton disabled={buyDisabled} onClick={() => handleTrade('BUY')}>
+              BUY
+            </BigBuyButton>
+            <BigSellButton disabled={sellDisabled} onClick={() => handleTrade('SELL')}>
+              SELL
+            </BigSellButton>
           </Box>
-        </Box>
-      </Paper>
+        </Paper>
 
-      {/* Snackbar for feedback */}
-      <Snackbar
-        open={showSnackbar}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity={snackbarSeverity} onClose={handleCloseSnackbar} sx={{ width: '100%' }}>
-          {snackbarMsg}
-        </Alert>
-      </Snackbar>
-    </Container>
+        {/* Snackbar */}
+        <Snackbar
+          open={showSnackbar}
+          autoHideDuration={4000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert severity={snackbarSeverity} sx={{ width: '100%' }}>
+            {snackbarMsg}
+          </Alert>
+        </Snackbar>
+      </Container>
+    </Fade>
   );
 }
 

@@ -53,7 +53,6 @@ function Login() {
           message: 'Login successful! Redirecting...',
           severity: 'success',
         });
-        // Go to /dashboard after success
         setTimeout(() => {
           navigate('/dashboard');
         }, 1500);
@@ -71,6 +70,7 @@ function Login() {
 
   return (
     <Container maxWidth="sm">
+      {/* Ensuring enough top margin if needed */}
       <Paper sx={{ p: 3, mt: 4 }}>
         <Typography variant="h5" mb={2}>
           Login
@@ -95,7 +95,6 @@ function Login() {
             value={form.password}
             onChange={handleChange}
           />
-
           <Button variant="contained" color="primary" type="submit">
             Login
           </Button>

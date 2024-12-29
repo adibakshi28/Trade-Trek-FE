@@ -78,7 +78,7 @@ function Register() {
 
   return (
     <Container maxWidth="sm">
-      <Paper sx={{ p: 3 }}>
+      <Paper sx={{ p: 3, mt: 4 }}>
         <Typography variant="h5" mb={2}>
           Register
         </Typography>
