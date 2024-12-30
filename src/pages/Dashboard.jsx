@@ -3,7 +3,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   Paper,
   Typography,
-  CircularProgress,
   Grid,
   Card,
   CardContent,
@@ -11,6 +10,13 @@ import {
   Snackbar,
   Alert,
   Button,
+  Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
@@ -18,31 +24,75 @@ import { useNavigate } from 'react-router-dom';
 import { getUserDashboard } from '../api/userApi';
 import { createRealtimeSocket } from '../api/websocketClient';
 
-const RowContainer = styled(Box)(({ flashColor }) => ({
-  transition: 'background-color 0.5s ease',
-  backgroundColor: flashColor || 'transparent',
-  marginBottom: '16px',
-  paddingBottom: '8px',
-  borderBottom: '1px solid #ccc',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  '&:hover': {
-    backgroundColor: '#f9f9f9',
-  },
-}));
+// ------------------------------------
+// STYLED COMPONENTS
+// ------------------------------------
 
-const HighlightCard = styled(Card)(({ flashColor }) => ({
-  transition: 'background-color 0.5s ease',
-  backgroundColor: flashColor || 'transparent',
-}));
-
-const TradeButton = styled(Button)({
-  backgroundColor: '#1976d2',
+// Side “header” or “app bar” 
+const HeaderBar = styled('div')(({ theme }) => ({
+  background: '#1565C0',
   color: '#fff',
+  padding: theme.spacing(2),
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  fontWeight: 'bold',
+  fontSize: '1.2rem',
+  borderRadius: '4px',
+}));
+
+
+// Parent container for “stats bar”
+const StatsBar = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  gap: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  flexWrap: 'wrap',
+}));
+
+// Individual “stat card” in top bar
+const StatCard = styled(Paper)(({ theme }) => ({
+  flex: '1 1 auto',
+  minWidth: 220,
+  padding: theme.spacing(2),
+  textAlign: 'center',
+  backgroundColor: '#f5f5f5',
+}));
+
+// For row-level highlight color
+const RowHighlight = styled(TableRow)(({ flashColor }) => ({
+  transition: 'background-color 0.5s ease',
+  backgroundColor: flashColor || 'transparent',
+}));
+
+// Trade button with a small scale animation on hover
+const TradeButton = styled(Button)({
+  background: '#1976d2',
+  color: '#fff',
+  position: 'relative',
+  padding: '10px 24px',
+  transition: '0.25s',
   '&:hover': {
-    backgroundColor: '#1565c0',
+    background: '#1565c0',
+    transform: 'translateY(-2px)',
+    boxShadow: '0 6px 12px #1976d240',
+    '&:after': {
+      opacity: 1,
+      transform: 'scale(1.5)',
+    }
   },
+  '&:active': {
+    transform: 'translateY(0)',
+  },
+  '&:after': {
+    content: '""',
+    position: 'absolute',
+    inset: 0,
+    background: 'radial-gradient(circle, #ffffff33 10%, transparent 70%)',
+    opacity: 0,
+    transform: 'scale(0.5)',
+    transition: '0.2s',
+  }
 });
 
 function Dashboard() {
@@ -50,19 +100,12 @@ function Dashboard() {
 
   const [funds, setFunds] = useState(null);
   const [portfolio, setPortfolio] = useState([]);
-
-  // Real-time LTP dictionary
   const [prices, setPrices] = useState({});
   const [prevPrices, setPrevPrices] = useState({});
-  // For row-level highlight color
   const [rowFlashColors, setRowFlashColors] = useState({});
 
-  // Real-time Portfolio Value + highlight
   const [portfolioValue, setPortfolioValue] = useState(0);
   const [portfolioValueFlash, setPortfolioValueFlash] = useState('transparent');
-  const [prevPortfolioValue, setPrevPortfolioValue] = useState(0);
-
-  // Net UnRealized P/L
   const [netUnrealizedPL, setNetUnrealizedPL] = useState(0);
 
   const [loading, setLoading] = useState(true);
@@ -71,7 +114,7 @@ function Dashboard() {
 
   const wsRef = useRef(null);
 
-  // 1) On mount: fetch dashboard + connect once
+  // On mount: fetch user data + connect WebSocket once
   useEffect(() => {
     (async () => {
       try {
@@ -81,7 +124,7 @@ function Dashboard() {
         setPortfolio(dashData.portfolio);
         setLoading(false);
 
-        // connect WebSocket
+        // WebSocket
         const token = localStorage.getItem('access_token');
         if (!token) {
           console.error('No token found, skipping WebSocket');
@@ -96,7 +139,7 @@ function Dashboard() {
 
         ws.onmessage = (evt) => {
           try {
-            const data = JSON.parse(evt.data); // e.g. [ {stock_ticker, ltp}, ...]
+            const data = JSON.parse(evt.data); // e.g. [ { stock_ticker, ltp }, ...]
             if (Array.isArray(data)) {
               handlePriceUpdates(data);
             }
@@ -127,20 +170,18 @@ function Dashboard() {
     };
   }, []);
 
-  // 2) Whenever portfolio or prices changes => recalc portfolio value & P/L
-  // This ensures we always have the latest portfolio from state plus the latest prices
+  // Recalc portfolio value & net P/L whenever portfolio changes or prices change
   useEffect(() => {
     if (!portfolio || portfolio.length === 0) {
-      // no positions => 0
       setPortfolioValue(0);
       setNetUnrealizedPL(0);
       return;
     }
-    recalcPortfolioValueAndPL(prices);
+    recalcPortfolioAndPL(prices);
     // eslint-disable-next-line
   }, [portfolio, prices]);
 
-  // 3) handle new LTP from the WS
+  // Handle new prices
   const handlePriceUpdates = (priceArray) => {
     setPrices((oldPrices) => {
       const newPrices = { ...oldPrices };
@@ -152,7 +193,6 @@ function Dashboard() {
         updatedPrev[sym] = oldPrice;
         newPrices[sym] = ltp;
 
-        // highlight the row
         let rowColor = 'transparent';
         if (ltp > oldPrice) rowColor = 'rgba(0,255,0,0.2)';
         else if (ltp < oldPrice) rowColor = 'rgba(255,0,0,0.2)';
@@ -164,55 +204,50 @@ function Dashboard() {
     });
   };
 
-  // 4) flash row color for half sec
   const flashRowColor = (sym, color) => {
     if (color === 'transparent') return;
-    setRowFlashColors((old) => ({
-      ...old,
-      [sym]: color,
-    }));
+    setRowFlashColors((prev) => ({ ...prev, [sym]: color }));
     setTimeout(() => {
-      setRowFlashColors((old) => ({
-        ...old,
-        [sym]: 'transparent',
-      }));
+      setRowFlashColors((prev) => ({ ...prev, [sym]: 'transparent' }));
     }, 500);
   };
 
-  // 5) Recalc + highlight the top portfolio card
-  const recalcPortfolioValueAndPL = (latestPrices) => {
+  // Recompute portfolio & net P/L
+  const recalcPortfolioAndPL = (latestPrices) => {
     let newVal = 0;
     let newPL = 0;
+
     portfolio.forEach((pos) => {
       const sym = pos.stock_ticker.toUpperCase();
       const ltp = latestPrices[sym] || 0;
 
-      // Portfolio value ignoring direction
+      // sum for portfolio ignoring direction
       newVal += ltp * pos.quantity;
 
       // net P/L
       if (pos.direction === 'BUY') {
         newPL += (ltp - pos.execution_price) * pos.quantity;
       } else {
+        // SELL => (execPrice - ltp) * qty
         newPL += (pos.execution_price - ltp) * pos.quantity;
       }
     });
 
-    // highlight top if changed
-    highlightPortfolioValue(newVal);
+    // highlight portfolio value if changed
+    highlightPortfolioValue(portfolioValue, newVal);
     setPortfolioValue(newVal);
     setNetUnrealizedPL(newPL);
   };
 
-  // highlight the entire portfolio value card
-  const highlightPortfolioValue = (newVal) => {
-    const oldVal = portfolioValue;
-    let color = 'transparent';
-    if (newVal > oldVal) color = 'rgba(0,255,0,0.2)';
-    else if (newVal < oldVal) color = 'rgba(255,0,0,0.2)';
-
-    setPortfolioValueFlash(color);
-    setTimeout(() => setPortfolioValueFlash('transparent'), 500);
+  // Compare old vs new portfolioValue => highlight color
+  const highlightPortfolioValue = (oldVal, newVal) => {
+    if (newVal > oldVal) {
+      setPortfolioValueFlash('rgba(0,255,0,0.2)');
+      setTimeout(() => setPortfolioValueFlash('transparent'), 500);
+    } else if (newVal < oldVal) {
+      setPortfolioValueFlash('rgba(255,0,0,0.2)');
+      setTimeout(() => setPortfolioValueFlash('transparent'), 500);
+    }
   };
 
   const handleCloseSnackbar = () => setShowSnackbar(false);
@@ -222,7 +257,14 @@ function Dashboard() {
   };
 
   if (loading) {
-    return <CircularProgress sx={{ m: 2 }} />;
+    return (
+      <Box sx={{ p: 2, gap: 2, display: 'flex', flexDirection: 'column' }}>
+        <Skeleton variant="text" width={200} />
+        <Skeleton variant="rectangular" width="100%" height={40} />
+        <Skeleton variant="rectangular" width="100%" height={60} />
+        <Skeleton variant="rectangular" width="80%" height={40} />
+      </Box>
+    );
   }
 
   if (!funds || !portfolio) {
@@ -234,26 +276,30 @@ function Dashboard() {
   }
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Snackbar
-        open={showSnackbar}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity="error" onClose={handleCloseSnackbar} sx={{ width: '100%' }}>
-          {error}
-        </Alert>
-      </Snackbar>
+    <>
+      <HeaderBar>
+        <Typography variant="h5" fontWeight="bold">
+          Dashboard
+        </Typography>
+      </HeaderBar>
 
-      <Typography variant="h4" gutterBottom>
-        Dashboard
-      </Typography>
+      <Box sx={{ p: 2 }}>
+        {/* Error snackbar */}
+        <Snackbar
+          open={showSnackbar}
+          autoHideDuration={3000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert severity="error" onClose={handleCloseSnackbar} sx={{ width: '100%' }}>
+            {error}
+          </Alert>
+        </Snackbar>
 
-      {/* Top row: funds, real-time portfolio value, net P/L */}
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={4}>
-          <Paper sx={{ p: 2 }}>
+        {/* Top stats bar */}
+        <StatsBar>
+          {/* Funds */}
+          <StatCard>
             <Typography variant="subtitle1" fontWeight="bold">
               Available Funds
             </Typography>
@@ -264,14 +310,13 @@ function Dashboard() {
                 maximumFractionDigits: 2,
               })}
             </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Paper
+          </StatCard>
+
+          {/* Portfolio Value */}
+          <StatCard
             sx={{
-              p: 2,
-              // transition: 'background-color 0.5s ease',
-              // backgroundColor: portfolioValueFlash,
+              backgroundColor: portfolioValueFlash, // highlight when it changes
+              transition: 'background-color 0.5s ease',
             }}
           >
             <Typography variant="subtitle1" fontWeight="bold">
@@ -284,95 +329,97 @@ function Dashboard() {
                 maximumFractionDigits: 2,
               })}
             </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-        <Paper
+          </StatCard>
+
+          {/* Net Unrealized P/L */}
+          <StatCard
             sx={{
-              p: 2,
-              transition: 'background-color 0.5s ease',
-              backgroundColor: portfolioValueFlash,
+              backgroundColor: 'white',
             }}
           >
             <Typography variant="subtitle1" fontWeight="bold">
               Net Unrealized P/L
             </Typography>
-            <Typography variant="h5">
-              $
-              {netUnrealizedPL.toLocaleString(undefined, {
+            <Typography
+              variant="h5"
+              sx={{ color: netUnrealizedPL >= 0 ? 'green' : 'red' }}
+            >
+              {netUnrealizedPL >= 0 ? '+' : '-'}$
+              {Math.abs(netUnrealizedPL).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
             </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+          </StatCard>
+        </StatsBar>
 
-      {/* Portfolio list */}
-      <Box sx={{ mt: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Current Portfolio Positions
-        </Typography>
-        <Paper sx={{ p: 2 }}>
-          {portfolio.length === 0 ? (
-            <Typography>No positions found.</Typography>
-          ) : (
-            portfolio.map((pos) => {
-              const sym = pos.stock_ticker.toUpperCase();
-              const ltp = prices[sym] || 0;
-              const rowColor = rowFlashColors[sym] || 'transparent';
-              const posVal = ltp * pos.quantity;
-              const directionLabel = pos.direction === 'BUY' ? 'LONG' : 'SHORT';
+        {/* Portfolio positions in a table */}
+        <Box mt={4}>
+          <Typography variant="h6" gutterBottom>
+            Current Portfolio Positions
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Symbol</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Direction</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Qty</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Execution Price</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Current Price</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Value</TableCell>
+                  <TableCell></TableCell> {/* For the Trade button */}
+                </TableRow>
+              </TableHead>
 
-              return (
-                <Box
-                  key={pos.id}
-                  sx={{
-                    mb: 2,
-                    pb: 1,
-                    borderBottom: '1px solid #ccc',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    transition: 'background-color 0.5s ease',
-                    backgroundColor: rowColor,
-                  }}
-                >
-                  {/* left side */}
-                  <Box>
-                    <Typography variant="subtitle2" fontWeight="bold">
-                      {pos.stock_ticker} ({directionLabel})
-                    </Typography>
-                    <Typography variant="caption">{pos.stock_name}</Typography>
-                  </Box>
+              <TableBody>
+                {portfolio.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7}>
+                      <Typography>No positions found.</Typography>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  portfolio.map((pos) => {
+                    const sym = pos.stock_ticker.toUpperCase();
+                    const ltp = prices[sym] || 0;
+                    const rowColor = rowFlashColors[sym] || 'transparent';
+                    const posVal = ltp * pos.quantity;
+                    const directionLabel = pos.direction === 'BUY' ? 'LONG' : 'SHORT';
 
-                  {/* middle: quantity + real-time price + value */}
-                  <Box sx={{ textAlign: 'right', flex: 1, mx: 2 }}>
-                    <Typography variant="body2" fontWeight="bold">
-                      Qty: {pos.quantity} @ ${pos.execution_price.toFixed(2)}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'gray' }}>
-                      Current: <strong>${ltp.toFixed(2)}</strong> | Value:{' '}
-                      <strong>${posVal.toFixed(2)}</strong>
-                    </Typography>
-                  </Box>
-
-                  {/* trade button */}
-                  <Box>
-                    <TradeButton
-                      size="small"
-                      onClick={() => handleTrade(pos.stock_ticker)}
-                    >
-                      TRADE
-                    </TradeButton>
-                  </Box>
-                </Box>
-              );
-            })
-          )}
-        </Paper>
+                    return (
+                      <RowHighlight key={pos.id} flashColor={rowColor}>
+                        <TableCell>
+                          <Typography variant="subtitle2" fontWeight="bold">
+                            {pos.stock_ticker}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {pos.stock_name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>{directionLabel}</TableCell>
+                        <TableCell>{pos.quantity}</TableCell>
+                        <TableCell>${pos.execution_price.toFixed(2)}</TableCell>
+                        <TableCell>${ltp.toFixed(2)}</TableCell>
+                        <TableCell>${posVal.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <TradeButton
+                            size="small"
+                            onClick={() => handleTrade(pos.stock_ticker)}
+                          >
+                            TRADE
+                          </TradeButton>
+                        </TableCell>
+                      </RowHighlight>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }
 

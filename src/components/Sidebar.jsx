@@ -1,8 +1,70 @@
-// src/components/Sidebar.jsx
 import React, { useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Box, List, ListItemButton, ListItemText, Typography } from '@mui/material';
+import {
+  Box,
+  List,
+  ListItemButton,
+  ListItemText,
+  Typography,
+  Divider,
+} from '@mui/material';
+import { styled } from '@mui/system';
 import { AuthContext } from '../context/AuthContext';
+import { motion } from 'framer-motion';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import SearchIcon from '@mui/icons-material/Search';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+
+// 🎨 Styled Components
+const SidebarContainer = styled(motion.div)(({ theme }) => ({
+  width: '240px',
+  height: '100vh',
+  background: '#1976d2',
+  color: '#fff',
+  display: 'flex',
+  flexDirection: 'column',
+  position: 'fixed',
+  top: 64, // Offset below the AppBar
+  left: 0,
+  overflowY: 'auto',
+  boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
+  scrollbarWidth: 'none',
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
+}));
+
+const SidebarHeader = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderBottom: '1px solid rgba(255,255,255,0.2)',
+  textAlign: 'center',
+}));
+
+const SidebarListItem = styled(ListItemButton)(({ theme }) => ({
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  '&.active': {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderLeft: '4px solid #4fc3f7',
+  },
+}));
+
+const SidebarIcon = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginRight: theme.spacing(1),
+}));
+
+// ✨ Animation Variants
+const sidebarVariants = {
+  hidden: { x: -240 },
+  visible: { x: 0, transition: { duration: 0.3, ease: 'easeOut' } },
+};
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -10,55 +72,62 @@ function Sidebar() {
   const { user } = useContext(AuthContext);
 
   const menuItems = [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Transactions', path: '/dashboard/transactions' },
-    { label: 'Summary', path: '/dashboard/summary' },
-    { label: 'Search Stocks', path: '/dashboard/stocks' },
-    { label: 'Trade', path: '/dashboard/trade' },
+    { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
+    { label: 'Transactions', path: '/dashboard/transactions', icon: <ReceiptIcon /> },
+    { label: 'Summary', path: '/dashboard/summary', icon: <BarChartIcon /> },
+    { label: 'Search Stocks', path: '/dashboard/stocks', icon: <SearchIcon /> },
+    { label: 'Trade', path: '/dashboard/trade', icon: <TrendingUpIcon /> },
   ];
 
   return (
-    <Box
-      sx={{
-        width: 240,
-        position: 'fixed',
-        top: '64px',             // offset below the AppBar
-        left: 0,
-        bottom: 0,
-        backgroundColor: '#1976d2',
-        color: '#fff',
-        overflowY: 'auto',
-      }}
+    <SidebarContainer
+      variants={sidebarVariants}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
     >
-      <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
-        {/* <Typography variant="h6">Mock Trader</Typography> */}
-        {user && (
-          <Box sx={{ mt: 1 }}>
+      {/* Sidebar Header */}
+      <SidebarHeader>
+        {user ? (
+          <>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
               {user.first_name} {user.last_name}
             </Typography>
-            <Typography variant="caption">{user.username}</Typography>
-          </Box>
+            <Typography variant="caption" sx={{ opacity: 0.8 }}>
+              @{user.username}
+            </Typography>
+          </>
+        ) : (
+          <Typography variant="h6">Welcome</Typography>
         )}
-      </Box>
+      </SidebarHeader>
 
+      {/* Sidebar Menu */}
       <List sx={{ flexGrow: 1 }}>
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
-            <ListItemButton
+            <SidebarListItem
               key={item.label}
               onClick={() => navigate(item.path)}
-              sx={{
-                backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : 'inherit',
-              }}
+              className={isActive ? 'active' : ''}
             >
+              <SidebarIcon>{item.icon}</SidebarIcon>
               <ListItemText primary={item.label} />
-            </ListItemButton>
+            </SidebarListItem>
           );
         })}
       </List>
-    </Box>
+
+      <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
+
+      {/* Footer */}
+      <Box sx={{ textAlign: 'center', p: 2 }}>
+        <Typography variant="body2" sx={{ fontSize: '0.8rem', opacity: 0.8 }}>
+          © 2024 Mock Trader
+        </Typography>
+      </Box>
+    </SidebarContainer>
   );
 }
 

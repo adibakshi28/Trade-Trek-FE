@@ -1,21 +1,77 @@
-// src/pages/Summary.jsx
 import React, { useEffect, useState } from 'react';
 import {
   Paper,
   Typography,
-  CircularProgress,
   Snackbar,
   Alert,
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Box,
+  Grid,
+  Skeleton,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { getUserSummary } from '../api/userApi';
 import { styled } from '@mui/system';
+import { motion } from 'framer-motion';
 
-const GreenText = styled('span')({ color: 'green' });
-const RedText = styled('span')({ color: 'red' });
+// 🎨 Styled Components
+const StyledContainer = styled(Box)(({ theme }) => ({
+  minHeight: '100vh',
+  width: '100%',
+  background: '#f5f7fa',
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'center',
+  paddingTop: theme.spacing(6),
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  overflowX: 'hidden',
+  boxSizing: 'border-box',
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  width: '90%',
+  maxWidth: '1400px',
+  padding: theme.spacing(4),
+  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+  borderRadius: '8px',
+  background: '#fff',
+  marginTop: theme.spacing(-6), // Move the box upwards
+}));
+
+const StyledCard = styled(Box)(({ theme }) => ({
+  borderRadius: '8px',
+  padding: theme.spacing(2),
+  textAlign: 'center',
+  background: '#fdfdfd',
+  boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+}));
+
+const SectionHeader = styled(Typography)(({ theme }) => ({
+  fontWeight: 'bold',
+  marginBottom: theme.spacing(2),
+  fontSize: '1.2rem',
+  textAlign: 'left',
+}));
+
+const GreenText = styled('span')({
+  color: 'green',
+  fontWeight: 'bold',
+});
+
+const RedText = styled('span')({
+  color: 'red',
+  fontWeight: 'bold',
+});
+
+// ✨ Animation Variants
+const pageVariants = {
+  initial: { opacity: 0, y: 50 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  exit: { opacity: 0, y: -50, transition: { duration: 0.5, ease: 'easeIn' } },
+};
 
 function Summary() {
   const [summary, setSummary] = useState(null);
@@ -49,11 +105,39 @@ function Summary() {
     return plValue.toFixed(2);
   };
 
-  if (loading) return <CircularProgress />;
+  if (loading) {
+    return (
+      <StyledContainer>
+        <StyledPaper>
+          {/* Skeleton for the Summary Page */}
+          <Typography variant="h5" fontWeight="bold" gutterBottom>
+            📋 Account Summary
+          </Typography>
+          <Grid container spacing={3} mb={4}>
+            {[1, 2, 3].map((key) => (
+              <Grid item xs={12} md={4} key={key}>
+                <Skeleton variant="rectangular" height={100} sx={{ borderRadius: '8px' }} />
+              </Grid>
+            ))}
+          </Grid>
+          <SectionHeader>📄 Ticker Summaries</SectionHeader>
+          <Grid container spacing={2}>
+            {[1, 2, 3, 4].map((key) => (
+              <Grid item xs={12} md={6} key={key}>
+                <Skeleton variant="rectangular" height={60} sx={{ borderRadius: '8px' }} />
+              </Grid>
+            ))}
+          </Grid>
+        </StyledPaper>
+      </StyledContainer>
+    );
+  }
 
   if (!summary) {
     return (
-      <Typography color="error">No summary data found.</Typography>
+      <StyledContainer>
+        <Typography color="error">No summary data found.</Typography>
+      </StyledContainer>
     );
   }
 
@@ -62,48 +146,81 @@ function Summary() {
     : [];
 
   return (
-    <Paper sx={{ p: 3 }}>
-      <Snackbar
-        open={showSnackbar}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
-          {error}
-        </Alert>
-      </Snackbar>
+    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+      <StyledContainer>
+        <StyledPaper>
+          {/* Snackbar for Error */}
+          <Snackbar
+            open={showSnackbar}
+            autoHideDuration={3000}
+            onClose={handleCloseSnackbar}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+              {error}
+            </Alert>
+          </Snackbar>
 
-      <Typography variant="h5" gutterBottom>
-        Detailed Summary
-      </Typography>
-      <Typography>Cash Balance: ${summary.cash_balance?.toLocaleString()}</Typography>
-      <Typography>Portfolio Value: ${summary.portfolio_value?.toLocaleString()}</Typography>
-      <Typography>Positions Market Value: {summary.positions_market_value}</Typography>
-      <Typography>Total Realized P/L: {formatPL(summary.total_realized_pl)}</Typography>
-      <Typography>Total Unrealized P/L: {formatPL(summary.total_unrealized_pl)}</Typography>
+          {/* Page Title */}
+          <Typography variant="h4" fontWeight="bold" gutterBottom textAlign="center">
+            📋 Account Summary
+          </Typography>
 
-      <Typography variant="h6" sx={{ mt: 2 }}>
-        Ticker Summaries
-      </Typography>
-      {tickerEntries.length === 0 ? (
-        <Typography>No ticker summary found.</Typography>
-      ) : (
-        tickerEntries.map(([ticker, info]) => (
-          <Accordion key={ticker}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>{ticker}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography>Quantity: {info.quantity}</Typography>
-              <Typography>Avg Cost: ${info.avg_cost?.toFixed(2)}</Typography>
-              <Typography>Current Price: ${info.current_price?.toFixed(2)}</Typography>
-              <Typography>Unrealized P/L: {formatPL(info.unrealized_pl)}</Typography>
-              <Typography>Realized P/L: {formatPL(info.realized_pl)}</Typography>
-            </AccordionDetails>
-          </Accordion>
-        ))
-      )}
-    </Paper>
+          {/* Key Metrics */}
+          <Grid container spacing={3} mb={4}>
+            <Grid item xs={12} md={4}>
+              <StyledCard>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  💵 Cash Balance
+                </Typography>
+                <Typography variant="h5">
+                  ${summary.cash_balance?.toLocaleString()}
+                </Typography>
+              </StyledCard>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <StyledCard>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  📈 Portfolio Value
+                </Typography>
+                <Typography variant="h5">
+                  ${summary.portfolio_value?.toLocaleString()}
+                </Typography>
+              </StyledCard>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <StyledCard>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  💲Total Unrealized P/L
+                </Typography>
+                <Typography variant="h5">{formatPL(summary.total_unrealized_pl)}</Typography>
+              </StyledCard>
+            </Grid>
+          </Grid>
+
+          {/* Ticker Summaries */}
+          <SectionHeader>📄 Ticker Summaries</SectionHeader>
+          <Grid container spacing={2}>
+            {tickerEntries.map(([ticker, info]) => (
+              <Grid item xs={12} md={6} key={ticker}>
+                <Accordion>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {ticker}
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>Quantity: {info.quantity}</Typography>
+                    <Typography>Avg Cost: ${info.avg_cost?.toFixed(2)}</Typography>
+                    <Typography>Unrealized P/L: {formatPL(info.unrealized_pl)}</Typography>
+                  </AccordionDetails>
+                </Accordion>
+              </Grid>
+            ))}
+          </Grid>
+        </StyledPaper>
+      </StyledContainer>
+    </motion.div>
   );
 }
 
