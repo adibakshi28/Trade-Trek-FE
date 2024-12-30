@@ -53,6 +53,7 @@ const StyledTableHead = styled(TableHead)(({ theme }) => ({
 const StyledTableCellHeader = styled(TableCell)(({ theme }) => ({
   fontWeight: 'bold',
   color: '#333',
+  fontSize: '1.03rem',
   textTransform: 'uppercase',
 }));
 
@@ -173,7 +174,7 @@ function Transactions() {
                       <StyledTableCellHeader>Quantity</StyledTableCellHeader>
                       <StyledTableCellHeader>Execution Price</StyledTableCellHeader>
                       <StyledTableCellHeader>Transaction Fee</StyledTableCellHeader>
-                      <StyledTableCellHeader>Created At</StyledTableCellHeader>
+                      <StyledTableCellHeader>Executed On</StyledTableCellHeader>
                     </TableRow>
                   </StyledTableHead>
                   <TableBody>
@@ -183,13 +184,13 @@ function Transactions() {
                         : 'N/A';
                       return (
                         <StyledTableRow key={tx.id}>
-                          <TableCell>{index + 1 + page * rowsPerPage}</TableCell>
-                          <TableCell>{tx.stock_ticker}</TableCell>
-                          <TableCell>{tx.direction}</TableCell>
-                          <TableCell>{tx.quantity}</TableCell>
-                          <TableCell>${tx.execution_price}</TableCell>
-                          <TableCell>${tx.transaction_fee}</TableCell>
-                          <TableCell>{createdAt}</TableCell>
+                          <TableCell sx={{ fontSize: '0.95rem' }}>{index + 1 + page * rowsPerPage}</TableCell>
+                          <TableCell sx={{ fontSize: '0.95rem' }}>{tx.stock_ticker}</TableCell>
+                          <TableCell sx={{ fontSize: '0.95rem' }}>{tx.direction}</TableCell>
+                          <TableCell sx={{ fontSize: '0.95rem' }}>{tx.quantity}</TableCell>
+                          <TableCell sx={{ fontSize: '0.95rem' }}>${tx.execution_price}</TableCell>
+                          <TableCell sx={{ fontSize: '0.95rem' }}>${tx.transaction_fee}</TableCell>
+                          <TableCell sx={{ fontSize: '0.95rem' }}>{createdAt}</TableCell>
                         </StyledTableRow>
                       );
                     })}

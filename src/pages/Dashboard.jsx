@@ -362,12 +362,12 @@ function Dashboard() {
             <Table>
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Symbol</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Direction</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Qty</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Execution Price</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Current Price</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Value</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1.03rem' }}>Symbol</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1.03rem' }}>Direction</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1.03rem' }}>Qty</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1.03rem' }}>Execution Price</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1.03rem' }}>Current Price</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1.03rem' }}>Value</TableCell>
                   <TableCell></TableCell> {/* For the Trade button */}
                 </TableRow>
               </TableHead>
@@ -390,18 +390,18 @@ function Dashboard() {
                     return (
                       <RowHighlight key={pos.id} flashColor={rowColor}>
                         <TableCell>
-                          <Typography variant="subtitle2" fontWeight="bold">
+                          <Typography sx={{ fontSize: '0.9rem' }} variant="subtitle2" fontWeight="bold">
                             {pos.stock_ticker}
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography sx={{ fontSize: '0.9rem' }} variant="caption" color="text.secondary">
                             {pos.stock_name}
                           </Typography>
                         </TableCell>
-                        <TableCell>{directionLabel}</TableCell>
-                        <TableCell>{pos.quantity}</TableCell>
-                        <TableCell>${pos.execution_price.toFixed(2)}</TableCell>
-                        <TableCell>${ltp.toFixed(2)}</TableCell>
-                        <TableCell>${posVal.toFixed(2)}</TableCell>
+                        <TableCell sx={{ fontSize: '0.95rem' }}>{directionLabel}</TableCell>
+                        <TableCell sx={{ fontSize: '0.95rem' }}>{pos.quantity}</TableCell>
+                        <TableCell sx={{ fontSize: '0.95rem' }}>${pos.execution_price.toFixed(2)}</TableCell>
+                        <TableCell sx={{ fontSize: '0.95rem', fontWeight: 'bold', }}>${ltp.toFixed(2)}</TableCell>
+                        <TableCell sx={{ fontSize: '0.95rem', fontWeight: 'bold', }}>${posVal.toFixed(2)}</TableCell>
                         <TableCell>
                           <TradeButton
                             size="small"
