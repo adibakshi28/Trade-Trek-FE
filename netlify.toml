@@ -1,16 +1,60 @@
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# ========================
+# Redirect Rules
+# ========================
 
+# API Redirect (Proxy API requests to backend server)
 [[redirects]]
   from = "/api/*"
   to = "http://18.189.118.160:8000/api/:splat"
   status = 200
   force = true
 
+# WebSocket Redirect (Proxy WS requests to backend server)
 [[redirects]]
   from = "/ws/*"
   to = "ws://18.189.118.160:8000/:splat"
   status = 200
   force = true
+
+# Catch-all Route (For React Router)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# ========================
+# Security Headers
+# ========================
+
+# Add CORS headers for API
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+# Add CORS headers for WebSocket
+[[headers]]
+  for = "/ws/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+# ========================
+# Cache Settings
+# ========================
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# ========================
+# General Settings
+# ========================
+
+[build]
+  command = "npm run build"
+  publish = "build"
