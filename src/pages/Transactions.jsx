@@ -164,7 +164,7 @@ function Transactions() {
             </Typography>
           ) : (
             <>
-              <TableContainer sx={{ maxHeight: '500px', overflowY: 'hidden' }}>
+              <TableContainer sx={{ maxHeight: '500px'}}>
                 <Table stickyHeader>
                   <StyledTableHead>
                     <TableRow>
