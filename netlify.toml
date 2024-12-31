@@ -33,6 +33,7 @@
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Allow-Credentials = "true"
 
 # Add CORS headers for WebSocket
 [[headers]]
@@ -41,6 +42,7 @@
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Allow-Credentials = "true"
 
 # ========================
 # Cache Settings
@@ -50,6 +52,15 @@
   for = "/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# ========================
+# Force HTTPS Redirect
+# ========================
+[[redirects]]
+  from = "http://mock-trader.netlify.app/*"
+  to = "https://mock-trader.netlify.app/:splat"
+  status = 301
+  force = true
 
 # ========================
 # General Settings
