@@ -373,26 +373,30 @@ function TradePage() {
                 value={quantity}
                 onChange={(e) => {
                   let value = e.target.value;
-              
-                  // Remove non-digit characters
-                  value = value.replace(/\D/g, '');
-              
-                  // Remove leading zeros
-                  value = value.replace(/^0+/, '');
-              
-                  if (value === '') {
-                    setQuantity('');
-                  } else {
-                    setQuantity(Number(value));
+
+                  // Allow only numbers and a single decimal point
+                  value = value.replace(/[^0-9.]/g, '');
+
+                  // Ensure only one decimal point exists
+                  if (value.split('.').length > 2) {
+                    value = value.substring(0, value.lastIndexOf('.'));
                   }
+
+                  // Remove leading zeros (but preserve single zero before decimal point)
+                  if (value !== '' && !value.startsWith('0.') && value !== '0') {
+                    value = value.replace(/^0+/, '');
+                  }
+
+                  setQuantity(value);
                 }}
                 sx={{ my: 2 }}
                 disabled={!selectedTicker} // can't change quantity if no ticker
                 inputProps={{
-                  inputMode: 'numeric', // Ensure mobile users get a numeric keypad
-                  pattern: '[0-9]*',    // Ensure only numbers are allowed
+                  inputMode: 'decimal', // Ensure mobile users get a decimal keypad
+                  pattern: '[0-9.]*',   // Ensure only numbers and decimal point are allowed
                 }}
               />
+
 
               {loadingValue ? (
                 <Skeleton variant="rectangular" width="100%" height={60} />
