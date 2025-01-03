@@ -88,7 +88,7 @@ function Transactions() {
 
   // Pagination state
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     (async () => {
@@ -139,7 +139,7 @@ function Transactions() {
           </Snackbar>
 
           {/* Page Title */}
-          <Typography variant="h4" fontWeight="bold" gutterBottom textAlign="center">
+          <Typography variant="h5" fontWeight="bold" gutterBottom textAlign="center">
             📑 Transaction History
           </Typography>
 
@@ -164,33 +164,43 @@ function Transactions() {
             </Typography>
           ) : (
             <>
-              <TableContainer sx={{ maxHeight: '500px'}}>
+              <TableContainer sx={{ maxHeight: '500px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', margin: '16px 0' }}>
                 <Table stickyHeader>
                   <StyledTableHead>
-                    <TableRow>
-                      <StyledTableCellHeader>#</StyledTableCellHeader>
-                      <StyledTableCellHeader>Stock Ticker</StyledTableCellHeader>
-                      <StyledTableCellHeader>Direction</StyledTableCellHeader>
-                      <StyledTableCellHeader>Quantity</StyledTableCellHeader>
-                      <StyledTableCellHeader>Execution Price</StyledTableCellHeader>
-                      <StyledTableCellHeader>Transaction Fee</StyledTableCellHeader>
-                      <StyledTableCellHeader>Executed On</StyledTableCellHeader>
+                    <TableRow sx={{ backgroundColor: '#f9fafb' }}>
+                      <StyledTableCellHeader sx={{ fontWeight: 'bold', fontSize: '0.9rem', padding: '8px' }}>#</StyledTableCellHeader>
+                      <StyledTableCellHeader sx={{ fontWeight: 'bold', fontSize: '0.9rem', padding: '8px' }}>Stock Ticker</StyledTableCellHeader>
+                      <StyledTableCellHeader sx={{ fontWeight: 'bold', fontSize: '0.9rem', padding: '8px' }}>Direction</StyledTableCellHeader>
+                      <StyledTableCellHeader sx={{ fontWeight: 'bold', fontSize: '0.9rem', padding: '8px' }}>Quantity</StyledTableCellHeader>
+                      <StyledTableCellHeader sx={{ fontWeight: 'bold', fontSize: '0.9rem', padding: '8px' }}>Execution Price</StyledTableCellHeader>
+                      <StyledTableCellHeader sx={{ fontWeight: 'bold', fontSize: '0.9rem', padding: '8px' }}>Transaction Fee</StyledTableCellHeader>
+                      <StyledTableCellHeader sx={{ fontWeight: 'bold', fontSize: '0.9rem', padding: '8px' }}>Trade Date</StyledTableCellHeader>
                     </TableRow>
                   </StyledTableHead>
                   <TableBody>
                     {paginatedTransactions.map((tx, index) => {
                       const createdAt = tx.created_at
-                        ? format(new Date(tx.created_at), 'yyyy-MM-dd HH:mm:ss')
+                        ? format(new Date(tx.created_at), 'dd MMM yy')
                         : 'N/A';
+                      const createdAtTime = tx.created_at
+                        ? format(new Date(tx.created_at), 'hh:mm a')
+                        : '';
                       return (
-                        <StyledTableRow key={tx.id}>
-                          <TableCell sx={{ fontSize: '0.95rem' }}>{index + 1 + page * rowsPerPage}</TableCell>
-                          <TableCell sx={{ fontSize: '0.95rem' }}>{tx.stock_ticker}</TableCell>
-                          <TableCell sx={{ fontSize: '0.95rem' }}>{tx.direction}</TableCell>
-                          <TableCell sx={{ fontSize: '0.95rem' }}>{tx.quantity}</TableCell>
-                          <TableCell sx={{ fontSize: '0.95rem' }}>${tx.execution_price}</TableCell>
-                          <TableCell sx={{ fontSize: '0.95rem' }}>${tx.transaction_fee}</TableCell>
-                          <TableCell sx={{ fontSize: '0.95rem' }}>{createdAt}</TableCell>
+                        <StyledTableRow key={tx.id} sx={{
+                          '&:nth-of-type(odd)': { backgroundColor: '#f3f3f3' },
+                          '&:hover': { backgroundColor: '#fbfbfb' },
+                          height: '40px'
+                        }}>
+                          <TableCell sx={{ fontSize: '0.9rem', padding: '6px' }}>{index + 1 + page * rowsPerPage}</TableCell>
+                          <TableCell sx={{ fontSize: '0.9rem', fontWeight: '500', padding: '6px' }}>{tx.stock_ticker}</TableCell>
+                          <TableCell sx={{ fontSize: '0.9rem', textTransform: 'capitalize', padding: '6px' }}>{tx.direction}</TableCell>
+                          <TableCell sx={{ fontSize: '0.9rem', padding: '6px' }}>{tx.quantity}</TableCell>
+                          <TableCell sx={{ fontSize: '0.9rem', padding: '6px' }}>${tx.execution_price}</TableCell>
+                          <TableCell sx={{ fontSize: '0.9rem', padding: '6px' }}>${tx.transaction_fee}</TableCell>
+                          <TableCell sx={{ fontSize: '0.9rem', color: 'black', padding: '6px' }}>
+                            {createdAt}
+                            <div style={{ fontSize: '0.8rem', color: '#777' }}>{createdAtTime}</div>
+                          </TableCell>
                         </StyledTableRow>
                       );
                     })}

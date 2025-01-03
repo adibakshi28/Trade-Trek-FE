@@ -1,5 +1,5 @@
 // src/pages/StockSearch.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Paper,
@@ -20,10 +20,13 @@ import {
   Slide,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { getStockUniverse } from '../api/stockApi';
+import { useUniverse } from '../context/UniverseContext';
 
 function StockSearch() {
   const navigate = useNavigate();
+
+  // Access Universe Context
+  const { universeData, isLoading, error, fetchUniverseData } = useUniverse();
 
   // State Management
   const [universe, setUniverse] = useState([]);
@@ -31,25 +34,44 @@ function StockSearch() {
   const [ticker, setTicker] = useState('');
   const [assetType, setAssetType] = useState('');
   const [results, setResults] = useState([]);
-  const [error, setError] = useState('');
+  const [localError, setLocalError] = useState('');
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  // Prevent Duplicate API Calls
+  const hasFetchedData = useRef(false);
+
   useEffect(() => {
-    (async () => {
-      try {
-        setLoadingUniverse(true);
-        const data = await getStockUniverse();
-        setUniverse(data);
-      } catch (err) {
-        console.error(err);
-        setError('Failed to load stock universe');
-        setShowSnackbar(true);
-      } finally {
-        setLoadingUniverse(false);
+    const loadUniverseData = async () => {
+      if (!hasFetchedData.current && !universeData) {
+        try {
+          setLoadingUniverse(true);
+          await fetchUniverseData();
+          hasFetchedData.current = true;
+        } catch (err) {
+          console.error(err);
+          setLocalError('Failed to load data. Try again later.');
+          setShowSnackbar(true);
+        } finally {
+          setLoadingUniverse(false);
+        }
       }
-    })();
-  }, []);
+    };
+
+    loadUniverseData();
+  }, [universeData, fetchUniverseData]);
+
+  useEffect(() => {
+    if (universeData) {
+      setUniverse(universeData);
+      setLoadingUniverse(false);
+    }
+    if (error) {
+      setLocalError(error);
+      setShowSnackbar(true);
+      setLoadingUniverse(false);
+    }
+  }, [universeData, error]);
 
   const handleCloseSnackbar = () => setShowSnackbar(false);
 
@@ -96,7 +118,7 @@ function StockSearch() {
         </Typography>
 
         {/* Search and Filter */}
-        {loadingUniverse ? (
+        {loadingUniverse || isLoading ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Skeleton variant="text" width={200} />
             <Skeleton variant="rectangular" width="100%" height={40} />
@@ -204,7 +226,7 @@ function StockSearch() {
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
-          {error}
+          {localError || error}
         </Alert>
       </Snackbar>
     </Container>

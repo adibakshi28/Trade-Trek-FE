@@ -18,13 +18,17 @@ import {
   ListItemText,
 } from '@mui/material';
 import { useLocation } from 'react-router-dom';
+import { useUniverse } from '../context/UniverseContext';
 
-import { getUserPortfolio, getUserFunds } from '../api/userApi';
-import { getStockUniverse, getStockQuote, placeStockTransaction } from '../api/stockApi';
+import { getUserDashboard } from '../api/userApi';
+import { getStockQuote, placeStockTransaction } from '../api/stockApi';
 import { getTransactionValue } from '../api/transactionApi';
 
 function TradePage() {
   const location = useLocation();
+  
+  const { universeData, isLoading, error, fetchUniverseData } = useUniverse();
+
   // Possibly a default ticker from the StockDetail "Trade" button
   const defaultTicker = location.state?.defaultTicker || '';
 
@@ -45,17 +49,19 @@ function TradePage() {
   const [transactionValue, setTransactionValue] = useState(null);
 
   // Loading states
-  const [loadingUniverse, setLoadingUniverse] = useState(true);
   const [loadingUserData, setLoadingUserData] = useState(true);
   const [loadingQuote, setLoadingQuote] = useState(false);
   const [loadingValue, setLoadingValue] = useState(false);
+
+  // Track if trade in progress
+  const [tradeInProgress, setTradeInProgress] = useState(false); 
 
   // Animations
   const [showPage, setShowPage] = useState(false);
   const [showQuote, setShowQuote] = useState(false);
 
   // Trade form
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState('');
 
   // Snackbar
   const [snackbarMsg, setSnackbarMsg] = useState('');
@@ -63,27 +69,34 @@ function TradePage() {
   const [showSnackbar, setShowSnackbar] = useState(false);
 
   useEffect(() => {
-    // 1) load user data + entire stock universe ONCE
+    // 1) load user data
     (async () => {
       try {
         setLoadingUserData(true);
-        const [fData, pData, univData] = await Promise.all([
-          getUserFunds(),
-          getUserPortfolio(),
-          getStockUniverse(),
+        const [dData] = await Promise.all([
+          getUserDashboard(),
         ]);
-        setFunds(fData);
-        setPortfolio(pData);
-        setUniverse(univData);
+        setFunds(dData.funds);
+        setPortfolio(dData.portfolio);
+        if (!universeData){
+          await fetchUniverseData();
+        } else{
+          setUniverse(universeData);
+        }
       } catch (err) {
         showError('Failed to load data/universe');
       } finally {
         setLoadingUserData(false);
-        setLoadingUniverse(false);
         setShowPage(true); // once data is loaded, show the page
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (universeData) {
+      setUniverse(universeData);
+    }
+  }, [universeData]);
 
   // Once user picks a final ticker, fetch the quote. We do NOT fetch quote while typing.
   useEffect(() => {
@@ -141,7 +154,10 @@ function TradePage() {
   };
 
   const handleTrade = async (direction) => {
-    if (!selectedTicker || !quantity) return;
+    if (!selectedTicker || !quantity || tradeInProgress) return;
+
+    setTradeInProgress(true);
+
     try {
       const response = await placeStockTransaction({
         ticker: selectedTicker,
@@ -158,12 +174,14 @@ function TradePage() {
         setShowSnackbar(true);
 
         // refresh user data
-        const [fData, pData] = await Promise.all([getUserFunds(), getUserPortfolio()]);
-        setFunds(fData);
-        setPortfolio(pData);
+        const [dData] = await Promise.all([getUserDashboard()]);
+        setFunds(dData.funds);
+        setPortfolio(dData.portfolio);
       }
     } catch (err) {
       showError(err.response?.data?.message || 'Trade failed');
+    } finally {
+      setTradeInProgress(false); 
     }
   };
 
@@ -349,13 +367,31 @@ function TradePage() {
 
               <TextField
                 fullWidth
-                type="number"
+                type="text"
                 label="Quantity"
                 variant="outlined"
                 value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
+                onChange={(e) => {
+                  let value = e.target.value;
+              
+                  // Remove non-digit characters
+                  value = value.replace(/\D/g, '');
+              
+                  // Remove leading zeros
+                  value = value.replace(/^0+/, '');
+              
+                  if (value === '') {
+                    setQuantity('');
+                  } else {
+                    setQuantity(Number(value));
+                  }
+                }}
                 sx={{ my: 2 }}
                 disabled={!selectedTicker} // can't change quantity if no ticker
+                inputProps={{
+                  inputMode: 'numeric', // Ensure mobile users get a numeric keypad
+                  pattern: '[0-9]*',    // Ensure only numbers are allowed
+                }}
               />
 
               {loadingValue ? (
@@ -391,7 +427,7 @@ function TradePage() {
               variant="contained"
               color="success"
               sx={{ mr: 2, width: 120 }}
-              disabled={buyDisabled}
+              disabled={buyDisabled || tradeInProgress}
               onClick={() => handleTrade('BUY')}
             >
               BUY
@@ -400,7 +436,7 @@ function TradePage() {
               variant="contained"
               color="error"
               sx={{ width: 120 }}
-              disabled={sellDisabled}
+              disabled={sellDisabled || tradeInProgress}
               onClick={() => handleTrade('SELL')}
             >
               SELL

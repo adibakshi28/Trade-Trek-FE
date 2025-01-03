@@ -21,11 +21,10 @@ export const getStockInfo = async (ticker) => {
   return res.data;
 };
 
-// GET /stock/historical?ticker=xxx
-// returns { historical_price: [ { close, high, low, open, volume, ...}, ... ] }
-export const getStockHistorical = async (ticker) => {
+// GET /stock/historical?ticker=xxx&start_date=yyyy-mm-dd&end_date=yyyy-mm-dd&resolution=1day
+export const getStockHistorical = async (ticker, start_date, end_date, resolution) => {
   const res = await axiosClient.get('/stock/historical', {
-    params: { ticker },
+    params: { ticker, start_date, end_date, resolution },
   });
   return res.data;
 };

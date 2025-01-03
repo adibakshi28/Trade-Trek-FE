@@ -21,12 +21,11 @@ import {
   Button,
   Skeleton,
 } from '@mui/material';
-// API calls
 import { getStockInfo, getStockHistorical } from '../api/stockApi';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Line } from 'react-chartjs-2';
-
-// register chart.js components
+import moment from 'moment';
+import 'chart.js/auto';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -37,6 +36,13 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import BusinessIcon from '@mui/icons-material/Business';
+import IndustryIcon from '@mui/icons-material/AccountBalance';
+import IpoIcon from '@mui/icons-material/CalendarToday';
+import WebsiteIcon from '@mui/icons-material/Language';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 function StockDetail() {
@@ -51,18 +57,23 @@ function StockDetail() {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [animate, setAnimate] = useState(false);
 
-  // fetch data
+  // Fetch data
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
+
+        const endDate = moment().format('YYYY-MM-DD'); // Today
+        const startDate = moment().subtract(1, 'year').format('YYYY-MM-DD'); // 1 Year Back
+
         const info = await getStockInfo(ticker);
-        const hist = await getStockHistorical(ticker);
+        const hist = await getStockHistorical(ticker, startDate, endDate, '1day');
+
         setStockData(info);
-        setHistorical(hist.historical_price || []);
+        setHistorical(hist.reverse() || []);
       } catch (err) {
         console.error(err);
-        setError('Failed to load stock info');
+        setError('Failed to load stock information.');
         setShowSnackbar(true);
       } finally {
         setLoading(false);
@@ -70,21 +81,30 @@ function StockDetail() {
     })();
   }, [ticker]);
 
-  // fade in once data is loaded
+  // Trigger animations once data is loaded
   useEffect(() => {
     if (!loading) setAnimate(true);
   }, [loading]);
 
   const handleCloseSnackbar = () => setShowSnackbar(false);
 
-  // If still loading, show fancy placeholders or skeletons
+  // Loading State with Enhanced Skeletons
   if (loading) {
     return (
-      <Container maxWidth="xl" sx={{ mt: 2 }}>
-        <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
-          <Skeleton variant="rectangular" width={300} height={40} />
-          <Skeleton variant="rectangular" width="80%" height={20} />
-          <Skeleton variant="rectangular" width="100%" height={300} />
+      <Container maxWidth="xl" sx={{ mt: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <Skeleton variant="text" width={250} height={50} />
+          <Skeleton variant="rectangular" height={500} />
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <Skeleton variant="rectangular" height={200} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Skeleton variant="rectangular" height={200} />
+            </Grid>
+          </Grid>
+          <Skeleton variant="text" height={40} />
+          <Skeleton variant="rectangular" height={350} />
         </Box>
       </Container>
     );
@@ -92,8 +112,10 @@ function StockDetail() {
 
   if (!stockData) {
     return (
-      <Container maxWidth="xl" sx={{ mt: 3 }}>
-        <Typography color="error">No data found for {ticker}</Typography>
+      <Container maxWidth="xl" sx={{ mt: 4 }}>
+        <Typography color="error" variant="h6">
+          No data found for {ticker}.
+        </Typography>
       </Container>
     );
   }
@@ -101,47 +123,79 @@ function StockDetail() {
   // Deconstruct the data
   const { asset_type, quote, profile, financials, news } = stockData;
 
-  // daily change color
+  // Determine change color and icon
+  const isPositive = quote?.d > 0;
+  const isNegative = quote?.d < 0;
   let changeColor = 'inherit';
-  if (quote?.d > 0) changeColor = 'green';
-  if (quote?.d < 0) changeColor = 'red';
+  let ChangeIcon = null;
 
-  // helper: format numeric values
-  const fmt = (val) => (typeof val === 'number' ? val.toFixed(2) : val);
+  if (isPositive) {
+    changeColor = 'green';
+    ChangeIcon = TrendingUpIcon;
+  } else if (isNegative) {
+    changeColor = 'red';
+    ChangeIcon = TrendingDownIcon;
+  }
+
+  // Helper: format numeric values
+  const fmt = (val) =>
+    typeof val === 'number'
+      ? val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : val;
 
   // Prepare chart data
-  const chartLabels = historical.map((item) => {
-    if (item.t) {
-      const d = new Date(item.t * 1000);
-      return d.toLocaleDateString();
-    }
-    return '';
-  });
   const chartData = {
-    labels: chartLabels,
+    labels: historical.map((item) => moment(item.datetime).format('MMM YYYY')),
     datasets: [
       {
-        label: `${ticker} Price`,
-        data: historical.map((item) => item.close),
-        borderColor: '#2196f3',
-        backgroundColor: 'rgba(33,150,243,0.1)',
+        label: `${ticker} Closing Price`,
+        data: historical.map((item) => +item.close),
+        borderColor: '#1976d2',
+        backgroundColor: 'rgba(25, 118, 210, 0.1)',
         fill: true,
-        tension: 0.2,
+        tension: 0.4,
+        pointRadius: 0,
+      },
+      {
+        label: `${ticker} Volume`,
+        data: historical.map((item) => +item.volume),
+        type: 'bar',
+        backgroundColor: 'rgba(255, 152, 0, 0.4)',
+        yAxisID: 'y1',
       },
     ],
   };
+
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: { display: false },
-      title: { display: true, text: `${ticker} Historical Price` },
+      legend: { display: true, position: 'top' },
+      title: { display: true, text: `${ticker} 52-Week Price & Volume`, font: { size: 18 } },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+        callbacks: {
+          label: ({ dataset, raw }) =>
+            dataset.label.includes('Price') ? `Close: $${raw}` : `Volume: ${raw.toLocaleString()}`,
+        },
+      },
     },
+    interaction: { mode: 'index', intersect: false },
     scales: {
-      y: { beginAtZero: false },
+      x: { display: true, ticks: { maxTicksLimit: 12, autoSkip: true } },
+      y: { beginAtZero: false, title: { display: true, text: 'Closing Price ($)' } },
+      y1: {
+        beginAtZero: true,
+        title: { display: true, text: 'Volume' },
+        position: 'right',
+        grid: { drawOnChartArea: false },
+        ticks: { callback: (value) => value.toLocaleString() },
+      },
     },
   };
 
-  // On "Trade" button click, just navigate to the TradePage with ticker
+  // Handle Trade Button Click
   const handleGoTrade = () => {
     navigate('/dashboard/trade', {
       state: { defaultTicker: ticker.toUpperCase() },
@@ -149,205 +203,296 @@ function StockDetail() {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 2 }}>
+    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Snackbar
         open={showSnackbar}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert severity={error ? 'error' : 'success'} onClose={handleCloseSnackbar} sx={{ width: '100%' }}>
+        <Alert
+          severity={error ? 'error' : 'success'}
+          onClose={handleCloseSnackbar}
+          sx={{ width: '100%' }}
+        >
           {error || ''}
         </Alert>
       </Snackbar>
 
-      <Fade in={animate} timeout={600}>
-        <Paper sx={{ p: 3, backgroundColor: '#fafafa' }}>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
-            {profile?.name} ({ticker})
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-            Asset Type: {asset_type}
-          </Typography>
-          <Divider sx={{ mb: 3 }} />
+      <Fade in={animate} timeout={1000}>
+        <Paper elevation={4} sx={{ p: { xs: 2, md: 4 }, backgroundColor: '#fff' }}>
+          {/* Header Section */}
+          <Box sx={{ mb: 4, textAlign: { xs: 'center', md: 'left' } }}>
+            {/* Reduced font size from h3 to h4 */}
+            <Typography variant="h4" fontWeight="bold" gutterBottom>
+              {profile?.name} ({ticker})
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary">
+              Asset Type: {asset_type}
+            </Typography>
+          </Box>
 
-          <Grid container spacing={2}>
-            {/* Left column: Profile & chart */}
-            <Grid item xs={12} md={6} lg={5}>
-              <Card sx={{ mb: 2 }}>
-                <CardContent>
-                  <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
+          {/* Quote and Graph Section */}
+          <Grid container spacing={4}>
+            {/* Stock Quote */}
+            <Grid item xs={12} md={4}>
+              <Card
+                elevation={3}
+                sx={{
+                  p: 3,
+                  backgroundColor: '#f5f5f5',
+                  transition: 'transform 0.3s',
+                  '&:hover': { transform: 'scale(1.02)' },
+                }}
+              >
+                <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                  <Typography variant="h6" fontWeight="bold">
+                    Stock Quote
+                  </Typography>
+                  <Button variant="contained" color="primary" onClick={handleGoTrade}>
+                    Trade
+                  </Button>
+                </Box>
+                <Divider sx={{ mb: 2 }} />
+                <Box>
+                  <Typography variant="h4" fontWeight="bold" color="text.primary">
+                    ${quote?.c ? fmt(quote.c) : 'N/A'}
+                  </Typography>
+                  <Box display="flex" alignItems="center" sx={{ color: changeColor, mb: 2 }}>
+                    {ChangeIcon && <ChangeIcon sx={{ mr: 1 }} />}
+                    <Typography variant="subtitle1" fontWeight="medium">
+                      {quote?.d > 0 && '+'}
+                      {quote?.d ? fmt(quote.d) : '0'} ({quote?.dp > 0 && '+'}
+                      {quote?.dp ? fmt(quote.dp) : '0'}%)
+                    </Typography>
+                  </Box>
+                  <Divider sx={{ mb: 2 }} />
+                  <Box>
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      <strong>High:</strong> {quote?.h ? fmt(quote.h) : 'N/A'}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      <strong>Low:</strong> {quote?.l ? fmt(quote.l) : 'N/A'}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Previous Close:</strong> {quote?.pc ? fmt(quote.pc) : 'N/A'}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Card>
+
+              {/* Company Profile placed directly below Stock Quote */}
+              <Box sx={{ mt: 4 }}>
+                <Card
+                  elevation={3}
+                  sx={{
+                    p: 3,
+                    backgroundColor: '#fff',
+                    transition: 'transform 0.3s',
+                    '&:hover': { transform: 'scale(1.02)' },
+                  }}
+                >
+                  <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
                     {profile?.logo && (
                       <CardMedia
                         component="img"
-                        sx={{ width: 100, objectFit: 'contain' }}
+                        sx={{ width: 120, height: 120, objectFit: 'contain', mb: 2 }}
                         image={profile.logo}
-                        alt="logo"
+                        alt="Company Logo"
                       />
                     )}
                     <Typography variant="h6" fontWeight="bold">
-                      Profile
+                      Company Profile
                     </Typography>
                   </Box>
-                  <Box mt={2} ml={1}>
-                    <Typography variant="body2" sx={{ mb: 0.5 }}>
-                      <strong>Exchange:</strong> {profile?.exchange}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 0.5 }}>
-                      <strong>Industry:</strong> {profile?.finnhubIndustry}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 0.5 }}>
-                      <strong>IPO:</strong> {profile?.ipo}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 0.5 }}>
-                      <strong>Website:</strong>{' '}
-                      <Link href={profile?.weburl} target="_blank" rel="noopener">
-                        {profile?.weburl}
-                      </Link>
-                    </Typography>
+                  <Divider sx={{ mb: 2 }} />
+                  <Box>
+                    <Box display="flex" alignItems="center" mb={1}>
+                      <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                      <Typography variant="body2">
+                        <strong>Exchange:</strong> {profile?.exchange}
+                      </Typography>
+                    </Box>
+                    <Box display="flex" alignItems="center" mb={1}>
+                      <IndustryIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                      <Typography variant="body2">
+                        <strong>Industry:</strong> {profile?.finnhubIndustry}
+                      </Typography>
+                    </Box>
+                    <Box display="flex" alignItems="center" mb={1}>
+                      <IpoIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                      <Typography variant="body2">
+                        <strong>IPO:</strong> {profile?.ipo}
+                      </Typography>
+                    </Box>
+                    <Box display="flex" alignItems="center">
+                      <WebsiteIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                      <Typography variant="body2">
+                        <strong>Website:</strong>{' '}
+                        <Link
+                          href={profile?.weburl}
+                          target="_blank"
+                          rel="noopener"
+                          underline="hover"
+                        >
+                          {profile?.weburl}
+                        </Link>
+                      </Typography>
+                    </Box>
                   </Box>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent>
-                  <Box sx={{ minHeight: 300 }}>
-                    <Line data={chartData} options={chartOptions} />
-                  </Box>
-                </CardContent>
-              </Card>
+                </Card>
+              </Box>
             </Grid>
 
-            {/* Right column: Quote & Financials */}
-            <Grid item xs={12} md={6} lg={7}>
-              <Card sx={{ mb: 2 }}>
-                <CardContent>
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography variant="h6" fontWeight="bold">
-                      Quote
-                    </Typography>
-                    {/* The new Trade button that redirects */}
-                    <Button
-                      variant="contained"
-                      color="success"
-                      onClick={handleGoTrade}
-                    >
-                      Trade
-                    </Button>
-                  </Box>
-
-                  <Box mt={1} ml={1}>
-                    <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
-                      ${quote?.c ? fmt(quote.c) : 'N/A'}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{ color: changeColor, mb: 0.5, fontWeight: 'bold' }}
-                    >
-                      Change: {quote?.d ? fmt(quote.d) : 'N/A'} (Daily %:{' '}
-                      {quote?.dp ? fmt(quote.dp) : 'N/A'})
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 0.5 }}>
-                      <strong>High:</strong> {quote?.h ? fmt(quote.h) : 'N/A'} /{' '}
-                      <strong>Low:</strong> {quote?.l ? fmt(quote.l) : 'N/A'}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 0.5 }}>
-                      <strong>Previous Close:</strong>{' '}
-                      {quote?.pc ? fmt(quote.pc) : 'N/A'}
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" fontWeight="bold">
-                    Financial Highlights
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(2, 1fr)',
-                      gap: 1,
-                      mt: 1,
-                      ml: 1,
-                    }}
-                  >
-                    <Typography variant="body2">
-                      <strong>52W High:</strong> {fmt(financials?.['52WeekHigh'])}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>52W Low:</strong> {fmt(financials?.['52WeekLow'])}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Market Cap:</strong> {fmt(financials?.marketCapitalization)}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Beta:</strong> {fmt(financials?.beta)}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>PE (TTM):</strong> {fmt(financials?.peTTM)}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Dividend Yield:</strong> {fmt(financials?.currentDividendYieldTTM)}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>EPS Growth 5Y:</strong> {fmt(financials?.epsGrowth5Y)}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Revenue Growth 5Y:</strong> {fmt(financials?.revenueGrowth5Y)}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Gross Margin TTM:</strong> {fmt(financials?.grossMarginTTM)}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>ROA TTM:</strong> {fmt(financials?.roaTTM)}
-                    </Typography>
-                  </Box>
+            {/* Stock Graph */}
+            <Grid item xs={12} md={8}>
+              <Card
+                elevation={3}
+                sx={{
+                  p: 2,
+                  height: '100%',
+                  backgroundColor: '#fafafa',
+                  transition: 'transform 0.3s',
+                  '&:hover': { transform: 'scale(1.01)' },
+                }}
+              >
+                <CardContent sx={{ height: { xs: 300, md: 500 } }}>
+                  <Line data={chartData} options={chartOptions} />
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
 
+          {/* Financial Highlights */}
+          <Box sx={{ mt: 4 }}>
+            <Card
+              elevation={3}
+              sx={{
+                p: 3,
+                backgroundColor: '#fff',
+                transition: 'transform 0.3s',
+                '&:hover': { transform: 'scale(1.01)' },
+              }}
+            >
+              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                Financial Highlights
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              <Grid container spacing={2}>
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="body2">
+                    <strong>52W High:</strong> {fmt(financials?.['52WeekHigh'])}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="body2">
+                    <strong>52W Low:</strong> {fmt(financials?.['52WeekLow'])}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="body2">
+                    <strong>Market Cap:</strong> {fmt(financials?.marketCapitalization)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="body2">
+                    <strong>Beta:</strong> {fmt(financials?.beta)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="body2">
+                    <strong>PE (TTM):</strong> {fmt(financials?.peTTM)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="body2">
+                    <strong>Dividend Yield:</strong> {fmt(financials?.currentDividendYieldTTM)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="body2">
+                    <strong>EPS Growth 5Y:</strong> {fmt(financials?.epsGrowth5Y)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="body2">
+                    <strong>Revenue Growth 5Y:</strong> {fmt(financials?.revenueGrowth5Y)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="body2">
+                    <strong>Gross Margin TTM:</strong> {fmt(financials?.grossMarginTTM)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="body2">
+                    <strong>ROA TTM:</strong> {fmt(financials?.roaTTM)}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Card>
+          </Box>
+
           {/* News Section */}
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              Recent News
-            </Typography>
-            {Array.isArray(news) && news.length > 0 ? (
-              news.map((item) => (
-                <Accordion key={item.id} sx={{ mb: 1 }}>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography fontWeight="bold">{item.headline}</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    {item.image && (
-                      <Box
-                        component="img"
-                        src={item.image}
-                        alt="news-img"
-                        sx={{
-                          maxWidth: '100%',
-                          mb: 1,
-                          borderRadius: 1,
-                          boxShadow: 1,
-                        }}
-                      />
-                    )}
-                    <Typography variant="subtitle2" gutterBottom>
-                      Source: {item.source} | {new Date(item.datetime * 1000).toLocaleString()}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      {item.summary}
-                    </Typography>
-                    <Link href={item.url} target="_blank" rel="noopener">
-                      Read more
-                    </Link>
-                  </AccordionDetails>
-                </Accordion>
-              ))
-            ) : (
-              <Typography>No news available.</Typography>
-            )}
+          <Box sx={{ mt: 4 }}>
+            <Card
+              elevation={3}
+              sx={{
+                p: 3,
+                backgroundColor: '#fff',
+                transition: 'transform 0.3s',
+                '&:hover': { transform: 'scale(1.01)' },
+              }}
+            >
+              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                Recent News
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              {Array.isArray(news) && news.length > 0 ? (
+                news.map((item) => (
+                  <Accordion key={item.id} sx={{ mb: 2, boxShadow: 1 }}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                      <Typography fontWeight="medium">{item.headline}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      {item.image && (
+                        <Box
+                          component="img"
+                          src={item.image}
+                          alt="News"
+                          sx={{
+                            width: '100%',
+                            height: 'auto',
+                            maxHeight: 200,
+                            objectFit: 'cover',
+                            borderRadius: 1,
+                            mb: 2,
+                          }}
+                        />
+                      )}
+                      <Typography variant="caption" color="text.secondary" gutterBottom>
+                        Source: {item.source} |{' '}
+                        {new Date(item.datetime * 1000).toLocaleString()}
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        {item.summary}
+                      </Typography>
+                      <Link
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener"
+                        underline="hover"
+                        sx={{ color: 'primary.main' }}
+                      >
+                        Read more
+                      </Link>
+                    </AccordionDetails>
+                  </Accordion>
+                ))
+              ) : (
+                <Typography>No news available.</Typography>
+              )}
+            </Card>
           </Box>
         </Paper>
       </Fade>
