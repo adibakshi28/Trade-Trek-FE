@@ -156,7 +156,7 @@ function Dashboard() {
         wsRef.current = ws;
 
         ws.onopen = () => {
-          console.log('WebSocket connected');
+          // console.log('WebSocket connected');
         };
 
         ws.onmessage = (evt) => {
@@ -181,7 +181,7 @@ function Dashboard() {
         };
 
         ws.onclose = () => {
-          console.log('WebSocket closed');
+          // console.log('WebSocket closed');
         };
 
         ws.onerror = (err) => {
