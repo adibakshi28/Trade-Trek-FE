@@ -124,7 +124,7 @@ function Sidebar() {
       {/* Footer */}
       <Box sx={{ textAlign: 'center', p: 2 }}>
         <Typography variant="body2" sx={{ fontSize: '0.8rem', opacity: 0.8 }}>
-          © 2024 Mock Trader
+          © 2024 Trade Trek
         </Typography>
       </Box>
     </SidebarContainer>
