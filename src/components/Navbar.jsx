@@ -58,7 +58,7 @@ function Navbar() {
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         {/* Logo */}
         <Box onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>
-          <Logo variant="h6">Mock Trader</Logo>
+          <Logo variant="h6">Trade Trek</Logo>
         </Box>
 
         {/* Navigation Links */}
