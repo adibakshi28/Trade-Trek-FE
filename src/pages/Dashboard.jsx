@@ -19,9 +19,13 @@ import { styled, keyframes } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import CountUp from 'react-countup';
 import { getUserDashboard } from '../api/userApi';
-import { createRealtimeSocket } from '../api/websocketClient';
+// Remove the local WebSocket import
+// import { createRealtimeSocket } from '../api/websocketClient';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+
+// Import the WebSocket context
+import { useWebSocket } from '../context/WebSocketContext';
 
 // ------------------------------------
 // STYLED COMPONENTS
@@ -57,10 +61,10 @@ const StatCard = styled(Paper)(({ theme }) => ({
   backgroundColor: '#f5f5f5',
 }));
 
-// Table Row Highlight
+// Table Row Highlight with Gradient Transition
 const RowHighlight = styled(TableRow)(({ flashColor }) => ({
-  transition: 'background-color 0.5s ease',
-  backgroundColor: flashColor || 'transparent',
+  transition: 'background 1s ease',
+  background: flashColor || 'transparent',
 }));
 
 // Trade Button with Hover Animation
@@ -82,27 +86,51 @@ const TradeButton = styled(Button)({
 // Keyframes for Arrow Animations
 const moveUpFade = keyframes`
   0% {
+    opacity: 0;
+    transform: translateY(0) scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 0px rgba(0,0,0,0));
+  }
+  10% {
     opacity: 1;
-    transform: translateY(0) scale(1.3);
+    transform: translateY(0) scale(1.3) rotate(0deg);
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-30px) scale(1.1) rotate(-10deg);
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.3));
   }
   100% {
     opacity: 0;
-    transform: translateY(-30px) scale(0.7);
+    transform: translateY(-50px) scale(0.8) rotate(-20deg);
+    filter: drop-shadow(0 0 0px rgba(0,0,0,0));
   }
 `;
 
 const moveDownFade = keyframes`
   0% {
+    opacity: 0;
+    transform: translateY(0) scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 0px rgba(0,0,0,0));
+  }
+  10% {
     opacity: 1;
-    transform: translateY(0) scale(1.3);
+    transform: translateY(0) scale(1.3) rotate(0deg);
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(30px) scale(1.1) rotate(10deg);
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.3));
   }
   100% {
     opacity: 0;
-    transform: translateY(30px) scale(0.7);
+    transform: translateY(50px) scale(0.8) rotate(20deg);
+    filter: drop-shadow(0 0 0px rgba(0,0,0,0));
   }
 `;
 
-// Styled Component for Animated Arrows
+// Styled Component for Animated Arrows with Enhanced Animations
 const AnimatedArrow = styled('div')(({ direction }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -110,31 +138,70 @@ const AnimatedArrow = styled('div')(({ direction }) => ({
   animation: `${direction === 'up' ? moveUpFade : moveDownFade} 2s forwards`,
   // Adjust positioning to prevent layout shifts
   position: 'absolute',
-  right: '75px',
+  right: '10px',
+  // Ensure arrows are on top
+  zIndex: 1,
 }));
 
 function Dashboard() {
   const navigate = useNavigate();
 
+  // Access WebSocket context
+  const { prices, connectionStatus, error: wsError, sendMessage } = useWebSocket();
+
   const [funds, setFunds] = useState(null);
   const [portfolio, setPortfolio] = useState([]);
-  const [prices, setPrices] = useState({});
   const [prevPrices, setPrevPrices] = useState({});
   const [rowFlashColors, setRowFlashColors] = useState({});
+  const [arrowAnimations, setArrowAnimations] = useState({});
 
   const [portfolioValue, setPortfolioValue] = useState(0);
   const [netUnrealizedPL, setNetUnrealizedPL] = useState(0);
   const [netUnrealizedPLPrev, setNetUnrealizedPLPrev] = useState(0);
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
   const [showSnackbar, setShowSnackbar] = useState(false);
-  const [wbMsgReceived, setWbMsgReceived] = useState(0);
 
-  const wsRef = useRef(null);
   const initialPricesLoaded = useRef(false); // To track initial price load
 
-  // Fetch user data and set up WebSocket on mount
+  // Function to flash row color and trigger arrow animation
+  const flashRowColor = (sym, color, direction) => {
+    if (color === 'transparent') return;
+
+    // Set the row flash color with a gradient
+    setRowFlashColors((prev) => ({
+      ...prev,
+      [sym]: color === 'rgba(0,255,0,0.2)'
+        ? 'linear-gradient(90deg, rgba(0,255,0,0.2) 0%, rgba(0,255,0,0) 100%)'
+        : 'linear-gradient(90deg, rgba(255,0,0,0.2) 0%, rgba(255,0,0,0) 100%)',
+    }));
+
+    // Initiate arrow animation
+    const animationId = Date.now(); // Unique identifier for the animation instance
+    setArrowAnimations((prev) => ({
+      ...prev,
+      [sym]: { direction, id: animationId },
+    }));
+
+    // Reset row flash color after 1 second to allow the gradient to display smoothly
+    setTimeout(() => {
+      setRowFlashColors((prev) => ({
+        ...prev,
+        [sym]: 'transparent',
+      }));
+    }, 1000);
+
+    // Remove arrow animation after the animation duration
+    setTimeout(() => {
+      setArrowAnimations((prev) => ({
+        ...prev,
+        [sym]: null,
+      }));
+    }, 2000); // Duration matches the arrow animation duration
+  };
+
+  // Fetch user data on mount
   useEffect(() => {
     (async () => {
       try {
@@ -145,63 +212,28 @@ function Dashboard() {
         // Initialize portfolio value and net P/L with initial prices if available
         recalcPortfolioAndPL(dashData.portfolio, dashData.prices || {});
 
-        // Setup WebSocket
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-          console.error('No token found, skipping WebSocket');
-          setLoading(false);
-          return;
-        }
-        const ws = createRealtimeSocket(token);
-        wsRef.current = ws;
-
-        ws.onopen = () => {
-          // console.log('WebSocket connected');
-        };
-
-        ws.onmessage = (evt) => {
-          setWbMsgReceived((prev) => {
-            const newCount = prev + 1;
-
-            if (loading && newCount > 1) {
-              setLoading(false);
-            }
-
-            return newCount;
-          });
-
-          try {
-            const data = JSON.parse(evt.data); // e.g., [ { stock_ticker, ltp }, ...]
-            if (Array.isArray(data)) {
-              handlePriceUpdates(data);
-            }
-          } catch (err) {
-            console.error('Error parsing WS message', err);
-          }
-        };
-
-        ws.onclose = () => {
-          // console.log('WebSocket closed');
-        };
-
-        ws.onerror = (err) => {
-          console.error('WebSocket error', err);
-        };
+        setLoading(false);
       } catch (err) {
         console.error(err);
-        setError('Failed to load dashboard data');
+        setErrorMsg('Failed to load dashboard data');
         setShowSnackbar(true);
         setLoading(false);
       }
     })();
-
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-    };
-    // eslint-disable-next-line
   }, []);
+
+  // Subscribe to portfolio updates when Dashboard mounts
+  useEffect(() => {
+    // Send subscription message
+    sendMessage({ type: 'subscribe_portfolio_watchlist' });
+    console.log('📥 Sent subscribe_portfolio_watchlist message');
+
+    // Cleanup function to unsubscribe when Dashboard unmounts
+    return () => {
+      sendMessage({ type: 'unsubscribe_all' });
+      console.log('📤 Sent unsubscribe_all message');
+    };
+  }, [sendMessage]);
 
   // Recompute portfolio value & net P/L whenever portfolio or prices change
   useEffect(() => {
@@ -215,48 +247,29 @@ function Dashboard() {
   }, [portfolio, prices]);
 
   // Handle incoming price updates
-  const handlePriceUpdates = (priceArray) => {
-    setPrices((oldPrices) => {
-      const newPrices = { ...oldPrices };
-      const updatedPrev = { ...prevPrices };
+  useEffect(() => {
+    // Compare previous prices with current prices to determine changes
+    if (!initialPricesLoaded.current) {
+      initialPricesLoaded.current = true;
+      setPrevPrices(prices);
+      return;
+    }
 
-      priceArray.forEach(({ stock_ticker, ltp }) => {
-        const sym = stock_ticker.toUpperCase();
-        const oldPrice = Number(oldPrices[sym]).toFixed(2) || 0;
+    Object.keys(prices).forEach((sym) => {
+      const newPrice = Number(prices[sym]);
+      const oldPrice = Number(prevPrices[sym]) || 0;
 
-        if (initialPricesLoaded.current) {
-          updatedPrev[sym] = oldPrices[sym];
-        }
-
-        newPrices[sym] = Number(ltp).toFixed(2);
-
-        let rowColor = 'transparent';
-        if (ltp > oldPrice) rowColor = 'rgba(0,255,0,0.2)';
-        else if (ltp < oldPrice) rowColor = 'rgba(255,0,0,0.2)';
-        flashRowColor(sym, rowColor);
-      });
-
-      // After handling the first batch of prices, set initialPricesLoaded to true
-      if (!initialPricesLoaded.current) {
-        initialPricesLoaded.current = true;
-        // For the first set of prices, prevent delta calculation
-        setPrevPrices(newPrices);
-      } else {
-        setPrevPrices(updatedPrev);
+      if (newPrice > oldPrice) {
+        // Price increased
+        flashRowColor(sym, 'rgba(0,255,0,0.2)', 'up'); // Green highlight and up direction
+      } else if (newPrice < oldPrice) {
+        // Price decreased
+        flashRowColor(sym, 'rgba(255,0,0,0.2)', 'down'); // Red highlight and down direction
       }
-
-      return newPrices;
     });
-  };
 
-  // Flash row background color on price change
-  const flashRowColor = (sym, color) => {
-    if (color === 'transparent') return;
-    setRowFlashColors((prev) => ({ ...prev, [sym]: color }));
-    setTimeout(() => {
-      setRowFlashColors((prev) => ({ ...prev, [sym]: 'transparent' }));
-    }, 500);
-  };
+    setPrevPrices(prices);
+  }, [prices, prevPrices]);
 
   // Recompute portfolio value and net P/L
   const recalcPortfolioAndPL = (currentPortfolio, currentPrices) => {
@@ -293,6 +306,56 @@ function Dashboard() {
     navigate('/dashboard/trade', { state: { defaultTicker: ticker.toUpperCase() } });
   };
 
+  // Handle WebSocket errors
+  useEffect(() => {
+    if (wsError) {
+      console.error('WebSocket encountered an error:', wsError);
+      setErrorMsg('WebSocket encountered an error.');
+      setShowSnackbar(true);
+    }
+  }, [wsError]);
+
+  // Optional: Connection Status Indicator
+  const renderConnectionStatus = () => {
+    let color;
+    let label;
+
+    switch (connectionStatus) {
+      case 'connected':
+        color = 'green';
+        label = 'Connected';
+        break;
+      case 'disconnected':
+        color = 'red';
+        label = 'Disconnected';
+        break;
+      case 'error':
+        color = 'orange';
+        label = 'Error';
+        break;
+      default:
+        color = 'grey';
+        label = 'Unknown';
+    }
+
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Typography variant="body2">
+          Connection Status: {label}
+        </Typography>
+        <Box
+          sx={{
+            width: 10,
+            height: 10,
+            backgroundColor: color,
+            borderRadius: '50%',
+            ml: 1,
+          }}
+        />
+      </Box>
+    );
+  };
+
   if (loading) {
     return (
       <Box sx={{ p: 2, gap: 2, display: 'flex', flexDirection: 'column' }}>
@@ -318,6 +381,8 @@ function Dashboard() {
         <Typography variant="h5" fontWeight="bold">
           Dashboard
         </Typography>
+        {/* Optional: Display Connection Status */}
+        {renderConnectionStatus()}
       </HeaderBar>
 
       <Box sx={{ p: 2 }}>
@@ -333,7 +398,7 @@ function Dashboard() {
             onClose={handleCloseSnackbar}
             sx={{ width: '100%' }}
           >
-            {error}
+            {errorMsg}
           </Alert>
         </Snackbar>
 
@@ -374,7 +439,7 @@ function Dashboard() {
             </Typography>
             <Typography
               variant="h5"
-              sx={{ 
+              sx={{
                 color: netUnrealizedPL >= 0 ? 'green' : 'red',
                 fontWeight: 'bold',
               }}
@@ -451,13 +516,19 @@ function Dashboard() {
                             <Typography>
                               ${ltp.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </Typography>
-                            {/* Animated Arrow */}
-                            {priceChangeType && (
-                              <AnimatedArrow direction={priceChangeType}>
-                                {priceChangeType === 'up' ? (
-                                  <TrendingUpIcon sx={{ color: 'green', fontSize: '1.2rem' }} />
+                            {/* Enhanced Animated Arrow */}
+                            {arrowAnimations[sym] && (
+                              <AnimatedArrow direction={arrowAnimations[sym].direction}>
+                                {arrowAnimations[sym].direction === 'up' ? (
+                                  <TrendingUpIcon
+                                    sx={{ color: 'green', fontSize: '1.5rem' }}
+                                    aria-label="Price increased"
+                                  />
                                 ) : (
-                                  <TrendingDownIcon sx={{ color: 'red', fontSize: '1.2rem' }} />
+                                  <TrendingDownIcon
+                                    sx={{ color: 'red', fontSize: '1.5rem' }}
+                                    aria-label="Price decreased"
+                                  />
                                 )}
                               </AnimatedArrow>
                             )}

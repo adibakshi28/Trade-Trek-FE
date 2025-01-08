@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { UniverseProvider } from './context/UniverseContext';
+import { WebSocketProvider } from './context/WebSocketContext';
 
 // Layout / Components
 import Navbar from './components/Navbar';
@@ -23,6 +24,7 @@ function App() {
   return (
     <AuthProvider>
       <UniverseProvider>
+        <WebSocketProvider> 
         <Router>
           {/* Always show top Navbar */}
           <Navbar />
@@ -52,6 +54,7 @@ function App() {
             <Route path="*" element={<RootRedirect />} />
           </Routes>
         </Router>
+        </WebSocketProvider>
       </UniverseProvider>
     </AuthProvider>
   );

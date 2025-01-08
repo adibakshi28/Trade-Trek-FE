@@ -43,11 +43,15 @@ import WebsiteIcon from '@mui/icons-material/Language';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 
+import { useWebSocket } from '../context/WebSocketContext'; // Import WebSocket context
+
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 function StockDetail() {
   const { ticker } = useParams();
   const navigate = useNavigate();
+
+  const { prices, connectionStatus, error: wsError, sendMessage } = useWebSocket(); // Destructure WebSocket context
 
   const [stockData, setStockData] = useState(null);
   const [historical, setHistorical] = useState([]);
@@ -57,7 +61,9 @@ function StockDetail() {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [animate, setAnimate] = useState(false);
 
-  // Fetch data
+  const [realTimePrice, setRealTimePrice] = useState(null); // State for real-time price
+
+  // Fetch initial stock data
   useEffect(() => {
     (async () => {
       try {
@@ -81,61 +87,55 @@ function StockDetail() {
     })();
   }, [ticker]);
 
-  // Trigger animations once data is loaded
+  // Trigger fade-in animation once data is loaded
   useEffect(() => {
     if (!loading) setAnimate(true);
   }, [loading]);
 
   const handleCloseSnackbar = () => setShowSnackbar(false);
 
-  // Loading State with Enhanced Skeletons
-  if (loading) {
-    return (
-      <Container maxWidth="xl" sx={{ mt: 4 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <Skeleton variant="text" width={250} height={50} />
-          <Skeleton variant="rectangular" height={500} />
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <Skeleton variant="rectangular" height={200} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Skeleton variant="rectangular" height={200} />
-            </Grid>
-          </Grid>
-          <Skeleton variant="text" height={40} />
-          <Skeleton variant="rectangular" height={350} />
-        </Box>
-      </Container>
-    );
-  }
+  // Subscribe to the specific stock on mount and unsubscribe on unmount
+  useEffect(() => {
+    const symbol = ticker.toUpperCase();
 
-  if (!stockData) {
-    return (
-      <Container maxWidth="xl" sx={{ mt: 4 }}>
-        <Typography color="error" variant="h6">
-          No data found for {ticker}.
-        </Typography>
-      </Container>
-    );
-  }
+    // Subscribe to the stock
+    sendMessage({ type: 'subscribe', symbol });
+    console.log(`📥 Sent subscribe message for symbol: ${symbol}`);
+
+    // Cleanup: Unsubscribe when component unmounts
+    return () => {
+      sendMessage({ type: 'unsubscribe', symbol });
+      console.log(`📤 Sent unsubscribe message for symbol: ${symbol}`);
+    };
+  }, [sendMessage, ticker]);
+
+  // Update real-time price when WebSocket prices update
+  useEffect(() => {
+    const symbol = ticker.toUpperCase();
+    const updatedPrice = prices[symbol];
+
+    if (updatedPrice !== undefined && updatedPrice > 0) { // Only update if price > 0
+      setRealTimePrice(updatedPrice);
+    }
+    // If updatedPrice is 0, do not update realTimePrice
+  }, [prices, ticker]);
 
   // Deconstruct the data
-  const { asset_type, quote, profile, financials, news } = stockData;
+  const { asset_type, quote, profile, financials, news } = stockData || {};
 
-  // Determine change color and icon
-  const isPositive = quote?.d > 0;
-  const isNegative = quote?.d < 0;
-  let changeColor = 'inherit';
-  let ChangeIcon = null;
+  // Determine displayed price
+  const displayedPrice = realTimePrice !== null ? realTimePrice : (quote?.c ? quote.c : null);
 
-  if (isPositive) {
-    changeColor = 'green';
-    ChangeIcon = TrendingUpIcon;
-  } else if (isNegative) {
-    changeColor = 'red';
-    ChangeIcon = TrendingDownIcon;
-  }
+  // Calculate daily change and percentage based on displayed price
+  const previousClose = quote?.pc || 0;
+  const dailyChange = displayedPrice !== null ? displayedPrice - previousClose : 0;
+  const dailyChangePct = previousClose !== 0 ? (dailyChange / previousClose) * 100 : 0;
+
+  // Determine color based on daily change
+  const changeColor =
+    dailyChange > 0 ? 'green' :
+    dailyChange < 0 ? 'red' :
+    'inherit';
 
   // Helper: format numeric values
   const fmt = (val) =>
@@ -148,7 +148,7 @@ function StockDetail() {
     labels: historical.map((item) => moment(item.datetime).format('MMM YYYY')),
     datasets: [
       {
-        label: `${ticker} Closing Price`,
+        label: `${ticker.toUpperCase()} Closing Price`,
         data: historical.map((item) => +item.close),
         borderColor: '#1976d2',
         backgroundColor: 'rgba(25, 118, 210, 0.1)',
@@ -157,7 +157,7 @@ function StockDetail() {
         pointRadius: 0,
       },
       {
-        label: `${ticker} Volume`,
+        label: `${ticker.toUpperCase()} Volume`,
         data: historical.map((item) => +item.volume),
         type: 'bar',
         backgroundColor: 'rgba(255, 152, 0, 0.4)',
@@ -171,7 +171,7 @@ function StockDetail() {
     maintainAspectRatio: false,
     plugins: {
       legend: { display: true, position: 'top' },
-      title: { display: true, text: `${ticker} 52-Week Price & Volume`, font: { size: 18 } },
+      title: { display: true, text: `${ticker.toUpperCase()} 52-Week Price & Volume`, font: { size: 18 } },
       tooltip: {
         mode: 'index',
         intersect: false,
@@ -202,6 +202,88 @@ function StockDetail() {
     });
   };
 
+  // Optional: Connection Status Indicator
+  const renderConnectionStatus = () => {
+    let color;
+    let label;
+
+    switch (connectionStatus) {
+      case 'connected':
+        color = 'green';
+        label = 'Connected';
+        break;
+      case 'disconnected':
+        color = 'red';
+        label = 'Disconnected';
+        break;
+      case 'error':
+        color = 'orange';
+        label = 'Error';
+        break;
+      default:
+        color = 'grey';
+        label = 'Unknown';
+    }
+
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Typography variant="body2">
+          Connection Status: {label}
+        </Typography>
+        <Box
+          sx={{
+            width: 10,
+            height: 10,
+            backgroundColor: color,
+            borderRadius: '50%',
+            ml: 1,
+          }}
+        />
+      </Box>
+    );
+  };
+
+  // Handle WebSocket errors
+  useEffect(() => {
+    if (wsError) {
+      console.error('WebSocket encountered an error:', wsError);
+      setError('WebSocket encountered an error.');
+      setShowSnackbar(true);
+    }
+  }, [wsError]);
+
+  // Loading State with Enhanced Skeletons
+  if (loading) {
+    return (
+      <Container maxWidth="xl" sx={{ mt: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <Skeleton variant="text" width={250} height={50} />
+          <Skeleton variant="rectangular" height={500} />
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <Skeleton variant="rectangular" height={200} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Skeleton variant="rectangular" height={200} />
+            </Grid>
+          </Grid>
+          <Skeleton variant="text" height={40} />
+          <Skeleton variant="rectangular" height={350} />
+        </Box>
+      </Container>
+    );
+  }
+
+  if (!stockData) {
+    return (
+      <Container maxWidth="xl" sx={{ mt: 4 }}>
+        <Typography color="error" variant="h6">
+          No data found for {ticker.toUpperCase()}.
+        </Typography>
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Snackbar
@@ -223,9 +305,8 @@ function StockDetail() {
         <Paper elevation={4} sx={{ p: { xs: 2, md: 4 }, backgroundColor: '#fff' }}>
           {/* Header Section */}
           <Box sx={{ mb: 4, textAlign: { xs: 'center', md: 'left' } }}>
-            {/* Reduced font size from h3 to h4 */}
             <Typography variant="h4" fontWeight="bold" gutterBottom>
-              {profile?.name} ({ticker})
+              {profile?.name} ({ticker.toUpperCase()})
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
               Asset Type: {asset_type}
@@ -255,15 +336,15 @@ function StockDetail() {
                 </Box>
                 <Divider sx={{ mb: 2 }} />
                 <Box>
+                  {/* Display real-time price if available */}
                   <Typography variant="h4" fontWeight="bold" color="text.primary">
-                    ${quote?.c ? fmt(quote.c) : 'N/A'}
+                    {displayedPrice !== null ? `$${fmt(displayedPrice)}` : 'N/A'}
                   </Typography>
                   <Box display="flex" alignItems="center" sx={{ color: changeColor, mb: 2 }}>
-                    {ChangeIcon && <ChangeIcon sx={{ mr: 1 }} />}
                     <Typography variant="subtitle1" fontWeight="medium">
-                      {quote?.d > 0 && '+'}
-                      {quote?.d ? fmt(quote.d) : '0'} ({quote?.dp > 0 && '+'}
-                      {quote?.dp ? fmt(quote.dp) : '0'}%)
+                      {dailyChange > 0 && '+'}
+                      {fmt(dailyChange)} ({dailyChangePct > 0 ? '+' : ''}
+                      {fmt(dailyChangePct)}%)
                     </Typography>
                   </Box>
                   <Divider sx={{ mb: 2 }} />
