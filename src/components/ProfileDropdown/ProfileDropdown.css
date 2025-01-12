@@ -37,7 +37,20 @@
 
 .profile-menu-item:hover {
   background-color: var(--color-border-subtle) !important;
-  transform: scale(1.05); /* Slightly larger scale on hover */
+  transform: scale(1.05); 
+}
+
+/* Theme Section */
+.theme-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px !important;
+}
+
+.theme-label {
+  font-size: 0.95rem !important;
+  color: var(--color-text-primary) !important;
 }
 
 /* Logout Menu Item */

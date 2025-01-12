@@ -110,6 +110,11 @@
   gap: 16px;
 }
 
+/* Notifications Icon Button */
+.notifications-icon {
+  color: var(--color-text-primary) !important;
+}
+
 /* Notifications Icon Hover */
 .notifications-icon:hover {
   color: var(--color-text-secondary);

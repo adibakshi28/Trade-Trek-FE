@@ -33,7 +33,7 @@
 .notification-menu-item {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-start !important;
   padding: 10px 16px !important;
   border-bottom: 1px solid var(--color-border-subtle) !important;
 }

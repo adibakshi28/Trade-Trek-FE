@@ -1,16 +1,31 @@
 :root {
-  /* Dark Theme colours */
-  --color-bg: #0e0e0e;
-  --color-surface: #212121;
-  --color-surface-lite: #3d3d3d;
-  --color-primary: #1976d2;
-  --color-secondary: #4699f9;
-  --color-success: #80ef80;
-  --color-error:  #ff746c;
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #bbbbbb;
-  --color-border-subtle: #6a6a6a94;
+  --color-bg: #101321; 
+  --color-surface: #1f2339;
+  --color-surface-lite: #2c3149;
+  --color-primary: #5087f0;
+  --color-secondary: #f2994a; 
+  --color-success: #62d49f;
+  --color-error: #e57373; 
+  --color-text-primary: #e6e9ef;
+  --color-text-secondary: #a2a8c3; 
+  --color-border-subtle: #3a3f5c;
 }
+
+
+/* Light Theme Colours */
+.light-theme {
+  --color-bg: #f6f9fc; 
+  --color-surface: #ffffff; 
+  --color-surface-lite: #e7ebf0; 
+  --color-primary: #4fa4f3; 
+  --color-secondary: #f7b267; 
+  --color-success: #58c29e; 
+  --color-error: #f27573; 
+  --color-text-primary: #2d3447; 
+  --color-text-secondary: #657488; 
+  --color-border-subtle: #d0d8e5;
+}
+
 
 body, #root {
   margin: 0;
@@ -26,18 +41,17 @@ body, #root {
 .app-layout {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Ensure the entire app covers the viewport */
+  min-height: 100vh; 
 }
 
-/* Ensure the main content grows to fill the available space */
 .main-content {
   flex: 1; /* Allow this section to grow and take up remaining space */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Optional: Center content vertically */
+  justify-content: center;
 }
 
-/* Optional: Styling for scrollbars */
+/* Styling for scrollbars */
 body {
   scrollbar-width: thin;
   scrollbar-color: var(--color-surface) var(--color-bg);
