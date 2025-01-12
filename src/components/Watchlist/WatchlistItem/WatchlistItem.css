@@ -3,13 +3,12 @@
 .watchlist-item {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Space between left and right sections */
-  padding: 0.5rem 1rem !important; /* Reduced padding for smaller height */
+  justify-content: space-between;
+  padding: 0.5rem 1rem !important; 
   background: var(--color-surface);
-  position: relative; /* For positioning action buttons */
+  position: relative; 
   transition: background 0.3s ease;
-  height: 40px; /* Reduced height */
-  /* Remove the default bottom border */
+  height: 40px; 
   border-bottom: none;
 }
 
@@ -17,9 +16,9 @@
   content: '';
   position: absolute;
   bottom: 0;
-  left: 50%; /* Start from center */
-  transform: translateX(-50%); /* Center the border */
-  width: 95%; /* Span 95% of the watchlist item */
+  left: 50%; 
+  transform: translateX(-50%); 
+  width: 95%; 
   height: 1px;
   background-color: var(--color-border-subtle) !important;
 }
@@ -36,13 +35,13 @@
 }
 
 .watchlist-item__symbol {
-  font-size: 1rem !important; /* Reduced font size */
+  font-size: 1rem !important; 
   font-weight: bold !important;
   color: var(--color-text-primary) !important;
 }
 
 .watchlist-item__name {
-  font-size: 0.7rem !important; /* Further reduced font size */
+  font-size: 0.7rem !important; 
   color: var(--color-text-secondary) !important;
 }
 
@@ -54,7 +53,7 @@
 }
 
 .watchlist-item__price {
-  font-size: 1rem !important; /* Slightly reduced font size */
+  font-size: 1rem !important; 
   font-weight: bold !important;
   color: var(--color-text-primary) !important;
 }
@@ -68,7 +67,7 @@
 }
 
 .watchlist-item__change {
-  font-size: 0.7rem !important; /* Reduced font size */
+  font-size: 0.7rem !important; 
   color: var(--color-text-secondary) !important;
 }
 
@@ -82,18 +81,18 @@
 
 /* Action Buttons */
 .watchlist-item__actions {
-  display: none; /* Hidden by default */
+  display: none; 
   position: absolute;
   right: 1rem !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
-  gap: 1.5rem !important; /* Reduced gap between buttons */
+  gap: 1.5rem !important;
   opacity: 0 !important;
   transition: opacity 0.3s ease !important;
 }
 
 .watchlist-item:hover .watchlist-item__actions {
-  display: flex; /* Show on hover */
+  display: flex; 
   opacity: 1 !important;
 }
 
@@ -105,14 +104,14 @@
 }
 
 .watchlist-item__delete-button:hover {
-  transform: scale(1.2) !important; /* Slightly enlarge on hover */
+  transform: scale(1.2) !important;
   box-shadow: 0 0 5px 2px var(--color-primary);
 }
 
 .watchlist-item__trade-button {
   background-color: var(--color-primary) !important;
   color: var(--color-text-primary) !important;
-  text-transform: none !important; /* Keep button text as is */
+  text-transform: none !important; 
   transition: background-color 0.3s ease, transform 0.2s ease !important;
   padding: 0.2rem 0.4rem !important;
   font-size: 1rem !important;
@@ -120,7 +119,7 @@
 
 .watchlist-item__trade-button:hover {
   background-color: var(--color-secondary) !important;
-  transform: scale(1.05) !important; /* Slightly enlarge on hover */
+  transform: scale(1.05) !important;
 }
 
 /* Responsive Design */
@@ -128,8 +127,8 @@
   .watchlist-item {
     flex-direction: column;
     align-items: flex-start;
-    padding: 0.4rem 0.8rem; /* Further reduced padding */
-    height: auto; /* Allow height to adjust */
+    padding: 0.4rem 0.8rem;
+    height: auto; 
   }
 
   .watchlist-item__right {

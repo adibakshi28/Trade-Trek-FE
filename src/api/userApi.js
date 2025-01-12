@@ -37,3 +37,27 @@ export const getUserDashboard = async () => {
   return response.data; // e.g. { user, portfolio, fund, summary }
 };
 
+
+// GET /user/watchlist
+export const getUserWatchlist = async () => {
+  const res = await axiosClient.get('/user/watchlist');
+  return res.data; // e.g. array of watchlist items containing stock_ticker, stock_name
+};
+
+
+// GET /user/watchlist/remove?ticker=xxx
+export const removeFromUserWatchlist = async (ticker) => {
+  const res = await axiosClient.get('/user/watchlist/remove', {
+    params: { ticker },
+  });
+  return res.data;
+};
+
+
+// GET /user/watchlist/add?ticker=xxx
+export const addToUserWatchlist = async (ticker) => {
+  const res = await axiosClient.get('/user/watchlist/add', {
+    params: { ticker },
+  });
+  return res.data;
+};

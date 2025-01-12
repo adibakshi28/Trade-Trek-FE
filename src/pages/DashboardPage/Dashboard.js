@@ -10,6 +10,9 @@ import Plot from '../../components/Plot/Plot';
 import UserPortfolio from '../../components/UserPortfolio/UserPortfolio';
 import './Dashboard.css';
 
+import priceData from './price_data.json';
+import portfolioData from './portfolio_data.json';
+
 const Dashboard = () => {
   const { accessToken, isAuthLoading } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -28,7 +31,8 @@ const Dashboard = () => {
       <Box className="dashboard-main">
         <Box className="dashboard-top-row">
           <Box className="dashboard-plot">
-            <Plot type="stock" />
+            {/* <Plot type="STOCK" stock_name="AAPL" price_data={priceData}/> */}
+            <Plot type="PORTFOLIO" portfolio_data={portfolioData}/>
           </Box>
           <Box className="dashboard-portfolio-metrics">
             <PortfolioMetrics />

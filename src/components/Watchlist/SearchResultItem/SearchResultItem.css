@@ -1,0 +1,41 @@
+/* src/components/SearchResultItem/SearchResultItem.css */
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border-subtle);
+    transition: background 0.3s ease;
+  }
+  
+  .search-result-item:hover {
+    background: var(--color-border-subtle) !important;
+  }
+  
+  .search-result-item__left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: var(--color-text-primary);
+  }
+  
+  .search-result-item__right {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Add Icon */
+  .search-result-item__add-icon {
+    color: var(--color-text-primary) !important;
+    transition: transform 0.2s ease !important;
+    font-size: 1.75rem !important;
+    padding: 0 !important;
+  }
+  
+  .search-result-item__add-icon:hover {
+    padding: 0 !important;
+    transform: scale(1.2) !important;
+    box-shadow: 0 0 5px 2px var(--color-primary) !important;
+  }

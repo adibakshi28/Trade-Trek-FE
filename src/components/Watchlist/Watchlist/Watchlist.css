@@ -4,7 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 5px !important; /* Consistent margin */
+  padding: 5px !important;
   background: var(--color-bg) !important;
   box-sizing: border-box;
   width: 100% !important;
@@ -70,7 +70,6 @@
   box-sizing: border-box;
 }
 
-/* Scrollbar Styling (Optional) */
 .watchlist::-webkit-scrollbar {
   width: 2px;
 }
