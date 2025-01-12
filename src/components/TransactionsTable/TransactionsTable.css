@@ -45,7 +45,7 @@
   /* Table Container */
   .transactions-table-container {
     width: 100%; /* Ensure full width */
-    height: 75vh !important;
+    height: 73.5vh !important;
     border-radius: 10px;
     overflow: auto;
     background-color: var(--color-surface) !important;
@@ -84,11 +84,11 @@
   }
   
   .transactions-table-row:nth-of-type(even) {
-    background-color: #323237 !important;
+    background-color: var(--color-surface-lite) !important;
   }
   
   .transactions-table-row:hover {
-    background-color: #3a3a3c !important;
+    background-color: var(--color-border-subtle) !important;
   }
   
   /* Table Cells */

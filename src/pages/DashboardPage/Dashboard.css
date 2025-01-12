@@ -12,13 +12,14 @@ body, html {
   padding: 3px !important; /* Consistent margin */
   box-sizing: border-box;
   background-color: var(--color-bg) !important;
-  margin-top: 7.25vh !important;
+  /* margin-top: 8vh !important; */
 }
 
 .dashboard-watchlist {
   width: 25vw !important; /* 25% of viewport width */
-  height: 99.5% !important;
-  margin-left: 5px !important; /* Margin between Watchlist and DashboardMain */
+  height: 97.5% !important;
+  margin-top: 4.5vh !important; 
+  margin-left: 8px !important; /* Margin between Watchlist and DashboardMain */
   box-sizing: border-box;
 }
 
@@ -27,7 +28,7 @@ body, html {
   height: 100% !important;
   display: flex;
   flex-direction: column;
-  margin: 0 !important; /* Consistent margin */
+  margin-top: 4.5vh !important;
   box-sizing: border-box;
 }
 
@@ -36,14 +37,14 @@ body, html {
   flex-direction: row;
   width: 100% !important;
   height: 55% !important; /* Allocate 45vh for top row */
-  margin-bottom: 3px !important; /* Margin between top row and UserPortfolio */
+  margin-bottom: 7px !important; /* Margin between top row and UserPortfolio */
   box-sizing: border-box;
 }
 
 .dashboard-plot {
   width: 75% !important; /* Each takes half of the top row */
   height: 100% !important;
-  margin-left: 7px !important; 
+  margin-left: 12px !important; 
   margin-top: 5px !important;
   box-sizing: border-box;
 }
@@ -51,17 +52,17 @@ body, html {
 .dashboard-portfolio-metrics {
   width: 25% !important; /* Each takes half of the top row */
   height: 100% !important;
-  margin-left: 12px !important; /* 5px total margin between them */
-  margin-right: 10px !important;
+  margin-left: 17px !important; /* 5px total margin between them */
+  margin-right: 13px !important;
   margin-top: 5px !important;
   box-sizing: border-box;
 }
 
 .dashboard-user-portfolio {
-  width: 98.75% !important;
-  height: calc(103.5% - 55vh) !important; /* Remaining height */
+  width: 98.25% !important;
+  height: calc(101% - 55vh) !important; /* Remaining height */
   margin-top: 10px !important;
-  margin-left: 3px !important;
-  margin-right: 0 !important;
+  margin-left: 7px !important;
+  margin-right: 50px !important;
   box-sizing: border-box;
 }
