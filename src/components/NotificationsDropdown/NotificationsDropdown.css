@@ -1,51 +1,62 @@
 /* src/components/NotificationsDropdown/NotificationsDropdown.css */
-  
-  /* Container Styling */
-  .notifications-container {
-    width: 300px;
-    max-height: 400px;
-    overflow-y: auto;
-    background-color: var(--color-surface-lite);
-    color: var(--color-text-primary);
-    border-radius: 10px; /* Rounded corners for better aesthetics */
-    border: 1px solid var(--color-border-subtle);
+
+/* Menu Paper Styling */
+.notifications-paper {
+  width: 400px !important;
+  max-height: 400px !important;
+  overflow-y: auto !important;
+  background-color: var(--color-surface-lite) !important;
+  color: var(--color-text-primary) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 0 5px 1px  var(--color-text-secondary) !important;
+  margin-right: 100px !important;
+}
+
+/* Notifications Header */
+.notifications-header {
+  display: flex;
+  justify-content: center !important;
+  padding: 5px 0 !important;
+}
+
+.notifications-title {
+  font-weight: bold !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Divider */
+.MuiDivider-root {
+  background-color: var(--color-border-subtle) !important;
+}
+
+/* Notification Menu Item */
+.notification-menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px 16px !important;
+  border-bottom: 1px solid var(--color-border-subtle) !important;
+}
+
+.notification-menu-item:hover {
+  background-color: var(--color-border-subtle) !important;
+}
+
+/* No Notifications */
+.no-notifications {
+  justify-content: center;
+  color: var(--color-text-secondary) !important;
+}
+
+/* Notification Time */
+.notification-time {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .notifications-paper {
+    width: 250px;
   }
-  
-  /* Notifications Title */
-  .notifications-title {
-    padding: 16px;
-    font-weight: bold;
-    color: var(--color-text-primary);
-    border-bottom: 1px solid var(--color-border-subtle) !important;
-  }
-  
-  /* Notification Item Styling */
-  .notification-item {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--color-border-subtle) !important;
-  }
-  
-  .notification-item:last-child {
-    border-bottom: none; /* Remove border from the last item */
-  }
-  
-  .notification-item:hover {
-    background-color: var(--color-border-subtle);
-  }
-  
-  /* Typography Styling */
-  .MuiListItemText-primary {
-    color: var(--color-text-primary);
-  }
-  
-  .MuiListItemText-secondary {
-    color: var(--color-text-secondary);
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .notifications-container {
-      width: 250px;
-    }
-  }
-  
+}

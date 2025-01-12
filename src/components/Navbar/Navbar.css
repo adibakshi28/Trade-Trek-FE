@@ -1,10 +1,10 @@
-/* Navbar.css */
+/* src/components/Navbar/Navbar.css */
 
 /* Styled AppBar */
 .styled-appbar {
   background-color: var(--color-surface) !important;
   height: 60px;
-  box-shadow: 0 0 5px 1px  var(--color-text-secondary) !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
 }
 
 /* Toolbar */
@@ -88,7 +88,7 @@
 /* When active, underline grows */
 .nav-link.active:hover::after,
 .nav-link.active::after {
-  transform: scaleX(1) ; /* Fully reveal the underline */
+  transform: scaleX(1); /* Fully reveal the underline */
   box-shadow: 0 0 25px var(--color-primary), 0 0 70px var(--color-primary) !important;
 }
 
@@ -110,24 +110,39 @@
   gap: 16px;
 }
 
-/* Account Section */
-.account-section {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  margin-left: 15px !important;
-  margin-right: 5px !important;
-}
-
-.account-section:hover {
+/* Notifications Icon Hover */
+.notifications-icon:hover {
   color: var(--color-text-secondary);
-  transform: scale(1.05);
+  transform: scale(1.2); /* Slightly larger scale on hover */
+  box-shadow: 0 0 15px 2px var(--color-primary);
 }
 
-.username {
-  font-size: 0.9rem;
-  color: var(--color-text-primary);
-  padding-left: 6px;
+/* Custom Badge */
+.custom-badge .MuiBadge-badge {
+  background-color: var(--color-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Account Icon Button */
+.account-icon-button {
+  padding: 0 !important;
+  margin-right: 10px !important;
+  margin-left: 15px !important;
+  transition: transform 0.2s ease, color 0.3s ease;
+}
+
+.account-icon-button:hover {
+  padding: 0 !important;
+  color: var(--color-text-secondary);
+  transform: scale(1.05); /* Slightly larger scale on hover */
+  box-shadow: 0 0 15px 2px var(--color-primary);
+}
+
+
+/* Optional: Customize the Avatar component */
+.MuiAvatar-root {
+  background-color: var(--color-primary) !important;
+  color: var(--color-text-primary) !important;
 }
 
 /* Auth Links (Login/Register) */
@@ -141,18 +156,6 @@
 .nav-links:not(:empty) {
   display: flex;
 }
-
-.notifications-icon:hover {
-  color: var(--color-text-secondary);
-  transform: scale(1.2); /* Slightly larger scale on hover */
-  box-shadow: 0 0 15px 2px var(--color-primary);
-}
-
-.custom-badge .MuiBadge-badge {
-  background-color: var(--color-primary) !important;
-  color: var(--color-text-primary) !important;
-}
-
 
 @media (max-width: 768px) {
   /* Responsive adjustments if needed */

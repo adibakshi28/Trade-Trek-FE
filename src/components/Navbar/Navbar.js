@@ -1,6 +1,6 @@
 // src/components/Navbar/Navbar.js
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -8,6 +8,7 @@ import {
   Box,
   IconButton,
   Badge,
+  Avatar,
 } from '@mui/material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { logoutUser } from '../../api/authApi';
@@ -16,9 +17,8 @@ import logo from '../../assets/images/logo.png';
 import './Navbar.css';
 
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import NotificationsDropdown from '../NotificationsDropdown/NotificationsDropdown';
 import ProfileDropdown from '../ProfileDropdown/ProfileDropdown';
+import NotificationsDropdown from '../NotificationsDropdown/NotificationsDropdown';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -40,6 +40,12 @@ function Navbar() {
     { message: 'Weekly report is ready.', time: '1 hour ago' },
     { message: 'Password changed successfully.', time: 'Yesterday' },
   ];
+
+  // Prevent the dropdowns from staying open after logging in or out
+  useEffect(() => {     
+    setProfileAnchorEl(null);
+    setNotificationsAnchorEl(null);
+  }, [accessToken]);
 
   const handleNotificationsClick = (event) => {
     setNotificationsAnchorEl(event.currentTarget);
@@ -115,28 +121,16 @@ function Navbar() {
                 aria-label="Notifications"
                 onClick={handleNotificationsClick}
                 className='notifications-icon'
+                id="notifications-button" // Added ID for aria-labelledby
               >
                 <Badge
                   badgeContent={notifications.length}
-                  color="custom" /* Custom color */
+                  color="custom" /* Ensure 'custom' is defined in the theme or use a predefined color */
                   className="custom-badge"
                 >
                   <NotificationsNoneIcon />
                 </Badge>
               </IconButton>
-
-              {/* Profile Icon and Username */}
-              <Box
-                className="account-section"
-                onClick={handleProfileClick}
-                role="button"
-                aria-label="Profile"
-              >
-                <AccountCircleIcon />
-                <Typography variant="body1" className="username">
-                  {user.username}
-                </Typography>
-              </Box>
 
               {/* Notifications Dropdown */}
               <NotificationsDropdown
@@ -145,6 +139,20 @@ function Navbar() {
                 handleClose={handleNotificationsClose}
                 notifications={notifications}
               />
+
+              {/* Profile Icon */}
+              <IconButton
+                aria-label="Account"
+                onClick={handleProfileClick}
+                className='account-icon-button'
+                size='small'
+                id="account-button" // Added ID for aria-labelledby
+              >
+                <Avatar alt={user.username} src={user.avatarUrl}>
+                  {/* If no avatarUrl, display first letter */}
+                  {user.username.charAt(0).toUpperCase()}
+                </Avatar>
+              </IconButton>
 
               {/* Profile Dropdown */}
               <ProfileDropdown
