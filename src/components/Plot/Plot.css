@@ -1,0 +1,21 @@
+/* src/components/Plot/Plot.css */
+
+.plot-container {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.price-chart-card {
+  width: 100% !important;
+  height: 100% !important;
+  background-color: var(--color-surface) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+  padding: 10px !important;
+  box-sizing: border-box;
+  overflow: hidden !important;
+}

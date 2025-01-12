@@ -1,0 +1,162 @@
+/* Navbar.css */
+
+/* Styled AppBar */
+.styled-appbar {
+  background-color: var(--color-surface) !important;
+  height: 60px;
+  box-shadow: 0 0 5px 1px  var(--color-text-secondary) !important;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo Container */
+.logo-container {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logo {
+  width: 36px;
+  height: 36px;
+  margin-right: 8px;
+}
+
+/* Logo Typography */
+.logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--color-text-primary) !important;
+  transition: color 0.3s ease;
+}
+
+.logo:hover {
+  color: var(--color-error) !important;
+}
+
+/* Navigation Links Container */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  /* Center the navigation links */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Individual NavLink */
+.nav-link {
+  font-weight: normal;
+  font-size: 1.05rem;
+  text-decoration: none;
+  text-transform: capitalize;
+  color: var(--color-text-primary);
+  border-radius: 8px;
+  padding: 6px 16px;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+/* Active Navigation Link */
+.nav-link.active {
+  color: var(--color-text-primary) !important; /* Ensure active link text is prominent */
+  font-weight: bold !important;
+  position: relative; /* Enable positioning for pseudo-elements */
+}
+
+/* Glowing underline effect */
+.nav-link.active::after {
+  content: ''; /* Creates a pseudo-element for the underline */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px; /* Adjust position below the text */
+  height: 2px; /* Thickness of the underline */
+  background-color: var(--color-primary) !important; /* Primary color for the underline */
+  border-radius: 4px; /* Slight rounding for a smooth look */
+  box-shadow: 0 0 25px var(--color-primary), 0 0 50px var(--color-primary) !important;
+  transform: scaleX(0); /* Initially hidden */
+  transform-origin: center; /* Scale effect starts from the center */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth scaling and glow transition */
+}
+
+/* When active, underline grows */
+.nav-link.active:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1) ; /* Fully reveal the underline */
+  box-shadow: 0 0 25px var(--color-primary), 0 0 70px var(--color-primary) !important;
+}
+
+.nav-link:hover {
+  color: var(--color-text-secondary) !important;
+  transform: scale(1.05);
+}
+
+/* Right Section */
+.right-section {
+  display: flex;
+  align-items: center;
+}
+
+/* Logged In Section */
+.logged-in-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Account Section */
+.account-section {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-left: 15px !important;
+  margin-right: 5px !important;
+}
+
+.account-section:hover {
+  color: var(--color-text-secondary);
+  transform: scale(1.05);
+}
+
+.username {
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  padding-left: 6px;
+}
+
+/* Auth Links (Login/Register) */
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Hide nav-links when not logged in */
+.nav-links:not(:empty) {
+  display: flex;
+}
+
+.notifications-icon:hover {
+  color: var(--color-text-secondary);
+  transform: scale(1.2); /* Slightly larger scale on hover */
+  box-shadow: 0 0 15px 2px var(--color-primary);
+}
+
+.custom-badge .MuiBadge-badge {
+  background-color: var(--color-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+
+@media (max-width: 768px) {
+  /* Responsive adjustments if needed */
+  .nav-links {
+    display: none; /* Hide center links on smaller screens */
+  }
+}

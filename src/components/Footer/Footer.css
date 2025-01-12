@@ -1,0 +1,100 @@
+/* Footer.css */
+
+/* Footer Container */
+.footer {
+  background-color: var(--color-surface);
+  display: flex;
+  justify-content: center; /* Center the footer-center section */
+  align-items: center;
+  padding: 0.3rem 1rem; /* Reduced padding for a more compact footer */
+  min-height: 30px; /* Reduced height */
+  box-shadow: 0 0 5px 1px var(--color-text-secondary);
+  position: relative; /* For positioning footer-center absolutely */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Footer Sections */
+.footer-section {
+  display: flex;
+  align-items: center;
+}
+
+.footer-left {
+  position: absolute;
+  left: 1.2rem; /* Positioning to the far left */
+}
+
+.footer-right {
+  position: absolute;
+  right: 1.2rem; /* Positioning to the far right */
+}
+
+/* Center: Navigation Links */
+.footer-center {
+  display: flex;
+  justify-content: center;
+  gap: 1rem; /* Spacing between links */
+}
+
+/* Footer Text */
+.footer-text {
+  color: var(--color-text-primary);
+  font-size: 0.75rem; /* Reduced font size */
+}
+
+/* Navigation Links */
+.footer-link {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  margin: 0 1.5rem; /* Adjusted margin for better spacing */
+  transition: color 0.2s, transform 0.2s;
+  font-weight: 500;
+  font-size: 0.95rem; /* Slightly smaller font */
+}
+
+.footer-link:hover {
+  color: var(--color-text-secondary);
+  transform: scale(1.05); /* Scale effect on hover */
+}
+
+/* Social Media Icon Buttons */
+.footer-icon-button {
+  color: var(--color-text-primary);
+  margin-left: 0.5rem;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.footer-icon-button:hover {
+  color: var(--color-text-secondary);
+  transform: scale(1.2); /* Slightly larger scale on hover */
+  box-shadow: 0 0 15px 2px var(--color-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer {
+    flex-direction: column;
+    padding: 0.3rem 1rem; /* Adjusted padding for smaller screens */
+    text-align: center;
+    min-height: 60px; /* Increased min-height for better spacing */
+  }
+
+  .footer-left,
+  .footer-right {
+    position: static; /* Remove absolute positioning on small screens */
+    margin: 0.3rem 0;
+  }
+
+  .footer-center {
+    margin: 0.3rem 0;
+  }
+
+  .footer-link {
+    margin: 0 0.5rem;
+  }
+
+  .footer-icon-button {
+    margin: 0 0.25rem;
+  }
+}

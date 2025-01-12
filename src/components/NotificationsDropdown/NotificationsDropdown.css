@@ -1,0 +1,51 @@
+/* src/components/NotificationsDropdown/NotificationsDropdown.css */
+  
+  /* Container Styling */
+  .notifications-container {
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: var(--color-surface-lite);
+    color: var(--color-text-primary);
+    border-radius: 10px; /* Rounded corners for better aesthetics */
+    border: 1px solid var(--color-border-subtle);
+  }
+  
+  /* Notifications Title */
+  .notifications-title {
+    padding: 16px;
+    font-weight: bold;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border-subtle) !important;
+  }
+  
+  /* Notification Item Styling */
+  .notification-item {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--color-border-subtle) !important;
+  }
+  
+  .notification-item:last-child {
+    border-bottom: none; /* Remove border from the last item */
+  }
+  
+  .notification-item:hover {
+    background-color: var(--color-border-subtle);
+  }
+  
+  /* Typography Styling */
+  .MuiListItemText-primary {
+    color: var(--color-text-primary);
+  }
+  
+  .MuiListItemText-secondary {
+    color: var(--color-text-secondary);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .notifications-container {
+      width: 250px;
+    }
+  }
+  

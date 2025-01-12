@@ -1,0 +1,177 @@
+/* src/components/TransactionsTable/TransactionsTable.css */
+  
+  /* Container to center the table and stretch it */
+  .transactions-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;   
+    background-color: var(--color-bg) !important;
+    box-sizing: border-box;
+  }
+  
+  /* Paper styling with updated box-shadow */
+  .transactions-paper {
+    width: 100%;
+    padding: 5px !important;
+    background-color: var(--color-surface) !important;
+    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  /* Page Title */
+  .transactions-title {
+    color: var(--color-text-primary) !important;
+    text-align: center;
+    margin-bottom: 10px !important;
+  }
+  
+  /* Skeleton Rows */
+  .skeleton-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border-subtle) !important;
+  }
+  
+  /* No Transactions Message */
+  .no-transactions {
+    color: var(--color-text-secondary) !important;
+    text-align: center;
+    margin-top: 40px;
+  }
+  
+  /* Table Container */
+  .transactions-table-container {
+    width: 100%; /* Ensure full width */
+    height: 75vh !important;
+    border-radius: 10px;
+    overflow: auto;
+    background-color: var(--color-surface) !important;
+    margin: 0 !important;
+  }
+  
+  /* Table Styling */
+  .transactions-table {
+    width: 100%; /* Ensure table takes full width */
+    border-collapse: collapse;
+  }
+  
+  /* Table Head */
+  .transactions-table-head {
+    background-color: var(--color-surface) !important;
+  }
+  
+  .transactions-header-cell {
+    color: var(--color-text-primary) !important;
+    background-color: var(--color-surface) !important;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--color-border-subtle) !important;
+    padding: 5px !important;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
+  
+  /* Table Rows */
+  .transactions-table-row {
+    background-color: var(--color-surface) !important;
+    border-bottom: 1px solid var(--color-border-subtle) !important;
+    transition: background-color 0.3s ease;
+  }
+  
+  .transactions-table-row:nth-of-type(even) {
+    background-color: #323237 !important;
+  }
+  
+  .transactions-table-row:hover {
+    background-color: #3a3a3c !important;
+  }
+  
+  /* Table Cells */
+  .transactions-cell {
+    color: var(--color-text-primary) !important;
+    font-size: 0.9rem;
+    padding: 10px;
+    border-bottom: 1px solid var(--color-border-subtle) !important;
+  }
+  
+  /* Direction-specific Colors */
+  .transactions-cell.long {
+    color: var(--color-success) !important;
+    text-transform: uppercase;
+  }
+  
+  .transactions-cell.short {
+    color: var(--color-error) !important;
+    text-transform: uppercase;
+  }
+  
+  /* Trade Time Styling */
+  .trade-time {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary) !important;
+  }
+  
+  /* Pagination Styling */
+  .transactions-pagination {
+    color: var(--color-text-primary) !important;
+  }
+  
+  .MuiTablePagination-root {
+    color: var(--color-text-primary) !important;
+  }
+  
+  .MuiTablePagination-selectLabel,
+  .MuiTablePagination-displayedRows {
+    color: var(--color-text-primary);
+  }
+  
+  .MuiTablePagination-selectIcon {
+    color: var(--color-text-primary);
+  }
+  
+  .MuiOutlinedInput-root {
+    color: var(--color-text-primary);
+  }
+  
+  .MuiInputBase-input {
+    color: var(--color-text-primary);
+  }
+  
+  .MuiTablePagination-actions {
+    color: var(--color-text-primary);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .transactions-paper {
+      padding: 15px;
+    }
+  
+    .transactions-title {
+      font-size: 1.2rem;
+    }
+  
+    .transactions-header-cell {
+      font-size: 0.8rem;
+      padding: 8px;
+    }
+  
+    .transactions-cell {
+      font-size: 0.8rem;
+      padding: 8px;
+    }
+  
+    .skeleton-row {
+      padding: 8px 0;
+    }
+  
+    .trade-time {
+      font-size: 0.7rem;
+    }
+  }
+  

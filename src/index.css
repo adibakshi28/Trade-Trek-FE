@@ -1,26 +1,44 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+:root {
+  /* Dark Theme colours */
+  --color-bg: #0e0e0e;
+  --color-surface: #212121;
+  --color-surface-lite: #3d3d3d;
+  --color-primary: #1976d2;
+  --color-secondary: #4699f9;
+  --color-success: #80ef80;
+  --color-error:  #ff746c;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #bbbbbb;
+  --color-border-subtle: #6a6a6a94;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-body, html {
+body, #root {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100vh; /* Full viewport height */
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: 'Roboto', sans-serif;
 }
 
-#root {
-  /* Ensure content starts below the fixed AppBar of height ~64px */
-  padding-top: 64px;
-  min-height: 100%;
-  box-sizing: border-box;
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure the entire app covers the viewport */
+}
+
+/* Ensure the main content grows to fill the available space */
+.main-content {
+  flex: 1; /* Allow this section to grow and take up remaining space */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Optional: Center content vertically */
+}
+
+/* Optional: Styling for scrollbars */
+body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface) var(--color-bg);
 }

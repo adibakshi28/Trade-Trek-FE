@@ -1,0 +1,82 @@
+/* src/components/UserPortfolio/UserPortfolio.css */
+
+.portfolio-card {
+  width: 100% !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+  border-radius: 10px !important;
+  background-color: var(--color-surface) !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+  padding: 5px !important;
+  box-sizing: border-box !important;
+  margin: 5px !important; /* Consistent margin */
+}
+
+.portfolio-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+.portfolio-header {
+  font-size: 0.95rem !important;
+  font-weight: bold !important;
+  color: var(--color-text-primary) !important;
+  background-color: var(--color-bg-secondary) !important;
+  text-align: center !important;
+  padding-top: 0.5rem !important;
+}
+
+.portfolio-ticker {
+  font-size: 0.95rem !important;
+  color: var(--color-text-primary) !important;
+  font-weight: bold !important;
+}
+
+.portfolio-name {
+  font-size: 0.875rem !important;
+  color: var(--color-text-secondary) !important;
+}
+
+.portfolio-text {
+  font-size: 0.875rem !important;
+  color: var(--color-text-primary) !important;
+}
+
+.portfolio-value {
+  font-size: 0.875rem !important;
+  font-weight: bold !important;
+}
+
+.portfolio-positive {
+  color: var(--color-success) !important;
+}
+
+.portfolio-negative {
+  color: var(--color-error) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .portfolio-card {
+    height: auto !important;
+    margin-top: 5px !important;
+  }
+
+  .portfolio-header {
+    font-size: 0.75rem !important;
+  }
+
+  .portfolio-ticker {
+    font-size: 0.875rem !important;
+  }
+
+  .portfolio-name {
+    font-size: 0.75rem !important;
+  }
+
+  .portfolio-text,
+  .portfolio-value {
+    font-size: 0.75rem !important;
+  }
+
+}

@@ -1,0 +1,118 @@
+/* src/pages/FAQPage/FAQ.css */
+
+/* Container Styling */
+.faq-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Align items to the top */
+    width: 100%; /* Full width of main-content */
+    padding: 2rem 10rem; /* Adequate padding */
+    background: var(--color-bg); /* Dark background */
+    box-sizing: border-box;
+    flex: 1; /* Allow the container to grow and fill available space */
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+    margin-top: 60px; /* Space below Navbar */
+  }
+  
+  /* Card Styling */
+  .faq-card {
+    width: 100% !important; /* Full width */
+    max-width: 800px; /* Limit the maximum width for better readability */
+    padding: 1.5rem;
+    border-radius: 8px;
+    background: var(--color-surface) !important; /* Override default background */
+    box-shadow: 0 0 15px 2px var(--color-text-secondary) !important; 
+  }
+  
+  /* Header Styling */
+  .faq-header {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the header content */
+    margin-bottom: 2rem; /* Space below header */
+  }
+  
+  .faq-header-icon {
+    font-size: 2.5rem !important;
+    color: var(--color-primary) !important;
+    margin-right: 0.5rem !important; /* Space between icon and text */
+  }
+  
+  /* Heading */
+  .faq-heading {
+    text-align: center;
+    font-size: 2rem !important;
+    font-weight: bold !important;
+    color: var(--color-text-primary) !important;
+  }
+  
+  /* Accordion Styling */
+  .faq-accordion {
+    background: var(--color-surface) !important; /* Override default background */
+    border: 1px solid var(--color-text-secondary)   !important; /* Override default border */
+    border-radius: 8px !important; /* Override default border radius */
+    margin-bottom: 1rem !important;
+    box-shadow: none !important; /* Remove default shadow */
+    transition: box-shadow 0.3s ease !important;
+  }
+  
+  .faq-accordion:hover {
+    box-shadow: 0 6px 15px var(--color-primary) !important; /* Add shadow on hover */
+  }
+  
+  /* Accordion Summary Styling */
+  .faq-question-text {
+    font-size: 1.1rem !important;
+    font-weight: bold !important;
+    color: var(--color-text-primary) !important;
+  }
+  
+  /* Expand Icon Styling */
+  .faq-expand-icon {
+    color: var(--color-text-primary) !important;
+    transition: transform 0.3s ease !important;
+  }
+  
+  .Mui-expanded .faq-expand-icon {
+    transform: rotate(180deg);
+  }
+  
+  /* Accordion Details Styling */
+  .faq-answer-text {
+    font-size: 1rem;
+    color: var(--color-text-secondary) !important;
+    padding: 0.5rem 1rem;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .faq-container {
+      padding: 2rem 5rem; /* Adjust padding for medium screens */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .faq-container {
+      padding: 2rem 2rem; /* Adjust padding for small screens */
+      margin-top: 60px; /* Ensure space below Navbar */
+    }
+  
+    .faq-card {
+      padding: 1rem;
+    }
+  
+    .faq-header {
+      flex-direction: column;
+    }
+  
+    .faq-header-icon {
+      margin-right: 0; /* Remove right margin */
+      margin-bottom: 0.5rem; /* Add bottom margin */
+    }
+  
+    .faq-heading {
+      font-size: 1.75rem !important;
+    }
+  }
+  

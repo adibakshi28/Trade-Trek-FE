@@ -5,20 +5,21 @@ import { AuthProvider } from './context/AuthContext';
 import { UniverseProvider } from './context/UniverseContext';
 import { WebSocketProvider } from './context/WebSocketContext';
 
-// Layout / Components
-import Navbar from './components/Navbar';
-import DashboardLayout from './pages/DashboardLayout';
-import RootRedirect from './pages/RootRedirect';
+// Layout Components
+import Navbar from './components/Navbar/Navbar';
+import Footer from './components/Footer/Footer';
 
-// Pages
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Transactions from './pages/Transactions';
-import Summary from './pages/Summary';
-import StockSearch from './pages/StockSearch';
-import TradePage from './pages/TradePage';
-import StockDetail from './pages/StockDetail';
+// Public Routes
+import Landing from './pages/LandingPage/Landing';
+import Login from './pages/LoginPage/Login';
+import Register from './pages/RegisterPage/Register';
+import FAQ from './pages/FAQPage/FAQ';
+import Contact from './pages/ContactPage/Contact';
+
+// Protected Routes
+import Dashboard from './pages/DashboardPage/Dashboard';
+import Transactions from './pages/TransactionsPage/Transactions';
+import Social from './pages/SocialPage/Social';
 
 function App() {
   return (
@@ -26,33 +27,27 @@ function App() {
       <UniverseProvider>
         <WebSocketProvider> 
         <Router>
-          {/* Always show top Navbar */}
-          <Navbar />
+          <div className="app-layout">
+            <Navbar />
+              <div className="main-content">
+                <Routes>
+                  <Route path="/" element={<Landing />} />
 
-          <Routes>
-            {/* Root route that checks token and redirects accordingly */}
-            <Route path="/" element={<RootRedirect />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
 
-            {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/contact" element={<Contact />} />
 
-            {/* Protected Dashboard Layout */}
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              {/* Dashboard default index */}
-              <Route index element={<Dashboard />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/transactions" element={<Transactions />} />
+                  <Route path="/social" element={<Social />} />
 
-              {/* Our other child routes */}
-              <Route path="transactions" element={<Transactions />} />
-              <Route path="summary" element={<Summary />} />
-              <Route path="stocks" element={<StockSearch />} />
-              <Route path="trade" element={<TradePage />} />
-              <Route path="stocks/:ticker" element={<StockDetail />} />
-            </Route>
-
-            {/* Catch-all fallback -> RootRedirect */}
-            <Route path="*" element={<RootRedirect />} />
-          </Routes>
+                  <Route path="*" element={<Landing />} />
+                </Routes>
+              </div>
+            <Footer />
+          </div>
         </Router>
         </WebSocketProvider>
       </UniverseProvider>

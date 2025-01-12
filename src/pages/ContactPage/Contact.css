@@ -1,0 +1,109 @@
+/* src/pages/ContactPage/ContactPage.css */
+
+/* Container Styling */
+.contact-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Align items to the top */
+    width: 100%; /* Full width of main-content */
+    padding: 2rem 1rem; /* Adequate padding */
+    background: var(--color-bg); /* Dark background */
+    box-sizing: border-box;
+    flex: 1; /* Allow the container to grow and fill available space */
+    margin-top: 60px;
+
+  }
+  
+  /* Card Styling */
+  .contact-card {
+    width: 100%;
+    max-width: 600px; /* Adjusted max-width for better layout */
+    padding: 2rem;
+    border-radius: 8px;
+    background: var(--color-surface);
+    box-shadow: 0 0 15px 2px var(--color-text-secondary);
+  }
+  
+  /* Header Styling */
+  .contact-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem !important;
+  }
+  
+  .contact-icon {
+    font-size: 3rem !important;
+    color: var(--color-primary) !important;
+    margin-right: 0.5rem !important;
+  }
+  
+  /* Heading Styling */
+  .contact-heading {
+    font-size: 2rem !important;
+    font-weight: bold !important;
+    color: var(--color-text-primary) !important;
+  }
+  
+  /* Contact Information Styling */
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Space between contact items */
+  }
+  
+  /* Individual Contact Item */
+  .contact-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .info-icon {
+    font-size: 1.5rem;
+    color: var(--color-primary) !important;
+    margin-right: 1rem;
+  }
+  
+  /* Contact Text Styling */
+  .info-text {
+    font-size: 1.1rem;
+    color: var(--color-text-primary) !important;
+  }
+  
+  /* Link Styling */
+  .info-link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease !important;
+  }
+  
+  .info-link:hover {
+    color: var(--color-primary-dark) !important;
+    text-decoration: underline;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .contact-card {
+      padding: 1.5rem;
+    }
+  
+    .contact-heading {
+      font-size: 1.75rem;
+    }
+  
+    .contact-icon {
+      font-size: 2.5rem;
+      margin-right: 0.3rem;
+    }
+  
+    .info-text {
+      font-size: 1rem;
+    }
+  
+    .info-icon {
+      font-size: 1.3rem;
+      margin-right: 0.8rem;
+    }
+  }
+  

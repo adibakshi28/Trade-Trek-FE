@@ -1,0 +1,120 @@
+/* Login.css */
+
+/* Center container using global flexbox layout */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1; /* Use the global flexbox layout */
+  padding: 1rem; /* Add some padding for smaller screens */
+  background: var(--color-bg); /* Dark background from global theme */
+  margin-top: 75px;
+}
+
+/* Paper styling for login form */
+.login-paper {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 15px 2px var(--color-text-secondary) !important;
+  text-align: center;
+  background: var(--color-surface) !important; /* Dark surface background */
+  color: var(--color-text-primary) !important; /* Primary text color */
+}
+
+/* Header section */
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.login-icon {
+  font-size: 48px;
+  color: var(--color-primary); /* Primary accent color */
+}
+
+.login-title {
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+/* Form styles */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* TextField Styling */
+.login-form .MuiOutlinedInput-root {
+  fieldset {
+    border-color: var(--color-text-secondary);
+  }
+  &:hover fieldset {
+    border-color: var(--color-primary);
+  }
+  &.Mui-focused fieldset {
+    border-color: var(--color-primary);
+  }
+}
+
+/* Style for the placeholder text */
+.login-form .MuiOutlinedInput-root input::placeholder {
+  color: var(--color-text-secondary); /* Use secondary text color */
+  opacity: 1; /* Ensure the placeholder is fully visible */
+}
+
+.login-form .MuiOutlinedInput-root input {
+  color: var(--color-text-primary); /* Ensure the input text is readable */
+}
+
+/* Adjust the label (when focused or not) */
+.login-form .MuiInputLabel-root {
+  color: var(--color-text-secondary); /* Label color for non-focused state */
+}
+
+.login-form .MuiInputLabel-root.Mui-focused {
+  color: var(--color-primary); /* Label color for focused state */
+}
+
+/* Login button */
+.login-button {
+  font-size: 16px !important;
+  font-weight: bold !important;
+  height: 48px;
+  color: var(--color-text-primary); /* Button text color */
+  background: var(--color-primary); /* Primary accent color */
+  transition: transform 0.2s ease-in-out, background 0.3s ease !important;
+}
+
+/* Disabled button styling */
+.login-button:disabled {
+  color: var(--color-text-secondary) !important; /* Gray text for disabled button */
+  cursor: not-allowed; /* Indicate that the button is not clickable */
+}
+
+.login-button:hover {
+  transform: scale(1.05);
+  background: var(--color-secondary); 
+}
+
+/* Links */
+.login-links {
+  margin-top: 1rem;
+}
+
+.login-links a {
+  color: var(--color-primary); /* Primary accent color */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.login-links a:hover {
+  text-decoration: underline;
+  color: var(--color-secondary);
+}

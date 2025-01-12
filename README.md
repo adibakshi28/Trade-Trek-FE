@@ -1,4 +1,4 @@
-# Trade Trek
+# TradeTrek
 
 React Frontend for a Real time trading engine
 

@@ -1,0 +1,44 @@
+.stock-search {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the search bar */
+  width: 100%; /* Full parent width */
+  padding: 1rem 0;
+}
+
+.stock-search__input {
+  width: 95% !important; /* Set width to 95% of parent */
+  max-width: 600px; /* Optional: Limit max width for larger screens */
+  background: var(--color-border-subtle); /* Background color for the input */
+  border-radius: 7px !important; /* Full pill shape */
+  overflow: hidden; /* Prevent content overflow */
+  box-shadow: 0px 4px 10px var(--color-bg); /* Soft shadow for depth */
+}
+
+.stock-search__input .MuiOutlinedInput-root {
+  border-radius: 7px !important; /* Rounded corners */
+  padding-left: 0.5rem; /* Adjust padding */
+}
+
+.stock-search__input .MuiOutlinedInput-notchedOutline {
+  border: none !important; /* Remove the default border */
+}
+
+.stock-search__input:hover .MuiOutlinedInput-notchedOutline {
+  border: none !important; /* Maintain no border on hover */
+}
+
+.stock-search__input:focus-within {
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+.stock-search__input .MuiOutlinedInput-input {
+  color: var(--color-text-primary) !important; /* Text color */
+  font-size: 1rem !important; /* Adjust font size */
+  padding: 0.75rem 0 !important; /* Adjust input padding */
+}
+
+.stock-search__input .MuiInputAdornment-root svg {
+  color: var(--color-text-secondary) !important; /* Icon color */
+  font-size: 1.25rem !important; /* Adjust icon size */
+}
