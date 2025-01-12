@@ -98,8 +98,10 @@
 }
 
 .watchlist-item__delete-button {
-  color: var(--color-bg) !important;
+  color: var(--color-text-primary) !important;
   transition: transform 0.2s ease !important;
+  font-size: 1.75rem !important;
+  padding: 0 !important;
 }
 
 .watchlist-item__delete-button:hover {

@@ -84,50 +84,48 @@ const UserPortfolio = () => {
           </TableHead>
           <TableBody>
             {portfolioData.map((row, index) => (
-              <React.Fragment key={index}>
-                <TableRow>
-                  <TableCell>
-                    <Typography className="portfolio-ticker">{row.ticker}</Typography>
-                    <Typography className="portfolio-name">{row.name}</Typography>
-                  </TableCell>
-                  <TableCell align="center" className="portfolio-text">{row.qty}</TableCell>
-                  <TableCell align="center" className="portfolio-text">{row.direction}</TableCell>
-                  <TableCell align="center" className="portfolio-text">{row.avgCost.toFixed(2)}</TableCell>
-                  <TableCell align="center" className="portfolio-text">{row.ltp.toFixed(2)}</TableCell>
-                  <TableCell
-                    align="center"
-                    className={`portfolio-value ${
-                      row.curValue >= 0 ? 'portfolio-positive' : 'portfolio-negative'
-                    }`}
-                  >
-                    {row.curValue.toFixed(2)}
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    className={`portfolio-value ${
-                      row.pnl >= 0 ? 'portfolio-positive' : 'portfolio-negative'
-                    }`}
-                  >
-                    {row.pnl >= 0 ? `+${row.pnl.toFixed(2)}` : row.pnl.toFixed(2)}
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    className={`portfolio-value ${
-                      row.netChg >= 0 ? 'portfolio-positive' : 'portfolio-negative'
-                    }`}
-                  >
-                    {row.netChg >= 0 ? `+${row.netChg.toFixed(1)}%` : `${row.netChg.toFixed(1)}%`}
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    className={`portfolio-value ${
-                      row.dayChg >= 0 ? 'portfolio-positive' : 'portfolio-negative'
-                    }`}
-                  >
-                    {row.dayChg >= 0 ? `+${row.dayChg.toFixed(1)}%` : `${row.dayChg.toFixed(1)}%`}
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
+              <TableRow key={index} className="portfolio-row">
+                <TableCell>
+                  <Typography className="portfolio-ticker">{row.ticker}</Typography>
+                  <Typography className="portfolio-name">{row.name}</Typography>
+                </TableCell>
+                <TableCell align="center" className="portfolio-text">{row.qty}</TableCell>
+                <TableCell align="center" className="portfolio-text">{row.direction}</TableCell>
+                <TableCell align="center" className="portfolio-text">{row.avgCost.toFixed(2)}</TableCell>
+                <TableCell align="center" className="portfolio-text">{row.ltp.toFixed(2)}</TableCell>
+                <TableCell
+                  align="center"
+                  className={`portfolio-value ${
+                    row.curValue >= 0 ? 'portfolio-positive' : 'portfolio-negative'
+                  }`}
+                >
+                  {row.curValue.toFixed(2)}
+                </TableCell>
+                <TableCell
+                  align="center"
+                  className={`portfolio-value ${
+                    row.pnl >= 0 ? 'portfolio-positive' : 'portfolio-negative'
+                  }`}
+                >
+                  {row.pnl >= 0 ? `+${row.pnl.toFixed(2)}` : row.pnl.toFixed(2)}
+                </TableCell>
+                <TableCell
+                  align="center"
+                  className={`portfolio-value ${
+                    row.netChg >= 0 ? 'portfolio-positive' : 'portfolio-negative'
+                  }`}
+                >
+                  {row.netChg >= 0 ? `+${row.netChg.toFixed(1)}%` : `${row.netChg.toFixed(1)}%`}
+                </TableCell>
+                <TableCell
+                  align="center"
+                  className={`portfolio-value ${
+                    row.dayChg >= 0 ? 'portfolio-positive' : 'portfolio-negative'
+                  }`}
+                >
+                  {row.dayChg >= 0 ? `+${row.dayChg.toFixed(1)}%` : `${row.dayChg.toFixed(1)}%`}
+                </TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>

@@ -47,7 +47,7 @@ function WatchlistItem({ symbol, name, price, change, onDelete, onTrade }) {
           className="watchlist-item__delete-button"
           onClick={() => onDelete(symbol)}
         >
-          <DeleteIcon fontSize="small" />
+          <DeleteIcon fontSize="custom" />
         </IconButton>
         <Button
           variant="contained"

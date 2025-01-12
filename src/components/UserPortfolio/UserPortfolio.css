@@ -1,5 +1,6 @@
 /* src/components/UserPortfolio/UserPortfolio.css */
 
+/* Portfolio Card Styling */
 .portfolio-card {
   width: 100% !important;
   height: 100% !important;
@@ -12,47 +13,63 @@
   margin: 5px !important; /* Consistent margin */
 }
 
+/* Table Styling */
 .portfolio-table {
   width: 100% !important;
   border-collapse: collapse !important;
 }
 
+/* Sticky Header Styling */
 .portfolio-header {
   font-size: 0.95rem !important;
   font-weight: bold !important;
   color: var(--color-text-primary) !important;
   background-color: var(--color-bg-secondary) !important;
   text-align: center !important;
-  padding-top: 0.5rem !important;
+  padding: 0.5rem !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2 !important; 
 }
 
+/* Portfolio Ticker Styling */
 .portfolio-ticker {
   font-size: 0.95rem !important;
   color: var(--color-text-primary) !important;
   font-weight: bold !important;
 }
 
+/* Portfolio Name Styling */
 .portfolio-name {
   font-size: 0.875rem !important;
   color: var(--color-text-secondary) !important;
 }
 
+/* Portfolio Text Styling */
 .portfolio-text {
   font-size: 0.875rem !important;
   color: var(--color-text-primary) !important;
 }
 
+/* Portfolio Value Styling */
 .portfolio-value {
   font-size: 0.875rem !important;
   font-weight: bold !important;
 }
 
+/* Positive and Negative Value Styling */
 .portfolio-positive {
   color: var(--color-success) !important;
 }
 
 .portfolio-negative {
   color: var(--color-error) !important;
+}
+
+
+/* Hover Effect */
+.portfolio-row:hover {
+  background-color: var(--color-border-subtle) !important;
 }
 
 /* Responsive Design */
@@ -78,5 +95,4 @@
   .portfolio-value {
     font-size: 0.75rem !important;
   }
-
 }
