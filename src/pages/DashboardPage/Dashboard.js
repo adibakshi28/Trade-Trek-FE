@@ -31,8 +31,8 @@ const Dashboard = () => {
       <Box className="dashboard-main">
         <Box className="dashboard-top-row">
           <Box className="dashboard-plot">
-            {/* <Plot type="STOCK" stock_name="AAPL" price_data={priceData}/> */}
-            <Plot type="PORTFOLIO" portfolio_data={portfolioData}/>
+            <Plot type="STOCK" stock_name="AAPL" price_data={priceData.slice(1, 100)}/>
+            {/* <Plot type="PORTFOLIO" portfolio_data={portfolioData}/> */}
           </Box>
           <Box className="dashboard-portfolio-metrics">
             <PortfolioMetrics />

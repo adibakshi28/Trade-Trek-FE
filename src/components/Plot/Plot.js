@@ -1,177 +1,190 @@
+// src/components/Plot/Plot.js
+
 import React from 'react';
 import './Plot.css';
 import PropTypes from 'prop-types';
+
+// Import ApexCharts for STOCK type
+import ReactApexChart from 'react-apexcharts';
+
+// Import Chart.js components for PORTFOLIO type
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
   PointElement,
   LineElement,
-  Title,
-  Tooltip,
-  Legend,
+  Title as ChartTitle,
+  Tooltip as ChartTooltip,
+  Legend as ChartLegend,
   Filler,
+  TimeScale,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { CandlestickController, CandlestickElement } from 'chartjs-chart-financial';
+import 'chartjs-adapter-date-fns'; // Date adapter for Chart.js
 
 // Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  BarElement,
   PointElement,
   LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
+  ChartTitle,
+  ChartTooltip,
+  ChartLegend,
+  Filler,
+  TimeScale,
+  CandlestickController,
+  CandlestickElement
 );
 
 function Plot({ type, stock_name, price_data, portfolio_data }) {
   // Function to format datetime strings to Date objects
   const formatDate = (datetimeStr) => new Date(datetimeStr);
 
-  // Prepare data for STOCK type
+  // === STOCK Type: ApexCharts Candlestick + Volume ===
   const prepareStockData = () => {
     if (!price_data || !Array.isArray(price_data)) {
       console.error('Invalid price_data provided for STOCK type.');
-      return { data: {}, options: {} };
+      return { series: [], options: {} };
     }
 
-    const parsedData = price_data.map((data) => ({
-      datetime: formatDate(data.datetime),
-      close: data.close || 0,
-      volume: data.volume || 0,
+    // Sort price_data by datetime ascending
+    const sortedPriceData = [...price_data].sort(
+      (a, b) => new Date(a.datetime) - new Date(b.datetime)
+    );
+
+    // Format data for ApexCharts
+    const ohlcData = sortedPriceData.map((data) => ({
+      x: formatDate(data.datetime),
+      y: [data.open, data.high, data.low, data.close],
     }));
 
-    const stockLabels = parsedData.map((data) =>
-      data.datetime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    );
-    const stockPrices = parsedData.map((data) => data.close);
-    const stockVolumes = parsedData.map((data) => data.volume);
+    const volumeData = sortedPriceData.map((data) => ({
+      x: formatDate(data.datetime),
+      y: data.volume,
+    }));
 
-    const stockChartData = {
-      labels: stockLabels,
-      datasets: [
-        {
-          type: 'line',
-          label: `${stock_name} Price`,
-          data: stockPrices,
-          borderColor: 'rgba(0, 204, 255, 1)',
-          backgroundColor: 'rgba(0, 204, 255, 0.2)',
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0.4,
-          fill: true,
-          yAxisID: 'y',
-        },
-        {
-          type: 'bar',
-          label: 'Volume',
-          data: stockVolumes,
-          backgroundColor: 'rgba(255, 99, 132, 0.6)',
-          borderWidth: 0,
-          yAxisID: 'y1',
-        },
-      ],
-    };
+    const series = [
+      {
+        name: 'OHLC',
+        type: 'candlestick',
+        data: ohlcData,
+      },
+      {
+        name: 'Volume',
+        type: 'column',
+        data: volumeData,
+      },
+    ];
 
-    const stockOptions = {
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: {
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+    const options = {
+      chart: {
+        type: 'candlestick',
+        height: 410,
+        background: 'var(--color-surface)', 
+        toolbar: {
+          show: true,
+          tools: {
+            zoom: true,
+            zoomin: true,
+            zoomout: true,
+            reset: true,
+          },
+        },
+        zoom: {
+          enabled: true,
+          type: 'x',
+          autoScaleYaxis: true,
         },
       },
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          labels: {
-            color: '#ffffff',
+      title: {
+        text: `${stock_name} Price and Volume`,
+        align: 'center', // Align title to center
+        style: {
+          color: 'var(--color-text-primary)', // White color for title
+          fontSize: '18px',
+          fontWeight: 'bold',
+        },
+      },
+      xaxis: {
+        type: 'datetime',
+        labels: {
+          style: {
+            colors: 'var(--color-text-secondary)', // Light gray color for labels
+            fontSize: '10px',
           },
         },
         tooltip: {
-          backgroundColor: 'rgba(20, 20, 30, 0.9)',
-          titleColor: '#ffffff',
-          bodyColor: '#ffffff',
-        },
-        title: {
-          display: true,
-          text: `${stock_name} Price and Volume`,
-          color: '#ffffff',
-          font: {
-            size: 18,
-            weight: 'bold',
-          },
-          padding: {
-            top: 5,
+          enabled: true,
+          x: {
+            format: 'MMM dd, yyyy',
           },
         },
       },
-      scales: {
-        x: {
-          grid: {
-            color: 'rgba(255, 255, 255, 0.1)',
-          },
-          ticks: {
-            color: '#cccccc',
-            font: { size: 10 },
-          },
-        },
-        y: {
-          position: 'left',
-          grid: {
-            color: 'rgba(255, 255, 255, 0.1)',
-          },
-          ticks: {
-            color: '#cccccc',
-            font: { size: 12 },
-            callback: function (value) {
-              return `$${value}`;
-            },
-          },
+      yaxis: [
+        {
           title: {
-            display: true,
             text: 'Price ($)',
-            color: '#ffffff',
-            font: {
-              size: 14,
-              weight: 'bold',
+            style: {
+              color: 'var(--color-text-primary)', // White color for Y-axis title
+              fontSize: '14px',
+              fontWeight: 'bold',
             },
           },
+          labels: {
+            style: {
+              colors: 'var(--color-text-secondary)', // Light gray color for Y-axis labels
+              fontSize: '12px',
+            }
+          },
         },
-        y1: {
-          position: 'right',
-          grid: {
-            drawOnChartArea: false,
-          },
-          ticks: {
-            color: '#cccccc',
-            font: { size: 12 },
-          },
+        {
+          opposite: true,
           title: {
-            display: true,
             text: 'Volume',
-            color: '#ffffff',
-            font: {
-              size: 14,
-              weight: 'bold',
+            style: {
+              color: 'var(--color-text-primary)', // White color for Y1-axis title
+              fontSize: '14px',
+              fontWeight: 'bold',
             },
           },
+          labels: {
+            style: {
+              colors: 'var(--color-text-secondary)', // Light gray color for Y1-axis labels
+              fontSize: '12px',
+            }
+          },
         },
+      ],
+      tooltip: {
+        theme: 'dark', // Dark theme for tooltips
+        x: {
+          format: 'MMM dd, yyyy',
+        },
+      },
+      plotOptions: {
+        candlestick: {
+          colors: {
+            upward: 'var(--color-success)', // Green for upward candles
+            downward: 'var(--color-error)', // Red for downward candles
+          },
+        },
+        bar: {
+          columnWidth: '80%', // Adjust as needed
+        },
+      },
+      colors: ['#00E396', '#FEB019'], // Colors for OHLC and Volume
+      theme: {
+        mode: 'dark', // Dark theme
       },
     };
 
-    return { data: stockChartData, options: stockOptions };
+    return { series, options };
   };
 
-  // Prepare data for PORTFOLIO type
+  // === PORTFOLIO Type: Chart.js Line Chart ===
   const preparePortfolioData = () => {
     if (
       !portfolio_data ||
@@ -204,7 +217,7 @@ function Plot({ type, stock_name, price_data, portfolio_data }) {
       };
     });
 
-    const portfolioLabels = mergedData.map((data) =>
+    const labels = mergedData.map((data) =>
       data.datetime.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -218,11 +231,10 @@ function Plot({ type, stock_name, price_data, portfolio_data }) {
     const cashValues = mergedData.map((data) => data.cash);
     const indexPrices = mergedData.map((data) => data.price);
 
-    const portfolioChartData = {
-      labels: portfolioLabels,
+    const data = {
+      labels: labels,
       datasets: [
         {
-          type: 'line',
           label: 'Holding Value',
           data: holdingValues,
           borderColor: 'rgba(75, 192, 192, 1)',
@@ -233,32 +245,29 @@ function Plot({ type, stock_name, price_data, portfolio_data }) {
           fill: true,
           yAxisID: 'y',
         },
+        // {
+        //   label: 'Unrealised PnL',
+        //   data: unrealisedPnl,
+        //   borderColor: 'rgba(255, 206, 86, 1)',
+        //   backgroundColor: 'rgba(255, 206, 86, 0.2)',
+        //   borderWidth: 2,
+        //   pointRadius: 0,
+        //   tension: 0.4,
+        //   fill: true,
+        //   yAxisID: 'y',
+        // },
+        // {
+        //   label: 'Cash',
+        //   data: cashValues,
+        //   borderColor: 'rgba(153, 102, 255, 1)',
+        //   backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        //   borderWidth: 2,
+        //   pointRadius: 0,
+        //   tension: 0.4,
+        //   fill: true,
+        //   yAxisID: 'y',
+        // },
         {
-          type: 'line',
-          label: 'Unrealised PnL',
-          data: unrealisedPnl,
-          borderColor: 'rgba(255, 206, 86, 1)',
-          backgroundColor: 'rgba(255, 206, 86, 0.2)',
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0.4,
-          fill: true,
-          yAxisID: 'y',
-        },
-        {
-          type: 'line',
-          label: 'Cash',
-          data: cashValues,
-          borderColor: 'rgba(153, 102, 255, 1)',
-          backgroundColor: 'rgba(153, 102, 255, 0.2)',
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0.4,
-          fill: true,
-          yAxisID: 'y',
-        },
-        {
-          type: 'line',
           label: `${stock_index} Price`,
           data: indexPrices,
           borderColor: 'rgba(255, 159, 64, 1)',
@@ -272,7 +281,7 @@ function Plot({ type, stock_name, price_data, portfolio_data }) {
       ],
     };
 
-    const portfolioOptions = {
+    const options = {
       responsive: true,
       maintainAspectRatio: false,
       layout: {
@@ -368,23 +377,44 @@ function Plot({ type, stock_name, price_data, portfolio_data }) {
       },
     };
 
-    return { data: portfolioChartData, options: portfolioOptions };
+    return { data, options };
   };
 
-  // Determine which data and options to use based on the type prop
-  const { data, options } = type === 'PORTFOLIO' ? preparePortfolioData() : prepareStockData();
+  // Prepare data based on the type prop
+  const stockData = type === 'STOCK' ? prepareStockData() : null;
+  const portfolioDataPrepared = type === 'PORTFOLIO' ? preparePortfolioData() : null;
 
   return (
     <div className="plot-container">
       <div className="price-chart-card">
-        {/* Only render the chart if data is available */}
-        {data && Object.keys(data).length > 0 && (
-          <Line data={data} options={options} style={{ width: '100%', height: '100%' }} />
+        {/* Render STOCK Type Chart using ApexCharts */}
+        {type === 'STOCK' && stockData && stockData.series.length > 0 && (
+          <ReactApexChart
+            options={stockData.options}
+            series={stockData.series}
+            type="candlestick"
+            height={410} // Set to 410 as per user observation
+          />
         )}
-        {/* Optionally, you can render a message if no data is available */}
-        {(!data || Object.keys(data).length === 0) && (
-          <p style={{ color: '#ffffff', textAlign: 'center' }}>No data available to display.</p>
+        {/* Render PORTFOLIO Type Chart using Chart.js */}
+        {type === 'PORTFOLIO' && portfolioDataPrepared && portfolioDataPrepared.data && (
+          <Line
+            data={portfolioDataPrepared.data}
+            options={portfolioDataPrepared.options}
+            height={600} // Adjust as needed
+          />
         )}
+        {/* Optional: Render a message if no data is available */}
+        {type === 'STOCK' &&
+          (!stockData ||
+            !stockData.series ||
+            stockData.series.length === 0) && (
+            <p style={{ color: 'var(--color-text-primary)', textAlign: 'center' }}>No STOCK data available to display.</p>
+          )}
+        {type === 'PORTFOLIO' &&
+          (!portfolioDataPrepared || !portfolioDataPrepared.data) && (
+            <p style={{ color: 'var(--color-text-primary)', textAlign: 'center' }}>No PORTFOLIO data available to display.</p>
+          )}
       </div>
     </div>
   );
@@ -409,7 +439,22 @@ Plot.propTypes = {
           `Invalid prop \`${propName}\` supplied to \`${componentName}\`. Expected an array when type is 'STOCK'.`
         );
       }
-      // Further validation can be added here for the structure of price_data
+      // Further validation for the structure of price_data
+      for (let i = 0; i < props[propName].length; i++) {
+        const item = props[propName][i];
+        if (
+          !item.datetime ||
+          typeof item.open !== 'number' ||
+          typeof item.high !== 'number' ||
+          typeof item.low !== 'number' ||
+          typeof item.close !== 'number' ||
+          typeof item.volume !== 'number'
+        ) {
+          return new Error(
+            `Invalid data structure in \`${propName}\` at index ${i} supplied to \`${componentName}\`. Each item must have datetime (string), open (number), high (number), low (number), close (number), and volume (number).`
+          );
+        }
+      }
     }
     return null;
   },
@@ -421,7 +466,19 @@ Plot.propTypes = {
           `Invalid prop \`${propName}\` supplied to \`${componentName}\`. Expected an object when type is 'PORTFOLIO'.`
         );
       }
-      // Further validation can be added here for the structure of portfolio_data
+      // Further validation for the structure of portfolio_data
+      const { portfolio_history, stock_index, stock_index_history } = props[propName];
+      if (!Array.isArray(portfolio_history) || !Array.isArray(stock_index_history)) {
+        return new Error(
+          `Invalid structure in \`${propName}\` supplied to \`${componentName}\`. Expected portfolio_history and stock_index_history to be arrays.`
+        );
+      }
+      if (typeof stock_index !== 'string') {
+        return new Error(
+          `Invalid structure in \`${propName}\` supplied to \`${componentName}\`. Expected stock_index to be a string.`
+        );
+      }
+      // Additional checks can be added as needed
     }
     return null;
   },
