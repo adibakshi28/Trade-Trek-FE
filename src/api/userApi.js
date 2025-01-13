@@ -61,3 +61,9 @@ export const addToUserWatchlist = async (ticker) => {
   });
   return res.data;
 };
+
+// /user/portfolio/history
+export const getUserPortfolioHistory = async () => {
+  const response = await axiosClient.get('/user/portfolio/history');
+  return response.data; 
+};

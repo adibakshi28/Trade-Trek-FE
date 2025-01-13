@@ -1,61 +1,112 @@
 /* src/components/PortfolioMetrics/PortfolioMetrics.css */
 
 .portfolio-metrics-card {
+  width: 100% !important;
+  height: 100% !important;
+  background-color: var(--color-surface) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-evenly !important;
+  align-items: center !important;
+  padding: 10px !important;
+  box-sizing: border-box !important;
+}
+
+.metric-item {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 90% !important;
+  transition: transform 0.3s ease;
+}
+
+/* On hover, make the metric bigger */
+.metric-item:hover {
+  transform: scale(1.05);
+}
+
+.metric-name {
+  font-weight: bold !important;
+  color: var(--color-text-primary) !important;
+}
+
+.font-large {
+  font-size: 1.1rem !important;
+  font-weight: bold !important;
+  color: var(--color-text-primary) !important;
+}
+
+.metric-divider {
+  width: 90% !important;
+  height: 1px !important;
+  background-color: var(--color-border-subtle) !important;
+  margin: 10px 0 !important;
+}
+
+/* Text Colors for Positive or Negative */
+.text-success {
+  color: var(--color-success) !important; /* Green for positive values */
+  transition: color 0.5s ease; /* Smooth transition */
+}
+
+.text-error {
+  color: var(--color-error) !important; /* Red for negative values */
+  transition: color 0.5s ease; /* Smooth transition */
+}
+
+/* Default icon color = text color */
+.icon-default {
+  color: var(--color-text-primary) !important;
+}
+
+/* Icons that show up/down for positive/negative */
+.icon-positive {
+  color: var(--color-success) !important;
+}
+.icon-negative {
+  color: var(--color-error) !important;
+}
+
+/* Rolling Number Animation */
+.metric-value .countup {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.metric-value .countup-start {
+  transform: rotateX(90deg);
+}
+
+.metric-value .countup-end {
+  transform: rotateX(0deg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .portfolio-metrics-card {
     width: 100% !important;
-    height: 100% !important;
-    background-color: var(--color-surface) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-evenly !important;
-    align-items: center !important;
-    padding: 10px !important;
-    box-sizing: border-box !important;
+    height: auto !important;
+    margin-left: 0 !important;
+    padding: 15px !important;
   }
-  
+
   .metric-item {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    width: 90% !important;
+    width: 100% !important;
+    padding: 5px 0 !important;
   }
-  
-  .metric-name {
-    font-size: 1rem !important;
-    font-weight: bold !important;
-    color: var(--color-text-primary) !important;
-  }
-  
-  .metric-value {
-    font-size: 1.5rem !important;
-    font-weight: bold !important;
-    color: var(--color-text-primary) !important;
-    text-align: right !important;
-  }
-  
+
   .metric-divider {
-    width: 90% !important;
-    height: 1px !important;
-    background-color: var(--color-border-subtle) !important;
+    width: 95% !important;
   }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .portfolio-metrics-card {
-      width: 100% !important;
-      height: auto !important;
-      margin-left: 0 !important;
-    }
-  
-    .metric-item {
-      width: 100% !important;
-      padding: 5px 0 !important;
-    }
-  
-    .metric-divider {
-      width: 95% !important;
-    }
+
+  .metric-name,
+  .metric-value,
+  .font-large,
+  .text-success,
+  .text-error {
+    font-size: 0.9rem !important;
   }
-  
+}

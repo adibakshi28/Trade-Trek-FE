@@ -1,0 +1,70 @@
+/* src/components/TradeDialog/TradeDialog.css */
+
+.trade-dialog__paper {
+    border-radius: 8px;
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+  }
+  
+  .trade-dialog__title {
+    font-size: 1.25rem;
+    color: var(--color-text-primary) !important;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  
+  .trade-dialog__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  .trade-dialog__actions {
+    border-top: 1px solid var(--color-border-subtle) !important;
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .trade-dialog__stock-name {
+    font-size: 1rem !important;
+    font-weight: bold !important;
+    margin-bottom: 0.3rem;
+  }
+  
+  .trade-dialog__price {
+    margin-bottom: 0.2rem;
+    color: var(--color-text-secondary) !important;
+  }
+  
+  .trade-dialog__day-change {
+    margin-bottom: 0.5rem;
+  }
+  
+  .trade-dialog__day-change.positive {
+    color: var(--color-success) !important;
+  }
+  .trade-dialog__day-change.negative {
+    color: var(--color-error) !important;
+  }
+  
+  .trade-dialog__existing-qty {
+    margin-bottom: 0.5rem;
+    color: var(--color-text-secondary) !important;
+  }
+  
+  .trade-dialog__quantity-field {
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .trade-dialog__txn-box {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border-radius: 5px;
+    background-color: var(--color-surface-lite);
+    color: var(--color-text-secondary);
+  }
+  

@@ -17,6 +17,7 @@ import AllInclusiveIcon from '@mui/icons-material/AllInclusive';
 import StockSearch from '../StockSearch/StockSearch';
 import WatchlistItem from '../WatchlistItem/WatchlistItem';
 import SearchResultItem from '../SearchResultItem/SearchResultItem';
+import TradeDialog from '../../TradeDialog/TradeDialog';
 
 import {
   getUserWatchlist,
@@ -25,24 +26,29 @@ import {
 } from '../../../api/userApi';
 
 import { useUniverse } from '../../../context/UniverseContext';
+import { useWebSocket } from '../../../context/WebSocketContext';
 
-function Watchlist() {
+function Watchlist({ refreshPortfolio }) {
   const [stocks, setStocks] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('all');
-  
-  // For showing skeleton loaders while fetching watchlist
   const [isLoading, setIsLoading] = useState(false);
 
-  // Snackbar state
+  // Snackbar
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
-    severity: 'info', // 'success' | 'error' | 'warning' | 'info'
+    severity: 'info',
   });
 
-  const { universeData, fetchUniverseData } = useUniverse();
+  // For trade dialog
+  const [isTradeOpen, setIsTradeOpen] = useState(false);
+  const [tradeData, setTradeData] = useState(null);
 
+  const { universeData, fetchUniverseData } = useUniverse();
+  const { prices, sendMessage } = useWebSocket();
+
+  // 1) fetch watchlist
   useEffect(() => {
     fetchWatchlist();
     fetchUniverseData();
@@ -51,14 +57,15 @@ function Watchlist() {
   const fetchWatchlist = async () => {
     try {
       setIsLoading(true);
-      const data = await getUserWatchlist(); 
-      const randomStocks = data.map((item) => ({
+      const data = await getUserWatchlist();
+      const initial = data.map((item) => ({
         symbol: item.stock_ticker,
         name: item.stock_name,
-        price: 0,    
-        change: 0,  
+        price: 0,
+        change: 0,
+        priceDirection: 'none',
       }));
-      setStocks(randomStocks);
+      setStocks(initial);
     } catch (error) {
       showSnackbar('Server Error, try again later', 'error');
       console.error('Error fetching watchlist:', error);
@@ -67,48 +74,71 @@ function Watchlist() {
     }
   };
 
-  // Called by StockSearch whenever user types
+  // 2) real-time updates
+  useEffect(() => {
+    setStocks((prevStocks) =>
+      prevStocks.map((stock) => {
+        const symbolUpper = stock.symbol.toUpperCase();
+        const wsData = prices[symbolUpper]; // e.g. { ltp, day_change }
+        if (wsData) {
+          const newPrice = Number(wsData.ltp);
+          const newChange = Number(wsData.day_change);
+
+          let direction = stock.priceDirection;
+          if (newPrice > stock.price) direction = 'up';
+          else if (newPrice < stock.price) direction = 'down';
+
+          return {
+            ...stock,
+            price: newPrice,
+            change: newChange,
+            priceDirection: direction,
+          };
+        }
+        return stock;
+      })
+    );
+  }, [prices]);
+
+  // Searching
   const handleSearchChange = (value) => {
     setSearchQuery(value);
   };
 
-  // Called by SearchResultItem's Add icon
+  // Add ticker
   const handleAddTicker = async (ticker) => {
     try {
-      const response = await addToUserWatchlist(ticker);
-      // Check response.success
-      if (response.success) {
-        showSnackbar(response.message, 'success');
-        // refresh the watchlist from response
-        const updated = response.watchlist.map((item) => ({
+      const resp = await addToUserWatchlist(ticker);
+      if (resp.success) {
+        showSnackbar(resp.message, 'success');
+        const updated = resp.watchlist.map((item) => ({
           symbol: item.stock_ticker,
           name: item.stock_name,
-          price: parseFloat((Math.random() * 1000).toFixed(2)),
-          change: parseFloat((Math.random() * 20 - 10).toFixed(2)),
+          price: 0,
+          change: 0,
+          priceDirection: 'none',
         }));
         setStocks(updated);
-        // Clear search so we return to watchlist
+        sendMessage({ type: 'subscribe', symbol: ticker });
         setSearchQuery('');
       } else {
-        // success === false -> show error
-        showSnackbar(response.message, 'error');
+        showSnackbar(resp.message, 'error');
       }
     } catch (error) {
       showSnackbar('Server Error, try again later', 'error');
-      console.error(`Error adding ${ticker} to watchlist:`, error);
+      console.error(`Error adding ${ticker}:`, error);
     }
   };
 
-  // Called by WatchlistItem's Delete icon
+  // Delete ticker
   const handleDelete = async (symbol) => {
     try {
-      const response = await removeFromUserWatchlist(symbol);
-      if (response.success) {
-        showSnackbar(response.message, 'success');
-        // Update local watchlist
+      const resp = await removeFromUserWatchlist(symbol);
+      if (resp.success) {
+        showSnackbar(resp.message, 'success');
         setStocks((prev) => prev.filter((s) => s.symbol !== symbol));
       } else {
-        showSnackbar(response.message, 'error');
+        showSnackbar(resp.message, 'error');
       }
     } catch (error) {
       showSnackbar('Server Error, try again later', 'error');
@@ -116,44 +146,51 @@ function Watchlist() {
     }
   };
 
-  // Called by WatchlistItem "Trade" button
+  // Trade
   const handleTrade = (symbol) => {
-    console.log(`Initiate trade for ${symbol}`);
+    // find that stock in watchlist
+    const found = stocks.find((s) => s.symbol === symbol);
+    if (!found) return;
+    setTradeData({
+      symbol: found.symbol,
+      name: found.name,
+      price: found.price,     // real-time
+      dayChange: found.change // real-time
+    });
+    setIsTradeOpen(true);
   };
+  
 
+  // Filter
   const handleFilter = (event, newFilter) => {
-    if (newFilter !== null) {
-      setFilter(newFilter);
-    }
+    if (newFilter !== null) setFilter(newFilter);
   };
 
-  const filteredStocks = stocks.filter((stock) => {
-    if (filter === 'gainers') return stock.change > 0;
-    if (filter === 'losers') return stock.change < 0;
+  const filteredStocks = stocks.filter((stk) => {
+    if (filter === 'gainers') return stk.change > 0;
+    if (filter === 'losers') return stk.change < 0;
     return true;
   });
 
+  // build search results
   const isSearching = Boolean(searchQuery.trim());
   let searchResults = [];
   if (isSearching && universeData) {
     const text = searchQuery.toLowerCase();
     searchResults = universeData
-      .filter(
-        (item) =>
+      .filter((item) => {
+        return (
           item.stock_ticker.toLowerCase().includes(text) ||
           item.stock_name.toLowerCase().includes(text)
-      )
+        );
+      })
       .slice(0, 50);
   }
 
+  // Snackbar helpers
   const showSnackbar = (message, severity = 'info') => {
-    setSnackbar({
-      open: true,
-      message,
-      severity,
-    });
+    setSnackbar({ open: true, message, severity });
   };
-
   const handleCloseSnackbar = (_, reason) => {
     if (reason === 'clickaway') return;
     setSnackbar((prev) => ({ ...prev, open: false }));
@@ -162,7 +199,6 @@ function Watchlist() {
   return (
     <Box className="watchlist-container">
       <Box className="watchlist-card">
-        {/* Header: search + filter */}
         <Box className="watchlist-header">
           <StockSearch onSearchChange={handleSearchChange} />
           {!isSearching && (
@@ -174,13 +210,13 @@ function Watchlist() {
                 aria-label="stock filter"
                 size="small"
               >
-                <ToggleButton value="all" aria-label="all stocks">
+                <ToggleButton value="all">
                   <AllInclusiveIcon fontSize="small" /> All
                 </ToggleButton>
-                <ToggleButton value="gainers" aria-label="gainers">
+                <ToggleButton value="gainers">
                   <TrendingUpIcon fontSize="small" /> Gainers
                 </ToggleButton>
-                <ToggleButton value="losers" aria-label="losers">
+                <ToggleButton value="losers">
                   <TrendingDownIcon fontSize="small" /> Losers
                 </ToggleButton>
               </ToggleButtonGroup>
@@ -188,10 +224,8 @@ function Watchlist() {
           )}
         </Box>
 
-        {/* Main area: either searching or watchlist */}
         <Box className="watchlist">
           {isSearching ? (
-            // Show search results
             searchResults.map((stock) => (
               <SearchResultItem
                 key={stock.stock_ticker}
@@ -201,7 +235,6 @@ function Watchlist() {
               />
             ))
           ) : isLoading ? (
-            // Show skeletons while loading the watchlist
             [...Array(8)].map((_, i) => (
               <Skeleton
                 key={i}
@@ -211,7 +244,6 @@ function Watchlist() {
               />
             ))
           ) : (
-            // Show the normal watchlist items
             filteredStocks.map((stock) => (
               <WatchlistItem
                 key={stock.symbol}
@@ -219,6 +251,7 @@ function Watchlist() {
                 name={stock.name}
                 price={stock.price}
                 change={stock.change}
+                priceDirection={stock.priceDirection}
                 onDelete={handleDelete}
                 onTrade={handleTrade}
               />
@@ -227,10 +260,19 @@ function Watchlist() {
         </Box>
       </Box>
 
-      {/* Snackbar for showing success/error messages */}
+      {tradeData && (
+        <TradeDialog
+          open={isTradeOpen}
+          onClose={() => setIsTradeOpen(false)}
+          symbol={tradeData.symbol}
+          refreshPortfolio={refreshPortfolio}
+          showSnackbar={showSnackbar}
+        />
+      )}
+
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={1000}
+        autoHideDuration={1500}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >

@@ -58,6 +58,14 @@
   color: var(--color-text-primary) !important;
 }
 
+.price-up {
+  color: var(--color-success) !important;
+}
+
+.price-down {
+  color: var(--color-error) !important; 
+}
+
 .watchlist-item__price.negative {
   color: var(--color-error) !important;
 }
