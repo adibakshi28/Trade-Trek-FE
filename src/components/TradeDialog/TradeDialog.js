@@ -12,7 +12,7 @@ import {
   IconButton,
   Box,
   Skeleton,
-  InputAdornment
+  InputAdornment,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import NumbersIcon from '@mui/icons-material/Numbers';
@@ -190,15 +190,17 @@ function TradeDialog({
       classes={{ paper: 'trade-dialog__paper' }}
       PaperProps={{
         style: {
-          width: '400px',
-          height: '500px',
+          width: '450px', // Fixed width
+          height: '650px', // Fixed height
+          maxWidth: '90%',
           backgroundColor: 'var(--color-surface)',
           color: 'var(--color-text-primary)',
-          boxShadow: '0 0 5px 1px var(--color-text-secondary)',
           overflow: 'hidden',
+          borderRadius: '12px',
           animation: 'fadeIn 0.3s ease-in-out',
         },
       }}
+
       TransitionProps={{
         // Adding fade-in animation
         onEntering: (node) => {
@@ -215,25 +217,27 @@ function TradeDialog({
       </DialogTitle>
 
       <DialogContent className="trade-dialog__content">
-        <Typography variant="body1" className="trade-dialog__stock-name">
-          {name || symbol}
-        </Typography>
-        <Typography variant="body2" className="trade-dialog__price">
-          Price: ${localPrice?.toFixed(2)}
-        </Typography>
-        <Typography
-          variant="body2"
-          className={`trade-dialog__day-change ${
-            localDayChange >= 0 ? 'positive' : 'negative'
-          }`}
-        >
-          Day Change:{' '}
-          {localDayChange >= 0
-            ? `+${localDayChange.toFixed(2)}`
-            : localDayChange.toFixed(2)}
-        </Typography>
+        <Box className="trade-dialog__stock-info">
+          <Typography variant="h6" className="trade-dialog__stock-name">
+            {name || symbol}
+          </Typography>
+          <Typography variant="body1" className="trade-dialog__price">
+            Price: ${localPrice?.toFixed(2)}
+          </Typography>
+          <Typography
+            variant="body1"
+            className={`trade-dialog__day-change ${
+              localDayChange >= 0 ? 'positive' : 'negative'
+            }`}
+          >
+            Day Change:{' '}
+            {localDayChange >= 0
+              ? `+${localDayChange.toFixed(2)}%`
+              : `${localDayChange.toFixed(2)}%`}
+          </Typography>
+        </Box>
 
-        <Typography variant="body2" className="trade-dialog__existing-qty">
+        <Typography variant="body1" className="trade-dialog__existing-qty">
           Existing Qty: {existingQty}
         </Typography>
 
@@ -242,7 +246,7 @@ function TradeDialog({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginY: '0.5rem',
+            marginY: '0rem',
           }}
         >
           <Typography variant="body2" className="trade-dialog__market-label">
@@ -253,6 +257,7 @@ function TradeDialog({
             size="small"
             onClick={handleRefreshValue}
             className="trade-dialog__refresh-button"
+            aria-label="Refresh Transaction Value"
           >
             <RefreshIcon fontSize="custom" />
           </IconButton>
@@ -260,7 +265,7 @@ function TradeDialog({
 
         <TextField
           variant="outlined"
-          placeholder="Quantity"
+          placeholder="Enter Quantity"
           value={quantity}
           onChange={handleQuantityChange}
           className="trade-dialog__quantity-field"
@@ -277,12 +282,10 @@ function TradeDialog({
         {isLoadingValue && (
           <Box
             sx={{
-              display: 'flex',
-              alignItems: 'center',
               marginBottom: '1rem',
             }}
           >
-            <Skeleton variant="text" width="100%" height={20} />
+            <Skeleton variant="rectangular" height={60} />
           </Box>
         )}
 
@@ -311,6 +314,7 @@ function TradeDialog({
             onClick={handleBuy}
             disabled={!quantity || isPlacingTrade || !isBuyPossible}
             className="trade-dialog__action-button buy-button"
+            variant="contained"
           >
             Buy
           </Button>
@@ -318,6 +322,7 @@ function TradeDialog({
             onClick={handleSell}
             disabled={!quantity || isPlacingTrade || !isSellPossible}
             className="trade-dialog__action-button sell-button"
+            variant="contained"
           >
             Sell
           </Button>
@@ -325,6 +330,7 @@ function TradeDialog({
         <Button
           onClick={handleCancel}
           className="trade-dialog__cancel-button"
+          variant="outlined"
         >
           Cancel
         </Button>

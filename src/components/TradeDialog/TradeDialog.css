@@ -1,204 +1,225 @@
 /* src/components/TradeDialog/TradeDialog.css */
 
 @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  
-  .trade-dialog__paper {
-    border-radius: 10px !important;
-    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
-    /* Removed margin-top for better entrance animation */
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .trade-dialog__title {
-    font-size: 1.25rem !important;
-    font-weight: bold !important;
-    color: var(--color-text-primary) !important;
-    border-bottom: 1px solid var(--color-border-subtle) !important;
-  }
-  
-  .trade-dialog__content {
-    display: flex;
-    flex-direction: column;
-    margin-top: 0.5rem;
-    overflow-y: hidden;
-    padding: 1rem;
-    animation: fadeIn 0.3s ease-in-out;
-  }
-  
-  .trade-dialog__actions {
-    border-top: 1px solid var(--color-border-subtle) !important;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0.5rem 1rem;
-  }
-  
-  .trade-dialog__stock-name {
-    font-weight: bold !important;
-    color: var(--color-text-primary) !important;
-    margin-bottom: 0.3rem !important;
-    font-size: 1rem !important;
-  }
-  
-  .trade-dialog__price {
-    color: var(--color-text-secondary) !important;
-    margin-bottom: 0.2rem;
-    font-weight: bold !important;
-  }
-  
-  .trade-dialog__day-change {
-    margin-bottom: 0.6rem;
-  }
-  .trade-dialog__day-change.positive {
-    color: var(--color-success) !important;
-  }
-  .trade-dialog__day-change.negative {
-    color: var(--color-error) !important;
-  }
-  
-  /* For "Market Order" label or row */
-  .trade-dialog__market-label {
-    color: var(--color-text-secondary) !important;
-    font-size: 0.9rem !important;
-  }
-  
-  /* Existing QTY or similar text */
-  .trade-dialog__existing-qty {
-    color: var(--color-text-secondary) !important;
-    margin-bottom: 0.5rem;
-  }
+}
 
-  .trade-dialog__quantity-field {
-    width: 95% !important;
-    max-width: 600px;
-    background: var(--color-border-subtle);
-    border-radius: 5px !important;
-    overflow: hidden;
-    box-shadow: 0px 4px 10px var(--color-bg) !important;
-  }
-  
-  .trade-dialog__quantity-field .MuiOutlinedInput-root {
-    border-radius: 5px !important;
-    padding-left: 0.5rem;
-  }
-  
-  .trade-dialog__quantity-field .MuiOutlinedInput-notchedOutline {
-    border: none !important;
-  }
-  
-  .trade-dialog__quantity-field:hover .MuiOutlinedInput-notchedOutline {
-    border: none !important;
-  }
-  
-  .trade-dialog__quantity-field:focus-within {
-    box-shadow: 0 0 5px 2px var(--color-primary) !important;
-  }
-  
-  .trade-dialog__quantity-field .MuiOutlinedInput-input {
-    color: var(--color-text-primary) !important;
-    font-size: 1rem !important;
-    padding: 0.75rem 0 !important;
-  }
-  
-  .trade-dialog__quantity-field .MuiInputAdornment-root svg {
-    color: var(--color-text-secondary) !important;
-    font-size: 1.25rem !important;
-  }
-  
-  /* The box that shows transaction fee, required funds, etc. */
-  .trade-dialog__txn-box {
-    background-color: var(--color-surface-lite);
-    padding: 0.5rem !important;
-    border-radius: 10px !important;
-    color: var(--color-text-secondary) !important;
-    margin-bottom: 1rem !important;
-  }
-  
-  .trade-dialog__txn-box .txn-row {
-    margin: 0.2rem 0 !important;
-  }
-  
-  /* Buttons Container */
-  .trade-dialog__buttons-container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-  
-  /* Buy and Sell Buttons */
-  .trade-dialog__action-button {
-    flex: 1;
-    margin: 0 0.5rem !important;
-    padding: 0.5rem 0 !important;
-    border-radius: 5px !important;
-    transition: transform 0.2s, background-color 0.2s;
-    font-weight: bold !important;
-    color: var(--color-text-primary) !important;
-  }
-  
-  .buy-button {
-    background-color: var(--color-success) !important;
-    color: var(--color-text-primary) !important;
-  }
-  
-  .sell-button {
-    background-color: var(--color-error) !important;
-    color: var(--color-text-primary) !important;
-  }
-  
-  .trade-dialog__action-button:disabled {
-    background-color: var(--color-surface-lite) !important;
-    color: var(--color-text-secondary) !important;
-    cursor: not-allowed;
-  }
-  
-  .trade-dialog__action-button:not(:disabled):hover {
-    transform: scale(1.02);
-  }
-  
-  /* Cancel Button */
-  .trade-dialog__cancel-button {
-    background-color: var(--color-primary) !important;
-    color: var(--color-text-primary) !important;
-    padding: 0.5rem !important;
-    border-radius: 5px !important;
-    transition: transform 0.2s, background-color 0.2s !important;
-    font-weight: bold !important;
-    width: 95%;
-  }
-  
-  .trade-dialog__cancel-button:hover {
-    transform: scale(1.02);
-    background-color: var(--color-secondary) !important; 
-  }
-  
-  .trade-dialog__cancel-button:disabled {
-    background-color: var(--color-surface-lite) !important;
-    color: var(--color-text-secondary) !important;
-    cursor: not-allowed;
-  }
-  
-  /* Refresh Button */
-  .trade-dialog__refresh-button {
-    padding: 5px !important;
-    font-size: 1.75rem !important;
-    color: var(--color-text-primary ) !important;
-    transition: color 0.2s, background-color 0.2s;
-  }
-  
-  .trade-dialog__refresh-button:hover {
-    transform: scale(1.2) !important;
-    box-shadow: 0 0 5px 2px var(--color-primary);
-  }
+/* Dialog Paper Styling */
+.trade-dialog__paper {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden;
+}
 
-    
-  
+/* Dialog Title Styling */
+.trade-dialog__title {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+  border-bottom: 1px solid var(--color-border-subtle) !important;
+  padding: 1rem 1.5rem !important;
+}
+
+/* Dialog Content Styling */
+.trade-dialog__content {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem !important;
+  gap: 1rem !important;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Stock Information Container */
+.trade-dialog__stock-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem !important;
+}
+
+/* Stock Name Styling */
+.trade-dialog__stock-name {
+  font-weight: 700 !important;
+  color: var(--color-text-primary) !important;
+  font-size: 1.2rem !important;
+}
+
+/* Price Styling */
+.trade-dialog__price {
+  color: var(--color-text-secondary) !important;
+  font-weight: bold !important;
+  font-size: 1rem !important;
+}
+
+/* Day Change Styling */
+.trade-dialog__day-change {
+  font-weight: 500 !important;
+  font-size: 0.95rem !important;
+}
+
+.trade-dialog__day-change.positive {
+  color: var(--color-success) !important;
+}
+
+.trade-dialog__day-change.negative {
+  color: var(--color-error) !important;
+}
+
+/* Existing Quantity Styling */
+.trade-dialog__existing-qty {
+  color: var(--color-text-secondary) !important;
+  font-size: 1rem !important;
+}
+
+/* Market Order Label Styling */
+.trade-dialog__market-label {
+  color: var(--color-text-secondary) !important;
+  font-size: 1rem !important;
+  font-weight: bold !important;
+}
+
+.trade-dialog__refresh-button {
+  color: var(--color-text-primary) !important;
+  transition: transform 0.2s ease !important;
+  font-size: 1.75rem !important;
+  padding: 5px !important;
+}
+
+.trade-dialog__refresh-button:hover {
+  transform: scale(1.2) !important;
+  box-shadow: 0 0 5px 2px var(--color-primary);
+}
+
+/* Quantity Input Field Styling */
+.trade-dialog__quantity-field {
+  width: 95% !important;
+  max-width: 600px;
+  background: var(--color-border-subtle);
+  border-radius: 5px !important;
+  overflow: hidden;
+  box-shadow: 0px 4px 10px var(--color-bg) !important;
+}
+
+.trade-dialog__quantity-field .MuiOutlinedInput-root {
+  border-radius: 5px !important;
+  padding-left: 0.5rem;
+}
+
+.trade-dialog__quantity-field .MuiOutlinedInput-notchedOutline {
+  border: none !important;
+}
+
+.trade-dialog__quantity-field:hover .MuiOutlinedInput-notchedOutline {
+  border: none !important;
+}
+
+.trade-dialog__quantity-field:focus-within {
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+.trade-dialog__quantity-field .MuiOutlinedInput-input {
+  color: var(--color-text-primary) !important;
+  font-size: 1rem !important;
+  padding: 0.75rem 0 !important;
+}
+
+.trade-dialog__quantity-field .MuiInputAdornment-root svg {
+  color: var(--color-text-secondary) !important;
+  font-size: 1.25rem !important;
+}
+
+/* Transaction Value Box Styling */
+.trade-dialog__txn-box {
+  background-color: var(--color-surface-lite);
+  padding: 1rem !important;
+  border-radius: 10px !important;
+  color: var(--color-text-secondary) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+.trade-dialog__txn-box .txn-row {
+  margin: 0.4rem 0 !important;
+  font-size: 0.95rem !important;
+}
+
+/* Dialog Actions Styling */
+.trade-dialog__actions {
+  border-top: 1px solid var(--color-border-subtle) !important;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 1rem 1.5rem !important;
+  gap: 0.75rem;
+}
+
+/* Buttons Container */
+.trade-dialog__buttons-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+/* Buy and Sell Buttons Styling */
+.trade-dialog__action-button {
+  flex: 1;
+  padding: 0.5rem 0 !important;
+  border-radius: 8px !important;
+  transition: transform 0.2s, background-color 0.2s;
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+  text-transform: uppercase;
+  font-size: 0.95rem !important;
+}
+
+.buy-button {
+  background-color: var(--color-success) !important;
+}
+
+.sell-button {
+  background-color: var(--color-error) !important;
+}
+
+.trade-dialog__action-button:disabled {
+  background-color: var(--color-border-subtle) !important;
+  color: var(--color-text-secondary) !important;
+  cursor: not-allowed;
+}
+
+.trade-dialog__action-button:not(:disabled):hover {
+  transform: scale(1.02);
+  opacity: 0.9;
+}
+
+/* Cancel Button Styling */
+.trade-dialog__cancel-button {
+  background-color: var(--color-primary) !important;
+  color: var(--color-text-primary) !important;
+  padding: 0.5rem !important;
+  border-radius: 8px !important;
+  transition: transform 0.2s, background-color 0.2s !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  font-size: 0.95rem !important;
+  width: 100%;
+  border: 2px solid var(--color-primary) !important;
+}
+
+.trade-dialog__cancel-button:hover {
+  transform: scale(1.02);
+  background-color: var(--color-secondary) !important; /* Adjust as per your theme */
+  border-color: var(--color-secondary) !important;
+}
+
+.trade-dialog__cancel-button:disabled {
+  background-color: var(--color-border-subtle) !important;
+  color: var(--color-text-secondary) !important;
+  cursor: not-allowed;
+}
