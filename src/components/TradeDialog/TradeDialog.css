@@ -189,13 +189,13 @@
   
   /* Refresh Button */
   .trade-dialog__refresh-button {
-    /* padding: 0 !important; */
+    padding: 5px !important;
+    font-size: 1.75rem !important;
     color: var(--color-text-primary ) !important;
     transition: color 0.2s, background-color 0.2s;
   }
   
   .trade-dialog__refresh-button:hover {
-    /* padding: 0 !important; */
     transform: scale(1.2) !important;
     box-shadow: 0 0 5px 2px var(--color-primary);
   }

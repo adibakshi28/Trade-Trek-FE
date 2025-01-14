@@ -19,7 +19,7 @@ import {
   getUserFunds, 
   getUserPortfolioHistory 
 } from '../../api/userApi';
-import { getStockHistorical } from '../../api/stockApi'; // you have to create or have it
+import { getStockHistorical } from '../../api/stockApi';
 
 import './Dashboard.css';
 
@@ -34,7 +34,7 @@ export default function Dashboard() {
   const [funds, setFunds] = useState(0);
   const [portfolioHistory, setPortfolioHistory] = useState(null);
 
-  // Derived
+  // Derived states
   const [positions, setPositions] = useState([]);
   const [portfolioMetrics, setPortfolioMetrics] = useState({
     totalInvestment: 0,
@@ -44,26 +44,31 @@ export default function Dashboard() {
     totalPortfolioValue: 0,
   });
 
-  // For showing a stock plot
+  // For showing a STOCK plot
   const [selectedStockSymbol, setSelectedStockSymbol] = useState(null);
   const [selectedStockPlotData, setSelectedStockPlotData] = useState(null);
 
+  // For showing a PORTFOLIO metric line
+  const [selectedMetricKey, setSelectedMetricKey] = useState(null);
+
+  // 1) If user not authenticated => go login
   useEffect(() => {
     if (!isAuthLoading && !accessToken) {
       navigate('/login');
     }
   }, [accessToken, isAuthLoading, navigate]);
 
-  // Subscribe & fetch data
+  // 2) Subscribe to websockets & fetch data on mount
   useEffect(() => {
     sendMessage({ type: 'subscribe_portfolio_watchlist' });
     refreshPortfolio();
+
     return () => {
       sendMessage({ type: 'unsubscribe_all' });
     };
   }, [sendMessage]);
 
-  // Reusable function to fetch portfolio, funds, history
+  // 3) Reusable function to fetch portfolio/funds/history
   const refreshPortfolio = async () => {
     await Promise.all([
       fetchPortfolio(),
@@ -72,7 +77,6 @@ export default function Dashboard() {
     ]);
   };
 
-  // 1) get portfolio
   const fetchPortfolio = async () => {
     try {
       const data = await getUserPortfolio();
@@ -82,7 +86,6 @@ export default function Dashboard() {
     }
   };
 
-  // 2) get funds
   const fetchFunds = async () => {
     try {
       const data = await getUserFunds();
@@ -92,7 +95,6 @@ export default function Dashboard() {
     }
   };
 
-  // 3) get portfolio history
   const fetchPortfolioHistory = async () => {
     try {
       const data = await getUserPortfolioHistory();
@@ -102,11 +104,11 @@ export default function Dashboard() {
     }
   };
 
-  // Merge real-time LTP => P&L
+  // 4) Merge real-time price => portfolio positions => compute P&L
   useEffect(() => {
     const merged = portfolioRaw.map((pos) => {
       const symbol = pos.stock_ticker.toUpperCase();
-      const wsData = prices[symbol]; // { ltp, day_change } or undefined
+      const wsData = prices[symbol]; // e.g. { ltp, day_change }
       const ltp = wsData ? Number(wsData.ltp) : pos.execution_price;
 
       const qty = pos.quantity || 0;
@@ -117,7 +119,8 @@ export default function Dashboard() {
       if (direction === 'LONG') {
         pnl = (ltp - avgCost) * qty;
       } else {
-        pnl = (avgCost - ltp) * qty; // SHORT
+        // SHORT
+        pnl = (avgCost - ltp) * qty;
       }
       const curValue = ltp * qty;
 
@@ -130,7 +133,7 @@ export default function Dashboard() {
         pnl,
         curValue,
         netChg: netChgPct,
-        dayChange: 0, 
+        dayChange: 0,
       };
     });
 
@@ -139,7 +142,7 @@ export default function Dashboard() {
     // Summaries
     let totalInv = 0;
     let currVal = 0;
-    let dayProfit = 0;
+    let dayProfit = 0; 
     let unrlzdPnL = 0;
 
     merged.forEach((m) => {
@@ -159,11 +162,11 @@ export default function Dashboard() {
     });
   }, [portfolioRaw, prices, funds]);
 
-  // 4) Show stock plot
-  // fetch /stock/historical for last 3 months, pass data to Plot
+  // 5) Show a single STOCK plot (3 months history)
   const handleShowPlot = async (ticker) => {
     try {
       setSelectedStockSymbol(ticker.toUpperCase());
+      setSelectedMetricKey(null); // hide any portfolio metric
       // Build 3-month date range
       const endDate = new Date();
       const startDate = new Date();
@@ -182,8 +185,6 @@ export default function Dashboard() {
 
       // resolution=1day
       const histData = await getStockHistorical(ticker, startDateStr, endDateStr, '1day');
-
-      // histData might be an array of candle data: { datetime, open, high, low, close, volume }
       setSelectedStockPlotData(histData);
     } catch (err) {
       console.error('Error fetching stock historical:', err);
@@ -191,9 +192,19 @@ export default function Dashboard() {
     }
   };
 
+  // 6) Show a single PORTFOLIO metric line
+  const handleShowMetricPlot = (metricKey) => {
+    // Clear out any selected stock
+    setSelectedStockSymbol(null);
+    setSelectedStockPlotData(null);
+    // Store the portfolio metric we want to show
+    setSelectedMetricKey(metricKey);
+  };
+
   return (
     <Box className="dashboard-container">
       <Box className="dashboard-watchlist">
+        {/* Watchlist can open a stock plot */}
         <Watchlist
           refreshPortfolio={refreshPortfolio}
           onShowPlot={handleShowPlot}
@@ -203,14 +214,24 @@ export default function Dashboard() {
       <Box className="dashboard-main">
         <Box className="dashboard-top-row">
           <Box className="dashboard-plot">
-            {/* If we have selectedStockPlotData => show Plot for that stock */}
+            {/* Priority 1: If we have a selected stock + data => show STOCK plot */}
             {selectedStockSymbol && selectedStockPlotData ? (
               <Plot
                 type="STOCK"
                 stock_name={selectedStockSymbol}
                 price_data={selectedStockPlotData}
               />
-            ) : portfolioHistory ? (
+            ) : 
+            // Priority 2: If we have a selected portfolio metric => show that line
+            selectedMetricKey && portfolioHistory ? (
+              <Plot
+                type="PORTFOLIO"
+                portfolio_data={portfolioHistory}
+                plot_line={selectedMetricKey} // pass to Plot
+              />
+            ) : 
+            // Otherwise default to the entire portfolio or loading...
+            portfolioHistory ? (
               <Plot type="PORTFOLIO" portfolio_data={portfolioHistory} />
             ) : (
               <p style={{ color: 'white' }}>Loading Portfolio Overview...</p>
@@ -218,7 +239,12 @@ export default function Dashboard() {
           </Box>
 
           <Box className="dashboard-portfolio-metrics">
-            <PortfolioMetrics metrics={portfolioMetrics} funds={funds} />
+            <PortfolioMetrics
+              metrics={portfolioMetrics}
+              funds={funds}
+              // Pass a callback for metric plotting
+              onShowMetricPlot={handleShowMetricPlot}
+            />
           </Box>
         </Box>
 

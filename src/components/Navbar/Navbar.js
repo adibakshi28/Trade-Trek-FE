@@ -128,7 +128,7 @@ function Navbar() {
                   color="custom" /* Ensure 'custom' is defined in the theme or use a predefined color */
                   className="custom-badge"
                 >
-                  <NotificationsNoneIcon />
+                  <NotificationsNoneIcon fontSize="custom" />
                 </Badge>
               </IconButton>
 

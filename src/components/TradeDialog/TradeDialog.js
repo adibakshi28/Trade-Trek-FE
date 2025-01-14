@@ -191,7 +191,7 @@ function TradeDialog({
       PaperProps={{
         style: {
           width: '400px',
-          height: '475px',
+          height: '500px',
           backgroundColor: 'var(--color-surface)',
           color: 'var(--color-text-primary)',
           boxShadow: '0 0 5px 1px var(--color-text-secondary)',
@@ -254,7 +254,7 @@ function TradeDialog({
             onClick={handleRefreshValue}
             className="trade-dialog__refresh-button"
           >
-            <RefreshIcon fontSize="small" />
+            <RefreshIcon fontSize="custom" />
           </IconButton>
         </Box>
 

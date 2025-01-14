@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import './WatchlistItem.css';
-import { Box, Typography, IconButton, Button } from '@mui/material';
+import { Box, Typography, IconButton, Button, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import TimelineIcon from '@mui/icons-material/Timeline'; // Graph icon
@@ -76,23 +76,27 @@ function WatchlistItem({
       {/* Action Buttons (Visible on Hover) */}
       <Box className="watchlist-item__actions">
         {/* Graph/Plot icon */}
-        <IconButton
-          aria-label={`plot ${symbol}`}
-          className="watchlist-item__plot-button"
-          onClick={handlePlotClick}
-        >
-          <TimelineIcon fontSize="custom" />
-        </IconButton>
+        <Tooltip title={"Plot instrument price and volume"} placement="top">
+          <IconButton
+              aria-label={`plot ${symbol}`}
+              className="watchlist-item__plot-button"
+              onClick={handlePlotClick}
+            >
+              <TimelineIcon fontSize="custom" />
+            </IconButton>
+        </Tooltip>
 
         {/* Dustbin (delete) */}
-        <IconButton
-          aria-label={`delete ${symbol}`}
-          className="watchlist-item__delete-button"
-          onClick={handleDeleteClick}
-          disabled={isDeleting}
-        >
-          <DeleteIcon fontSize="custom" />
-        </IconButton>
+        <Tooltip title={"Remove instrument from watchlist"} placement="top">
+          <IconButton
+            aria-label={`delete ${symbol}`}
+            className="watchlist-item__delete-button"
+            onClick={handleDeleteClick}
+            disabled={isDeleting}
+          >
+            <DeleteIcon fontSize="custom" />
+          </IconButton>
+        </Tooltip>
 
         {/* Trade button */}
         <Button

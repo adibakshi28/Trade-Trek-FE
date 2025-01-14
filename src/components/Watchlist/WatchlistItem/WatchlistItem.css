@@ -108,7 +108,7 @@
   color: var(--color-text-primary) !important;
   transition: transform 0.2s ease !important;
   font-size: 1.75rem !important;
-  padding: 0 !important;
+  padding: 5px !important;
 }
 
 .watchlist-item__delete-button:hover {
@@ -120,7 +120,7 @@
   color: var(--color-text-primary) !important;
   transition: transform 0.2s ease !important;
   font-size: 1.75rem !important;
-  padding: 0 !important;
+  padding: 5px !important;
 }
 
 .watchlist-item__plot-button:hover {

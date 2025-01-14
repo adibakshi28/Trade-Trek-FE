@@ -107,17 +107,19 @@
 .logged-in-section {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 25px;
 }
 
 /* Notifications Icon Button */
 .notifications-icon {
   color: var(--color-text-primary) !important;
+  padding: 5px !important;
+  font-size: 1.75rem !important;
 }
 
 /* Notifications Icon Hover */
 .notifications-icon:hover {
-  color: var(--color-text-secondary);
+  color: var(--color-text-secondary) !important;
   transform: scale(1.2); /* Slightly larger scale on hover */
   box-shadow: 0 0 15px 2px var(--color-primary);
 }

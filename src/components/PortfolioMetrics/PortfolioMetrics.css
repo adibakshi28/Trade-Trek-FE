@@ -21,9 +21,9 @@
   align-items: center !important;
   width: 90% !important;
   transition: transform 0.3s ease;
+  position: relative;
 }
 
-/* On hover, make the metric bigger */
 .metric-item:hover {
   transform: scale(1.05);
 }
@@ -48,21 +48,18 @@
 
 /* Text Colors for Positive or Negative */
 .text-success {
-  color: var(--color-success) !important; /* Green for positive values */
-  transition: color 0.5s ease; /* Smooth transition */
+  color: var(--color-success) !important;
+  transition: color 0.5s ease;
 }
-
 .text-error {
-  color: var(--color-error) !important; /* Red for negative values */
-  transition: color 0.5s ease; /* Smooth transition */
+  color: var(--color-error) !important;
+  transition: color 0.5s ease;
 }
 
-/* Default icon color = text color */
+/* Icons */
 .icon-default {
   color: var(--color-text-primary) !important;
 }
-
-/* Icons that show up/down for positive/negative */
 .icon-positive {
   color: var(--color-success) !important;
 }
@@ -75,16 +72,27 @@
   display: inline-block;
   transition: transform 0.3s ease;
 }
-
 .metric-value .countup-start {
   transform: rotateX(90deg);
 }
-
 .metric-value .countup-end {
   transform: rotateX(0deg);
 }
 
-/* Responsive Design */
+/* The new graph icon on hover */
+.metric-plot-button {
+  color: var(--color-text-primary) !important;
+  transition: transform 0.2s ease !important;
+  font-size: 1.75rem !important;
+  padding: 5px !important;
+  margin-right: 30px !important;
+}
+.metric-plot-button:hover {
+  transform: scale(1.2) !important;
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .portfolio-metrics-card {
     width: 100% !important;
@@ -92,16 +100,13 @@
     margin-left: 0 !important;
     padding: 15px !important;
   }
-
   .metric-item {
     width: 100% !important;
     padding: 5px 0 !important;
   }
-
   .metric-divider {
     width: 95% !important;
   }
-
   .metric-name,
   .metric-value,
   .font-large,
