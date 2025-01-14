@@ -4,37 +4,46 @@
 .portfolio-card {
   width: 100% !important;
   height: 100% !important;
-  overflow-y: auto !important;
+  overflow: hidden !important; /* Changed to hidden to allow TableContainer to handle scrolling */
   border-radius: 10px !important;
   background-color: var(--color-surface) !important;
   box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
-  padding: 5px !important;
+  padding: 10px !important; /* Increased padding for better spacing */
   box-sizing: border-box !important;
-  margin: 5px !important; /* Consistent margin */
+  margin: 10px !important; /* Consistent margin */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Table Container Styling */
+.portfolio-table {
+  flex: 1; /* Allows the table to take up remaining space */
+  max-height: 400px; /* Adjust based on design needs */
+  overflow: auto; /* Enables scrolling within the table */
 }
 
 /* Table Styling */
-.portfolio-table {
+.portfolio-table table {
   width: 100% !important;
   border-collapse: collapse !important;
 }
 
 /* Sticky Header Styling */
 .portfolio-header {
-  font-size: 0.95rem !important;
+  font-size: 1rem !important;
   font-weight: bold !important;
   color: var(--color-text-primary) !important;
-  background-color: var(--color-bg-secondary) !important;
+  background-color: var(--color-surface) !important;
   text-align: center !important;
-  padding: 0.5rem !important;
+  padding: 0.75rem !important;
   position: sticky !important;
   top: 0 !important;
-  z-index: 2 !important; 
+  z-index: 3 !important; /* Higher z-index to stay above other content */
 }
 
 /* Portfolio Ticker Styling */
 .portfolio-ticker {
-  font-size: 0.95rem !important;
+  font-size: 1rem !important;
   color: var(--color-text-primary) !important;
   font-weight: bold !important;
 }
@@ -45,31 +54,58 @@
   color: var(--color-text-secondary) !important;
 }
 
-/* Portfolio Text Styling */
-.portfolio-text {
-  font-size: 0.875rem !important;
-  color: var(--color-text-primary) !important;
+/* Portfolio Cell Styling */
+.portfolio-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 /* Portfolio Value Styling */
 .portfolio-value {
-  font-size: 0.875rem !important;
-  font-weight: bold !important;
+  font-size: 0.95rem !important;
+  color: var(--color-text-primary) !important;
 }
 
 /* Positive and Negative Value Styling */
 .portfolio-positive {
+  font-size: 0.95rem !important;
   color: var(--color-success) !important;
 }
 
 .portfolio-negative {
+  font-size: 0.95rem !important;
   color: var(--color-error) !important;
 }
-
 
 /* Hover Effect */
 .portfolio-row:hover {
   background-color: var(--color-border-subtle) !important;
+}
+
+/* TableCell Styling */
+.portfolio-table .MuiTableCell-root {
+  padding: 0.75rem !important;
+  border-bottom: 1px solid var(--color-border-subtle) !important;
+  /* Ensuring text doesn't overflow */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Style for the active sortable header text */
+.portfolio-table .MuiTableSortLabel-root {
+  color: var(--color-text-primary) !important;
+}
+
+/* Style for the arrow icon in the active sortable header */
+.portfolio-table .MuiTableSortLabel-icon {
+  color: var(--color-text-primary) !important;
+}
+
+/* Hover effect for all sortable headers */
+.portfolio-table .MuiTableSortLabel-root:hover {
+  color: var(--color-text-secondary) !important;
 }
 
 /* Responsive Design */
@@ -80,7 +116,8 @@
   }
 
   .portfolio-header {
-    font-size: 0.75rem !important;
+    font-size: 0.85rem !important;
+    padding: 0.5rem !important;
   }
 
   .portfolio-ticker {
@@ -91,8 +128,11 @@
     font-size: 0.75rem !important;
   }
 
-  .portfolio-text,
   .portfolio-value {
     font-size: 0.75rem !important;
+  }
+
+  .portfolio-table {
+    max-height: 300px; /* Reduced height for smaller screens */
   }
 }

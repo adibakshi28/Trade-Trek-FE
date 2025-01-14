@@ -17,9 +17,9 @@ body, html {
 
 .dashboard-watchlist {
   width: 25vw !important; /* 25% of viewport width */
-  height: 97.5% !important;
-  margin-top: 4.5vh !important; 
-  margin-left: 8px !important; /* Margin between Watchlist and DashboardMain */
+  height: 96.5% !important;
+  margin-top: 5vh !important; 
+  margin-left: 12px !important; /* Margin between Watchlist and DashboardMain */
   box-sizing: border-box;
 }
 
