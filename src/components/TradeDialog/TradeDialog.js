@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  Box,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -10,41 +9,45 @@ import {
   Button,
   TextField,
   Typography,
-  CircularProgress,
+  IconButton,
+  Box,
+  Skeleton,
+  InputAdornment
 } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import NumbersIcon from '@mui/icons-material/Numbers';
 
 import './TradeDialog.css';
 
-import { useWebSocket } from '../../context/WebSocketContext'; 
+import { useWebSocket } from '../../context/WebSocketContext';
 import { getUserPortfolio } from '../../api/userApi';
 import { placeStockTransaction, getTransactionValue } from '../../api/stockApi';
 
 function TradeDialog({
   open,
   onClose,
-  symbol,             // the ticker symbol
-  refreshPortfolio,   // callback from parent to re-fetch portfolio on success
-  showSnackbar,       // callback from parent to show success/error
+  symbol,
+  refreshPortfolio,
+  showSnackbar,
 }) {
   // Real-time data from WebSocket
   const { prices } = useWebSocket();
 
   // Local states
-  const [name, setName] = useState('');           // Stock name if needed
-  const [localPrice, setLocalPrice] = useState(0); // Real-time price
+  const [name, setName] = useState(''); // If you have a way to fetch stock name, do so
+  const [localPrice, setLocalPrice] = useState(0);
   const [localDayChange, setLocalDayChange] = useState(0);
   const [existingQty, setExistingQty] = useState(0);
 
   const [quantity, setQuantity] = useState('');
-  const [txnValueResult, setTxnValueResult] = useState(null); // from /stock/transaction/value
+  const [txnValueResult, setTxnValueResult] = useState(null);
   const [isLoadingValue, setIsLoadingValue] = useState(false);
   const [isPlacingTrade, setIsPlacingTrade] = useState(false);
 
-  // 1) On open, reset everything and fetch existing quantity
+  // On open, reset everything and fetch existing qty
   useEffect(() => {
     if (!open) return;
-
-    // Reset fields
+    // Reset
     setName('');
     setLocalPrice(0);
     setLocalDayChange(0);
@@ -52,50 +55,56 @@ function TradeDialog({
     setExistingQty(0);
     setTxnValueResult(null);
 
-    // Attempt to get existing quantity
     fetchExistingQty();
   }, [open, symbol]);
 
-  // 2) Also listen to changes in `prices[symbol]` from WebSocket for real-time price
+  // Listen for real-time price updates from WebSocket
   useEffect(() => {
     if (!open || !symbol) return;
-
     const symbolUpper = symbol.toUpperCase();
-    const wsData = prices[symbolUpper]; // e.g. { ltp, day_change }
+    const wsData = prices[symbolUpper];
     if (wsData) {
       setLocalPrice(wsData.ltp);
       setLocalDayChange(wsData.day_change);
     }
   }, [open, symbol, prices]);
 
-  // If quantity changes or real-time price changes => re-check transaction value
+  // When quantity changes, fetch transaction value
   useEffect(() => {
-    if (open && quantity && Number(quantity) > 0 && localPrice > 0) {
+    if (open && quantity && parseFloat(quantity) > 0 && localPrice > 0) {
       fetchTransactionValue();
     } else {
       setTxnValueResult(null);
     }
-  }, [quantity, localPrice]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quantity]);
 
-  // Fetch the user’s existing quantity for this symbol from portfolio
   const fetchExistingQty = async () => {
     try {
       const portfolio = await getUserPortfolio();
-      const position = portfolio.find(
+      const pos = portfolio.find(
         (p) => p.stock_ticker?.toUpperCase() === symbol?.toUpperCase()
       );
-      setExistingQty(position ? position.quantity : 0);
+      setExistingQty(pos ? pos.quantity : 0);
     } catch (err) {
       console.error('Error fetching existing qty:', err);
     }
   };
 
-  // Query /stock/transaction/value?...
+  // Manually re-fetch transaction value if user hits Refresh
+  const handleRefreshValue = async () => {
+    fetchTransactionValue();
+  };
+
+  // GET /stock/transaction/value
   const fetchTransactionValue = async () => {
+    if (!quantity || Number(quantity) <= 0) {
+      setTxnValueResult(null);
+      return;
+    }
+    setIsLoadingValue(true);
     try {
-      setIsLoadingValue(true);
       const resp = await getTransactionValue(symbol, quantity, localPrice);
-      // resp => { transaction_fee, required_funds_buy, required_funds_sell, buy_trade_possible, sell_trade_possible, ... }
       setTxnValueResult(resp);
     } catch (err) {
       console.error('Error fetching transaction value:', err);
@@ -105,17 +114,18 @@ function TradeDialog({
     }
   };
 
-  // Called if user changes the quantity field
   const handleQuantityChange = (e) => {
-    setQuantity(e.target.value);
+    // Only allow digits & decimal points:
+    const val = e.target.value;
+    if (/^[0-9]*\.?[0-9]*$/.test(val)) {
+      setQuantity(val);
+    }
   };
 
-  // Cancel trade
   const handleCancel = () => {
     onClose();
   };
 
-  // Place a BUY trade
   const handleBuy = async () => {
     if (!quantity) return;
     setIsPlacingTrade(true);
@@ -126,21 +136,23 @@ function TradeDialog({
         quantity,
       });
       if (resp.success) {
-        showSnackbar(`BUY success: Bought ${resp.quantity} of ${resp.stockTicker}`, 'success');
-        await refreshPortfolio(); 
+        showSnackbar(
+          `BUY success: Bought ${resp.quantity} of ${resp.stockTicker} at $${resp.executionPrice}`,
+          'success'
+        );
+        await refreshPortfolio();
         onClose();
       } else {
-        showSnackbar('Buy transaction failed', 'error');
+        showSnackbar('Buy transaction failed.', 'error');
       }
     } catch (err) {
       console.error('Error placing BUY transaction:', err);
-      showSnackbar('Server Error. Try again', 'error');
+      showSnackbar('Server Error. Try again.', 'error');
     } finally {
       setIsPlacingTrade(false);
     }
   };
 
-  // Place a SELL trade
   const handleSell = async () => {
     if (!quantity) return;
     setIsPlacingTrade(true);
@@ -151,21 +163,23 @@ function TradeDialog({
         quantity,
       });
       if (resp.success) {
-        showSnackbar(`SELL success: Sold ${resp.quantity} of ${resp.stockTicker}`, 'success');
+        showSnackbar(
+          `SELL success: Sold ${resp.quantity} of ${resp.stockTicker} at $${resp.executionPrice}`,
+          'success'
+        );
         await refreshPortfolio();
         onClose();
       } else {
-        showSnackbar('Sell transaction failed', 'error');
+        showSnackbar('Sell transaction failed.', 'error');
       }
     } catch (err) {
       console.error('Error placing SELL transaction:', err);
-      showSnackbar('Server Error. Try again', 'error');
+      showSnackbar('Server Error. Try again.', 'error');
     } finally {
       setIsPlacingTrade(false);
     }
   };
 
-  // Are BUY/SELL possible from the transaction-value result?
   const isBuyPossible = txnValueResult?.buy_trade_possible;
   const isSellPossible = txnValueResult?.sell_trade_possible;
 
@@ -173,27 +187,37 @@ function TradeDialog({
     <Dialog
       open={open}
       onClose={handleCancel}
-      classes={{ paper: 'trade-dialog__paper' }} // tie to CSS
+      classes={{ paper: 'trade-dialog__paper' }}
       PaperProps={{
         style: {
           width: '400px',
-          height: '520px',
+          height: '475px',
           backgroundColor: 'var(--color-surface)',
           color: 'var(--color-text-primary)',
-          overflow: 'hidden', // fixed size
+          boxShadow: '0 0 5px 1px var(--color-text-secondary)',
+          overflow: 'hidden',
+          animation: 'fadeIn 0.3s ease-in-out',
+        },
+      }}
+      TransitionProps={{
+        // Adding fade-in animation
+        onEntering: (node) => {
+          node.style.opacity = 0;
+          setTimeout(() => {
+            node.style.transition = 'opacity 0.3s';
+            node.style.opacity = 1;
+          }, 10);
         },
       }}
     >
       <DialogTitle className="trade-dialog__title">
-        Trade <span>{symbol}</span>
+        Trade {symbol.toUpperCase()}
       </DialogTitle>
 
       <DialogContent className="trade-dialog__content">
         <Typography variant="body1" className="trade-dialog__stock-name">
           {name || symbol}
         </Typography>
-
-        {/* Real-time price & dayChange */}
         <Typography variant="body2" className="trade-dialog__price">
           Price: ${localPrice?.toFixed(2)}
         </Typography>
@@ -213,78 +237,96 @@ function TradeDialog({
           Existing Qty: {existingQty}
         </Typography>
 
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginY: '0.5rem',
+          }}
+        >
+          <Typography variant="body2" className="trade-dialog__market-label">
+            Market Order
+          </Typography>
+          {/* Refresh icon to recalc the transaction value manually */}
+          <IconButton
+            size="small"
+            onClick={handleRefreshValue}
+            className="trade-dialog__refresh-button"
+          >
+            <RefreshIcon fontSize="small" />
+          </IconButton>
+        </Box>
+
         <TextField
-          label="Quantity"
-          type="number"
           variant="outlined"
-          fullWidth
-          size="small"
-          sx={{ marginTop: '0.8rem' }}
+          placeholder="Quantity"
           value={quantity}
           onChange={handleQuantityChange}
           className="trade-dialog__quantity-field"
+          fullWidth
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <NumbersIcon />
+              </InputAdornment>
+            ),
+          }}
         />
 
         {isLoadingValue && (
-          <Box sx={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center' }}>
-            <CircularProgress size={20} sx={{ marginRight: '0.5rem' }} />
-            <Typography variant="body2">Calculating trade...</Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '1rem',
+            }}
+          >
+            <Skeleton variant="text" width="100%" height={20} />
           </Box>
         )}
 
         {txnValueResult && !isLoadingValue && (
           <Box className="trade-dialog__txn-box">
-            <Typography variant="body2">
+            <Typography variant="body2" className="txn-row">
               Transaction Fee: ${txnValueResult.transaction_fee?.toFixed(2)}
             </Typography>
-            <Typography variant="body2">
-              Required Funds (Buy): ${txnValueResult.required_funds_buy?.toFixed(2)}
+            <Typography variant="body2" className="txn-row">
+              Required Funds (Buy): ${txnValueResult.required_funds_buy?.toFixed(
+                2
+              )}
             </Typography>
-            <Typography variant="body2">
-              Required Funds (Sell): ${txnValueResult.required_funds_sell?.toFixed(2)}
+            <Typography variant="body2" className="txn-row">
+              Required Funds (Sell): ${txnValueResult.required_funds_sell?.toFixed(
+                2
+              )}
             </Typography>
           </Box>
         )}
       </DialogContent>
 
       <DialogActions className="trade-dialog__actions">
-        <Button onClick={handleCancel} color="inherit">
+        <Box className="trade-dialog__buttons-container">
+          <Button
+            onClick={handleBuy}
+            disabled={!quantity || isPlacingTrade || !isBuyPossible}
+            className="trade-dialog__action-button buy-button"
+          >
+            Buy
+          </Button>
+          <Button
+            onClick={handleSell}
+            disabled={!quantity || isPlacingTrade || !isSellPossible}
+            className="trade-dialog__action-button sell-button"
+          >
+            Sell
+          </Button>
+        </Box>
+        <Button
+          onClick={handleCancel}
+          className="trade-dialog__cancel-button"
+        >
           Cancel
-        </Button>
-        <Button
-          onClick={handleSell}
-          disabled={
-            !quantity ||
-            isPlacingTrade ||
-            !isSellPossible
-          }
-          sx={{
-            backgroundColor: 'var(--color-error)',
-            color: 'var(--color-text-primary)',
-            marginRight: '0.5rem',
-            ':hover': {
-              backgroundColor: '#cc4f4f',
-            },
-          }}
-        >
-          Sell
-        </Button>
-        <Button
-          onClick={handleBuy}
-          disabled={
-            !quantity ||
-            isPlacingTrade ||
-            !isBuyPossible
-          }
-          sx={{
-            backgroundColor: 'var(--color-success)',
-            color: 'var(--color-text-primary)',
-            ':hover': {
-              backgroundColor: '#4cad7c',
-            },
-          }}
-        >
-          Buy
         </Button>
       </DialogActions>
     </Dialog>
