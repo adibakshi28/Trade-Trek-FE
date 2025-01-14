@@ -34,7 +34,7 @@
 }
 
 .font-large {
-  font-size: 1.1rem !important;
+  font-size: 1.075rem !important;
   font-weight: bold !important;
   color: var(--color-text-primary) !important;
 }
