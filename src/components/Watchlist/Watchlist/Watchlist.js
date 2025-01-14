@@ -28,11 +28,17 @@ import {
 import { useUniverse } from '../../../context/UniverseContext';
 import { useWebSocket } from '../../../context/WebSocketContext';
 
-function Watchlist({ refreshPortfolio }) {
+function Watchlist({ refreshPortfolio, onShowPlot }) {
+  // onShowPlot is a callback that fetches historical data in Dashboard
+
   const [stocks, setStocks] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
+
+  // For trade dialog
+  const [isTradeOpen, setIsTradeOpen] = useState(false);
+  const [tradeData, setTradeData] = useState(null);
 
   // Snackbar
   const [snackbar, setSnackbar] = useState({
@@ -41,14 +47,9 @@ function Watchlist({ refreshPortfolio }) {
     severity: 'info',
   });
 
-  // For trade dialog
-  const [isTradeOpen, setIsTradeOpen] = useState(false);
-  const [tradeData, setTradeData] = useState(null);
-
   const { universeData, fetchUniverseData } = useUniverse();
   const { prices, sendMessage } = useWebSocket();
 
-  // 1) fetch watchlist
   useEffect(() => {
     fetchWatchlist();
     fetchUniverseData();
@@ -74,38 +75,38 @@ function Watchlist({ refreshPortfolio }) {
     }
   };
 
-  // 2) real-time updates
+  // Real-time updates
   useEffect(() => {
-    setStocks((prevStocks) =>
-      prevStocks.map((stock) => {
-        const symbolUpper = stock.symbol.toUpperCase();
-        const wsData = prices[symbolUpper]; // e.g. { ltp, day_change }
+    setStocks((prev) =>
+      prev.map((s) => {
+        const symbolUpper = s.symbol.toUpperCase();
+        const wsData = prices[symbolUpper];
         if (wsData) {
           const newPrice = Number(wsData.ltp);
           const newChange = Number(wsData.day_change);
 
-          let direction = stock.priceDirection;
-          if (newPrice > stock.price) direction = 'up';
-          else if (newPrice < stock.price) direction = 'down';
+          let direction = s.priceDirection;
+          if (newPrice > s.price) direction = 'up';
+          else if (newPrice < s.price) direction = 'down';
 
           return {
-            ...stock,
+            ...s,
             price: newPrice,
             change: newChange,
             priceDirection: direction,
           };
         }
-        return stock;
+        return s;
       })
     );
   }, [prices]);
 
   // Searching
-  const handleSearchChange = (value) => {
-    setSearchQuery(value);
+  const handleSearchChange = (val) => {
+    setSearchQuery(val);
   };
 
-  // Add ticker
+  // Add
   const handleAddTicker = async (ticker) => {
     try {
       const resp = await addToUserWatchlist(ticker);
@@ -126,11 +127,11 @@ function Watchlist({ refreshPortfolio }) {
       }
     } catch (error) {
       showSnackbar('Server Error, try again later', 'error');
-      console.error(`Error adding ${ticker}:`, error);
+      console.error('Error adding ticker:', error);
     }
   };
 
-  // Delete ticker
+  // Delete
   const handleDelete = async (symbol) => {
     try {
       const resp = await removeFromUserWatchlist(symbol);
@@ -148,21 +149,26 @@ function Watchlist({ refreshPortfolio }) {
 
   // Trade
   const handleTrade = (symbol) => {
-    // find that stock in watchlist
     const found = stocks.find((s) => s.symbol === symbol);
     if (!found) return;
     setTradeData({
       symbol: found.symbol,
       name: found.name,
-      price: found.price,     // real-time
-      dayChange: found.change // real-time
+      price: found.price,
+      dayChange: found.change,
     });
     setIsTradeOpen(true);
   };
-  
+
+  // Show plot (calls parent's onShowPlot)
+  const handleShowPlot = (symbol) => {
+    if (typeof onShowPlot === 'function') {
+      onShowPlot(symbol);
+    }
+  };
 
   // Filter
-  const handleFilter = (event, newFilter) => {
+  const handleFilter = (e, newFilter) => {
     if (newFilter !== null) setFilter(newFilter);
   };
 
@@ -172,25 +178,24 @@ function Watchlist({ refreshPortfolio }) {
     return true;
   });
 
-  // build search results
+  // Build search results
   const isSearching = Boolean(searchQuery.trim());
   let searchResults = [];
   if (isSearching && universeData) {
     const text = searchQuery.toLowerCase();
     searchResults = universeData
-      .filter((item) => {
-        return (
-          item.stock_ticker.toLowerCase().includes(text) ||
-          item.stock_name.toLowerCase().includes(text)
-        );
-      })
+      .filter((item) =>
+        item.stock_ticker.toLowerCase().includes(text) ||
+        item.stock_name.toLowerCase().includes(text)
+      )
       .slice(0, 50);
   }
 
-  // Snackbar helpers
+  // Snackbar
   const showSnackbar = (message, severity = 'info') => {
     setSnackbar({ open: true, message, severity });
   };
+
   const handleCloseSnackbar = (_, reason) => {
     if (reason === 'clickaway') return;
     setSnackbar((prev) => ({ ...prev, open: false }));
@@ -254,6 +259,7 @@ function Watchlist({ refreshPortfolio }) {
                 priceDirection={stock.priceDirection}
                 onDelete={handleDelete}
                 onTrade={handleTrade}
+                onShowPlot={handleShowPlot} // add
               />
             ))
           )}

@@ -14,7 +14,12 @@ import PortfolioMetrics from '../../components/PortfolioMetrics/PortfolioMetrics
 import Plot from '../../components/Plot/Plot';
 
 // APIs
-import { getUserPortfolio, getUserFunds, getUserPortfolioHistory } from '../../api/userApi';
+import { 
+  getUserPortfolio, 
+  getUserFunds, 
+  getUserPortfolioHistory 
+} from '../../api/userApi';
+import { getStockHistorical } from '../../api/stockApi'; // you have to create or have it
 
 import './Dashboard.css';
 
@@ -39,7 +44,10 @@ export default function Dashboard() {
     totalPortfolioValue: 0,
   });
 
-  // On mount, check auth
+  // For showing a stock plot
+  const [selectedStockSymbol, setSelectedStockSymbol] = useState(null);
+  const [selectedStockPlotData, setSelectedStockPlotData] = useState(null);
+
   useEffect(() => {
     if (!isAuthLoading && !accessToken) {
       navigate('/login');
@@ -50,7 +58,6 @@ export default function Dashboard() {
   useEffect(() => {
     sendMessage({ type: 'subscribe_portfolio_watchlist' });
     refreshPortfolio();
-
     return () => {
       sendMessage({ type: 'unsubscribe_all' });
     };
@@ -110,8 +117,7 @@ export default function Dashboard() {
       if (direction === 'LONG') {
         pnl = (ltp - avgCost) * qty;
       } else {
-        // SHORT
-        pnl = (avgCost - ltp) * qty;
+        pnl = (avgCost - ltp) * qty; // SHORT
       }
       const curValue = ltp * qty;
 
@@ -124,48 +130,87 @@ export default function Dashboard() {
         pnl,
         curValue,
         netChg: netChgPct,
-        dayChange: 0, // or from wsData.day_change if you want daily changes
+        dayChange: 0, 
       };
     });
 
     setPositions(merged);
 
     // Summaries
-    let totalInvestment = 0;
-    let currentValue = 0;
+    let totalInv = 0;
+    let currVal = 0;
     let dayProfit = 0;
     let unrlzdPnL = 0;
 
     merged.forEach((m) => {
-      const qty = m.quantity || 0;
-      const cost = m.execution_price * qty;
-      totalInvestment += cost;
-      currentValue += m.curValue;
+      const cost = (m.execution_price || 0) * (m.quantity || 0);
+      totalInv += cost;
+      currVal += m.curValue;
       unrlzdPnL += m.pnl;
-      // dayProfit += ...
     });
 
-    const totalPortfolioValue = currentValue + funds;
+    const totalPortfolioValue = currVal + funds;
     setPortfolioMetrics({
-      totalInvestment,
-      currentValue,
+      totalInvestment: totalInv,
+      currentValue: currVal,
       dayPnL: dayProfit,
       unrealizedPnL: unrlzdPnL,
       totalPortfolioValue,
     });
   }, [portfolioRaw, prices, funds]);
 
+  // 4) Show stock plot
+  // fetch /stock/historical for last 3 months, pass data to Plot
+  const handleShowPlot = async (ticker) => {
+    try {
+      setSelectedStockSymbol(ticker.toUpperCase());
+      // Build 3-month date range
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setMonth(endDate.getMonth() - 3);
+
+      // Format as YYYY-MM-DD
+      const yyyyEnd = endDate.getFullYear();
+      const mmEnd = String(endDate.getMonth() + 1).padStart(2, '0');
+      const ddEnd = String(endDate.getDate()).padStart(2, '0');
+      const endDateStr = `${yyyyEnd}-${mmEnd}-${ddEnd}`;
+
+      const yyyySt = startDate.getFullYear();
+      const mmSt = String(startDate.getMonth() + 1).padStart(2, '0');
+      const ddSt = String(startDate.getDate()).padStart(2, '0');
+      const startDateStr = `${yyyySt}-${mmSt}-${ddSt}`;
+
+      // resolution=1day
+      const histData = await getStockHistorical(ticker, startDateStr, endDateStr, '1day');
+
+      // histData might be an array of candle data: { datetime, open, high, low, close, volume }
+      setSelectedStockPlotData(histData);
+    } catch (err) {
+      console.error('Error fetching stock historical:', err);
+      setSelectedStockPlotData(null);
+    }
+  };
+
   return (
     <Box className="dashboard-container">
       <Box className="dashboard-watchlist">
-        {/* Pass refreshPortfolio so that after a trade, watchlist can refresh */}
-        <Watchlist refreshPortfolio={refreshPortfolio} />
+        <Watchlist
+          refreshPortfolio={refreshPortfolio}
+          onShowPlot={handleShowPlot}
+        />
       </Box>
 
       <Box className="dashboard-main">
         <Box className="dashboard-top-row">
           <Box className="dashboard-plot">
-            {portfolioHistory ? (
+            {/* If we have selectedStockPlotData => show Plot for that stock */}
+            {selectedStockSymbol && selectedStockPlotData ? (
+              <Plot
+                type="STOCK"
+                stock_name={selectedStockSymbol}
+                price_data={selectedStockPlotData}
+              />
+            ) : portfolioHistory ? (
               <Plot type="PORTFOLIO" portfolio_data={portfolioHistory} />
             ) : (
               <p style={{ color: 'white' }}>Loading Portfolio Overview...</p>

@@ -5,31 +5,31 @@ import './WatchlistItem.css';
 import { Box, Typography, IconButton, Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import TimelineIcon from '@mui/icons-material/Timeline'; // Graph icon
 
 function WatchlistItem({
   symbol,
   name,
   price,
   change,
-  priceDirection,  // "up", "down", or "none"
+  priceDirection,
   onDelete,
   onTrade,
+  onShowPlot,    // new
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Day-change color: if change >= 0 => green, else red
+  // Day-change color
   const isDayChangePositive = change >= 0;
 
-  // Price movement color: if priceDirection === 'up' => green, 'down' => red
-  // If 'none', no highlight
+  // Price movement color
   let priceClass = 'watchlist-item__price'; 
   if (priceDirection === 'up') {
-    priceClass += ' price-up'; // define .price-up in CSS
+    priceClass += ' price-up';
   } else if (priceDirection === 'down') {
-    priceClass += ' price-down'; // define .price-down in CSS
+    priceClass += ' price-down';
   }
 
-  // Day-change class
   let changeClass = 'watchlist-item__change';
   changeClass += isDayChangePositive ? ' positive' : ' negative';
 
@@ -42,6 +42,12 @@ function WatchlistItem({
       console.error(err);
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handlePlotClick = () => {
+    if (typeof onShowPlot === 'function') {
+      onShowPlot(symbol);
     }
   };
 
@@ -67,8 +73,18 @@ function WatchlistItem({
         </Typography>
       </Box>
 
-      {/* Action Buttons (Delete/Trade) */}
+      {/* Action Buttons (Visible on Hover) */}
       <Box className="watchlist-item__actions">
+        {/* Graph/Plot icon */}
+        <IconButton
+          aria-label={`plot ${symbol}`}
+          className="watchlist-item__plot-button"
+          onClick={handlePlotClick}
+        >
+          <TimelineIcon fontSize="custom" />
+        </IconButton>
+
+        {/* Dustbin (delete) */}
         <IconButton
           aria-label={`delete ${symbol}`}
           className="watchlist-item__delete-button"
@@ -77,6 +93,8 @@ function WatchlistItem({
         >
           <DeleteIcon fontSize="custom" />
         </IconButton>
+
+        {/* Trade button */}
         <Button
           variant="contained"
           color="primary"

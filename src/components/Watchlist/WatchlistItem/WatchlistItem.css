@@ -116,6 +116,18 @@
   box-shadow: 0 0 5px 2px var(--color-primary);
 }
 
+.watchlist-item__plot-button {
+  color: var(--color-text-primary) !important;
+  transition: transform 0.2s ease !important;
+  font-size: 1.75rem !important;
+  padding: 0 !important;
+}
+
+.watchlist-item__plot-button:hover {
+  transform: scale(1.2) !important;
+  box-shadow: 0 0 5px 2px var(--color-primary);
+}
+
 .watchlist-item__trade-button {
   background-color: var(--color-primary) !important;
   color: var(--color-text-primary) !important;
