@@ -199,7 +199,7 @@ function PortfolioMetrics({ metrics, funds, onShowMetricPlot }) {
               </div>
 
               {/* If we're hovering => show graph icon */}
-              {hoveringKey === metric.key ? (
+              {(hoveringKey === metric.key && metric.key !== "dayPnL" && metric.key !== "totalInvestment") ? (
                 <Tooltip title={`Plot ${metric.label}`} placement="top">
                   <IconButton
                     className="metric-plot-button"

@@ -16,7 +16,8 @@ const Footer = () => {
       {/* Left Side: Copyright */}
       <Box className="footer-section footer-left">
         <Typography variant="body2" className="footer-text">
-          © {new Date().getFullYear()} TradeTrek. All rights reserved.
+          {/* © {new Date().getFullYear()} TradeTrek. All rights reserved. */}
+          {new Date().getFullYear()} TradeTrek
         </Typography>
       </Box>
 
