@@ -24,15 +24,17 @@ function WatchlistItem({
 
   // Price movement color
   let priceClass = 'watchlist-item__price'; 
-  if (priceDirection === 'up') {
-    priceClass += ' price-up';
-  } else if (priceDirection === 'down') {
-    priceClass += ' price-down';
-  }
+  priceClass += isDayChangePositive ? ' positive' : ' negative';
 
   let changeClass = 'watchlist-item__change';
-  changeClass += isDayChangePositive ? ' positive' : ' negative';
-
+  if (priceDirection === 'up') {
+    changeClass += ' positive';
+  } else if (priceDirection === 'down') {
+    changeClass += ' negative';
+  } else{
+    changeClass += '';
+  }
+  
   const handleDeleteClick = async () => {
     if (isDeleting) return;
     setIsDeleting(true);

@@ -72,7 +72,7 @@ function UserPortfolio({ positions }) {
     { id: 'curValue', label: 'Cur. Value', sortable: true },
     { id: 'pnl', label: 'P&L', sortable: true },
     { id: 'netChg', label: 'Net Chg. (%)', sortable: true },
-    { id: 'dayChange', label: 'Day Chg. (%)', sortable: true },
+    { id: 'dayPnL', label: 'Day P&L', sortable: true },
   ];
 
   return (
@@ -128,7 +128,7 @@ function UserPortfolio({ positions }) {
                   </TableCell>
                   <TableCell
                     align="center"
-                    className={pos.curValue >= 0 ? 'portfolio-positive' : 'portfolio-negative'}
+                    className={pos.pnl >= 0 ? 'portfolio-positive' : 'portfolio-negative'}
                   >
                     {pos.curValue.toFixed(2)}
                   </TableCell>
@@ -151,8 +151,8 @@ function UserPortfolio({ positions }) {
                     className={pos.dayChange >= 0 ? 'portfolio-positive' : 'portfolio-negative'}
                   >
                     {pos.dayChange >= 0
-                      ? `+${pos.dayChange.toFixed(2)}%`
-                      : `${pos.dayChange.toFixed(2)}%`}
+                      ? `+${pos.dayChange.toFixed(2)}`
+                      : `${pos.dayChange.toFixed(2)}`}
                   </TableCell>
                 </TableRow>
               );

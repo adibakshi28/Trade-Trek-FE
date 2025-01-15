@@ -32,6 +32,16 @@ export const WebSocketProvider = ({ children }) => {
   // Queue messages if socket is not open
   const messageQueue = useRef([]);
 
+  const sendMessage = useCallback((message) => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify(message));
+      console.log('📤 Sent message:', message);
+    } else {
+      console.warn('⚠️ WebSocket not open. Queuing message:', message);
+      messageQueue.current.push(message);
+    }
+  }, []);
+
   const connectWebSocket = useCallback(() => {
     if (!accessToken) {
       console.warn('⚠️ No access token available. WebSocket not connected.');
@@ -45,6 +55,9 @@ export const WebSocketProvider = ({ children }) => {
       setError(null);
       reconnectAttempts.current = 0;
       console.log('✅ WebSocket Connected');
+
+      // **Send the subscription message upon connection**
+      sendMessage({ type: 'subscribe_portfolio_watchlist' });
 
       // Flush queued messages
       messageQueue.current.forEach((msg) => {
@@ -100,7 +113,7 @@ export const WebSocketProvider = ({ children }) => {
         reconnectAttempts.current += 1;
       }
     };
-  }, [accessToken]);
+  }, [accessToken, sendMessage]);
 
   // Connect WebSocket if we have an accessToken
   useEffect(() => {
@@ -112,6 +125,11 @@ export const WebSocketProvider = ({ children }) => {
 
     // Cleanup
     return () => {
+      // **Send the unsubscription message before closing the WebSocket**
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        sendMessage({ type: 'unsubscribe_all' });
+      }
+
       if (ws.current) {
         ws.current.close(1000, 'Component unmount or logout');
         console.log('🛑 WebSocket Connection Closed');
@@ -120,7 +138,7 @@ export const WebSocketProvider = ({ children }) => {
         clearTimeout(reconnectTimeout.current);
       }
     };
-  }, [accessToken, isAuthLoading, connectWebSocket]);
+  }, [accessToken, isAuthLoading, connectWebSocket, sendMessage]);
 
   // If token changes, close & let the above effect reconnect
   useEffect(() => {
@@ -129,17 +147,6 @@ export const WebSocketProvider = ({ children }) => {
       console.log('🔄 Reconnecting WebSocket due to access token change');
     }
   }, [accessToken, isAuthLoading]);
-
-  // Send message with queuing
-  const sendMessage = useCallback((message) => {
-    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify(message));
-      console.log('📤 Sent message:', message);
-    } else {
-      console.warn('⚠️ WebSocket not open. Queuing message:', message);
-      messageQueue.current.push(message);
-    }
-  }, []);
 
   const contextValue = useMemo(() => ({
     sendMessage,

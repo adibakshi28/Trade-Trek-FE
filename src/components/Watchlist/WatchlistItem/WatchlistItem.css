@@ -41,7 +41,7 @@
 }
 
 .watchlist-item__name {
-  font-size: 0.7rem !important; 
+  font-size: 0.8rem !important; 
   color: var(--color-text-secondary) !important;
 }
 
@@ -58,14 +58,6 @@
   color: var(--color-text-primary) !important;
 }
 
-.price-up {
-  color: var(--color-success) !important;
-}
-
-.price-down {
-  color: var(--color-error) !important; 
-}
-
 .watchlist-item__price.negative {
   color: var(--color-error) !important;
 }
@@ -75,8 +67,8 @@
 }
 
 .watchlist-item__change {
-  font-size: 0.7rem !important; 
-  color: var(--color-text-secondary) !important;
+  font-size: 0.8rem !important; 
+  color: var(--color-text-primary) !important;
 }
 
 .watchlist-item__change.positive {

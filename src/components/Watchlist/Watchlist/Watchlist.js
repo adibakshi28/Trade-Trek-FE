@@ -88,6 +88,7 @@ function Watchlist({ refreshPortfolio, onShowPlot }) {
           let direction = s.priceDirection;
           if (newPrice > s.price) direction = 'up';
           else if (newPrice < s.price) direction = 'down';
+          else direction = 'none';
 
           return {
             ...s,

@@ -7,13 +7,11 @@ import { Box } from '@mui/material';
 import { AuthContext } from '../../context/AuthContext';
 import { useWebSocket } from '../../context/WebSocketContext';
 
-// Child components
 import Watchlist from '../../components/Watchlist/Watchlist/Watchlist';
 import UserPortfolio from '../../components/UserPortfolio/UserPortfolio';
 import PortfolioMetrics from '../../components/PortfolioMetrics/PortfolioMetrics';
 import Plot from '../../components/Plot/Plot';
 
-// APIs
 import { 
   getUserPortfolio, 
   getUserFunds, 
@@ -58,15 +56,10 @@ export default function Dashboard() {
     }
   }, [accessToken, isAuthLoading, navigate]);
 
-  // 2) Subscribe to websockets & fetch data on mount
+  // 2) Fetch data on mount
   useEffect(() => {
-    sendMessage({ type: 'subscribe_portfolio_watchlist' });
     refreshPortfolio();
-
-    return () => {
-      sendMessage({ type: 'unsubscribe_all' });
-    };
-  }, [sendMessage]);
+  }, []);
 
   // 3) Reusable function to fetch portfolio/funds/history
   const refreshPortfolio = async () => {
@@ -104,17 +97,21 @@ export default function Dashboard() {
     }
   };
 
-  // 4) Merge real-time price => portfolio positions => compute P&L
+  // 4) Merge real-time price => portfolio positions => compute P&L and Day Chg. (%)
   useEffect(() => {
+    console.log('Prices:', prices);
     const merged = portfolioRaw.map((pos) => {
       const symbol = pos.stock_ticker.toUpperCase();
       const wsData = prices[symbol]; // e.g. { ltp, day_change }
-      const ltp = wsData ? Number(wsData.ltp) : pos.execution_price;
+
+      const ltp = wsData ? Number(wsData.ltp) : Number(pos.execution_price);
+      const day_change = wsData ? Number(wsData.day_change) : 0;
 
       const qty = pos.quantity || 0;
       const direction = (pos.direction || 'LONG').toUpperCase();
       const avgCost = Number(pos.execution_price || 0);
 
+      // Calculate PnL based on direction
       let pnl = 0;
       if (direction === 'LONG') {
         pnl = (ltp - avgCost) * qty;
@@ -127,13 +124,30 @@ export default function Dashboard() {
       const cost = avgCost * qty;
       const netChgPct = cost !== 0 ? (pnl / cost) * 100 : 0;
 
+      // Calculate Day PnL and Day Change Percentage
+      let dayPnL = 0;
+      let dayChangePct = 0;
+
+      if (direction === 'LONG') {
+        // For LONG positions
+        dayPnL = day_change * qty;
+        const previousPrice = ltp - day_change;
+        dayChangePct = previousPrice !== 0 ? (day_change / previousPrice) * 100 : 0;
+      } else {
+        // For SHORT positions
+        dayPnL = -day_change * qty;
+        const previousPrice = ltp + day_change;
+        dayChangePct = previousPrice !== 0 ? (-day_change / previousPrice) * 100 : 0;
+      }
+
       return {
         ...pos,
         ltp,
         pnl,
         curValue,
         netChg: netChgPct,
-        dayChange: 0,
+        dayChange: dayPnL,
+        dayChangePct,
       };
     });
 
@@ -150,6 +164,7 @@ export default function Dashboard() {
       totalInv += cost;
       currVal += m.curValue;
       unrlzdPnL += m.pnl;
+      dayProfit += m.dayChange;
     });
 
     const totalPortfolioValue = currVal + funds;
