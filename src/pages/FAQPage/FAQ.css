@@ -18,6 +18,8 @@
   /* Card Styling */
   .faq-card {
     width: 100% !important; /* Full width */
+    height: 75vh !important;
+    overflow: auto;
     max-width: 800px; /* Limit the maximum width for better readability */
     padding: 1.5rem;
     border-radius: 8px;
@@ -34,7 +36,7 @@
   }
   
   .faq-header-icon {
-    font-size: 2.5rem !important;
+    font-size: 2.25rem !important;
     color: var(--color-primary) !important;
     margin-right: 0.5rem !important; /* Space between icon and text */
   }
@@ -42,7 +44,7 @@
   /* Heading */
   .faq-heading {
     text-align: center;
-    font-size: 2rem !important;
+    font-size: 1.75rem !important;
     font-weight: bold !important;
     color: var(--color-text-primary) !important;
   }
@@ -51,7 +53,7 @@
   .faq-accordion {
     background: var(--color-surface) !important; /* Override default background */
     border: 1px solid var(--color-text-secondary)   !important; /* Override default border */
-    border-radius: 8px !important; /* Override default border radius */
+    border-radius: 10px !important; /* Override default border radius */
     margin-bottom: 1rem !important;
     box-shadow: none !important; /* Remove default shadow */
     transition: box-shadow 0.3s ease !important;

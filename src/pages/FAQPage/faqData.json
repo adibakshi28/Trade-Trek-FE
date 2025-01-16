@@ -1,23 +1,82 @@
 [
-    {
+  {
       "question": "What is TradeTrek?",
-      "answer": "TradeTrek is a platform that helps you manage and analyze your stock investments efficiently."
-    },
-    {
-      "question": "How can I register for TradeTrek?",
-      "answer": "You can register by clicking the 'Register' button on the homepage and filling out the registration form."
-    },
-    {
+      "answer": "TradeTrek is a sophisticated mock trading engine designed to simulate real-world trading scenarios using real-time market price updates. It enables users to trade S&P 500 stocks with virtual money, providing a secure environment to learn trading strategies and analyze market behavior without financial risk."
+  },
+  {
+      "question": "What securities can I trade on TradeTrek?",
+      "answer": "Currently, TradeTrek supports trading exclusively for US S&P 500 stocks. Future iterations may expand to include ETFs, global equities, and other asset classes depending on user demand and platform scalability."
+  },
+  {
+      "question": "Are the price updates real market prices or simulated?",
+      "answer": "TradeTrek provides real-time market prices sourced from a reliable data providers with an average latency of approx. 500ms. This ensures users experience near-instantaneous updates, closely mimicking live trading conditions."
+  },
+  {
+      "question": "Which exchange does TradeTrek simulate trades on?",
+      "answer": "TradeTrek simulates trades on the New York Stock Exchange (NYSE), ensuring that all stock prices and market data align with the real-time activity of this NYSE."
+  },
+  {
+      "question": "What timezone does TradeTrek operate in?",
+      "answer": "Platform operates on Eastern Time (ET), specifically the 'America/New_York' timezone, to synchronize with the trading hours of the New York Stock Exchange (NYSE)."
+  },
+  {
+      "question": "What types of orders are supported?",
+      "answer": "The platform currently supports only Market Orders. However, development is underway to introduce Limit Orders and Stop Orders, enhancing users' ability to simulate advanced trading strategies."
+  },
+  {
+      "question": "Is short selling supported on TradeTrek?",
+      "answer": "By default short selling is supported on TradeTrek. However, initiating a short position requires maintaining sufficient funds equivalent to the transaction value as margin."
+  },
+  {
+      "question": "Can I trade fractional quantities?",
+      "answer": "By default fractional trading is supported, allowing users to purchase stocks in increments as small as 0.1 shares. This feature enables users to diversify their portfolios, even with limited funds. If you want some custom setting, you can customize it in the settings."
+  },
+  {
+      "question": "Can I take levraged positions?",
+      "answer": "No, The platform focus is on cash-based trading. All trades are executed using virtual funds, and users cannot borrow capital to amplify their positions."
+  },
+  {
+      "question": "Is there a transaction fee for making trades on TradeTrek?",
+      "answer": "By default setting, there are no transaction fees for trading on TradeTrek. But if you want a more realistic experience, you can set a custom transaction fee in the settings."
+  },
+  {
+      "question": "What index does TradeTrek use for portfolio benchmarking?",
+      "answer": "TradeTrek uses the SPY ETF (SPDR S&P 500 ETF Trust) as a benchmark for portfolio performance. This allows users to compare their returns against the broader market represented by the S&P 500 index."
+  },
+  {
+      "question": "How does TradeTrek use SPY for risk management?",
+      "answer": "SPY is utilized in risk management calculations to determine metrics such as beta and portfolio volatility. By comparing user portfolios to SPY, TradeTrek provides insights into market correlation and relative risk exposure."
+  },
+  {
+      "question": "Why was SPY chosen as the benchmark index for TradeTrek?",
+      "answer": "SPY is widely regarded as a reliable proxy for the S&P 500, offering liquidity, accuracy, and consistency. These attributes make it an ideal choice for metric calculations, portfolio benchmarking, and market comparisons."
+  },
+  {
       "question": "Is TradeTrek free to use?",
-      "answer": "Yes, TradeTrek is free to use with optional premium features for advanced users."
-    },
-    {
-      "question": "How can I reset my password?",
-      "answer": "You can reset your password by clicking the 'Forgot Password' link on the login page."
-    },
-    {
+      "answer": "Yes, TradeTrek is completely free to use. Moreover, its source code is open source and publicly accessible, encouraging community contributions and transparency in platform development."
+  },
+  {
+      "question": "Is there a limit to the virtual funds available for trading?",
+      "answer": "Upon registration, each user is allocated $100,000 in virtual funds for trading. This amount can be reset upon request through support, allowing users to start fresh while testing different strategies."
+  },
+  {
+      "question": "Does TradeTrek support mobile devices?",
+      "answer": "While TradeTrek is primarily optimized for desktop and tablet use. Modile device usage is not supported at this time (and not recommended)."
+  },
+  {
+      "question": "What security measures does TradeTrek implement?",
+      "answer": "TradeTrek prioritizes user security with HTTPS encryption for all communications, secure password storage using hashing algorithms, and regular vulnerability assessments to protect against unauthorized access or data breaches."
+  },
+  {
+      "question": "Can I see other users’ trades or portfolios?",
+      "answer": "Not currently, but future updates may include a social feature allowing users to connect, share trades, and view portfolio performance metrics in a controlled and privacy-focused environment."
+  },
+  {
+    "question": "How can I reset my password?",
+    "answer": "For password reset requests, please contact our support team via the provided email address."
+  },
+  {
       "question": "How do I contact support?",
-      "answer": "You can contact support by visiting the 'Contact Us' page or emailing us at support@tradetrek.com."
-    }
+      "answer": "Support is available via email at adibakshi28@gmail.com (Aditya Bakshi). For faster assistance, ensure your email includes your registered username and a detailed description of your issue."
+  }
 ]
-  
