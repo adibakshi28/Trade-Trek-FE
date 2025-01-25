@@ -1,42 +1,104 @@
-/* src/components/metrics/DrawdownMeasures/DrawdownMeasures.css */
+.dm-card {
+  margin-top: 16px !important;
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+}
 
-.metric-card {
-    border: 1px solid #ccc;
-    padding: 15px;
-    border-radius: 4px;
-  }
-  
-  .metric-card h2 {
-    margin-bottom: 10px;
-  }
-  
-  .metric-section {
-    margin-bottom: 15px;
-  }
-  
-  .metric-section label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .metric-section input[type='text'],
-  .metric-section input[type='number'],
-  .metric-section select {
-    width: 100%;
-    padding: 5px;
-    font-size: 14px;
-  }
-  
-  .measures-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .measure-label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
+.dm-form-group {
+  color: var(--color-text-primary) !important;
+}
+
+.dm-form-control-label {
+  color: var(--color-text-primary) !important;
+}
+
+.dm-checkbox {
+  color: var(--color-text-primary) !important;
+}
+
+.dm-text-field {
+  color: var(--color-text-primary) !important;
+}
+
+.dm-text-field::placeholder {
+  color: var(--color-text-primary) !important;
+}
+
+.dm-select {
+  color: var(--color-text-primary) !important;
+}
+
+.dm-select .MuiSvgIcon-root {
+  color: var(--color-text-primary) !important;
+}
+
+.dm-form-control .MuiInputLabel-root {
+  color: var(--color-text-primary) !important;
+}
+
+.dm-form-control .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-border-subtle) !important;
+}
+
+.dm-form-control .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+.dm-form-control .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-primary) !important;
+}
+
+.dm-text-field:hover,
+.dm-select:hover {
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+.dm-checkbox:hover {
+  box-shadow: 0 0 8px var(--color-primary) !important;
+}
+
+.dm-divider {
+  margin: 16px 0 !important;
+  background-color: var(--color-border-subtle) !important;
+}
+
+.dm-results {
+  margin-top: 16px !important;
+  color: var(--color-text-primary) !important;
+}
+
+.dm-table-container {
+  margin-bottom: 16px !important;
+}
+
+.dm-table-container .MuiTableCell-root {
+  color: var(--color-text-primary) !important;
+}
+
+.dm-table-container .MuiTableHead-root .MuiTableCell-root {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+  font-weight: bold !important;
+}
+
+.dm-table-container .MuiTableBody-root .MuiTableCell-root {
+  border-color: var(--color-border-subtle) !important;
+}
+
+.dm-table-container .MuiTableRow-root:hover {
+  background-color: var(--color-border-subtle) !important;
+}
+
+.dm-select .MuiSelect-select::placeholder {
+  color: var(--color-text-primary) !important;
+}
+
+.dm-table-container .MuiTableBody-root .MuiTableRow-root:nth-child(even) {
+  background-color: var(--color-surface) !important;
+}
+
+.dm-table-container .MuiTableBody-root .MuiTableRow-root:nth-child(odd) {
+  background-color: var(--color-surface-lite) !important;
+}

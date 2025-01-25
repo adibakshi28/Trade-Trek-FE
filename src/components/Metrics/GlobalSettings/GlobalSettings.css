@@ -1,17 +1,61 @@
-/* src/components/metrics/GlobalSettings/GlobalSettings.css */
-
-/* Currently, MUI handles most of the styling. Add custom styles here if needed. */
-
-/* Example: Adjust date picker label */
-.react-datepicker-wrapper {
-  width: 100%;
+.gs-container {
+  margin-bottom: 16px !important;
 }
 
-.react-datepicker__input-container input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: 4px;
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
+.gs-label {
+  color: var(--color-text-primary) !important;
+}
+
+.gs-text-field {
+  color: var(--color-text-primary) !important;
+}
+
+.gs-text-field::placeholder {
+  color: var(--color-text-primary) !important;
+}
+
+.gs-select {
+  color: var(--color-text-primary) !important;
+}
+
+.gs-select .MuiSvgIcon-root {
+  color: var(--color-text-primary) !important;
+}
+
+.gs-input-label {
+  color: var(--color-text-primary) !important;
+}
+
+.gs-form-control .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-border-subtle) !important;
+}
+
+.gs-form-control .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+.gs-form-control .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-primary) !important;
+}
+
+.gs-text-field:hover,
+.gs-select:hover {
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+.gs-checkbox:hover {
+  box-shadow: 0 0 8px var(--color-primary) !important;
+}
+
+.gs-form-control-label {
+  color: var(--color-text-primary) !important;
+}
+
+.gs-checkbox {
+  color: var(--color-text-primary) !important;
+}
+
+.gs-menu-item-text {
+  color: var(--color-text-primary) !important;
 }

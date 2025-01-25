@@ -1,5 +1,27 @@
 import React from 'react';
-import { FormGroup, Card, CardContent, Typography, Checkbox, FormControlLabel, Select, MenuItem, FormControl, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Divider, Box, Grid } from '@mui/material';
+import {
+  FormGroup,
+  Card,
+  CardContent,
+  Typography,
+  Checkbox,
+  FormControlLabel,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Divider,
+  Box,
+  Grid
+} from '@mui/material';
+import './CorrelationDiversification.css';
 
 const CorrelationDiversification = ({ settings, onUpdate, apiResponse }) => {
   const safeSettings = {
@@ -27,9 +49,9 @@ const CorrelationDiversification = ({ settings, onUpdate, apiResponse }) => {
     if (tickers.length === 0) return null;
 
     return (
-      <Box sx={{ mt: 4 }}>
+      <Box className="cd-results">
         <Typography variant="subtitle1" gutterBottom>{title}</Typography>
-        <TableContainer component={Paper} sx={{ mb: 4, maxHeight: 400 }}>
+        <TableContainer component={Paper} className="cd-table-container">
           <Table stickyHeader size="small">
             <TableHead>
               <TableRow>
@@ -63,9 +85,9 @@ const CorrelationDiversification = ({ settings, onUpdate, apiResponse }) => {
     if (!trackingData) return null;
 
     return (
-      <Box sx={{ mt: 4 }}>
+      <Box className="cd-results">
         <Typography variant="subtitle1" gutterBottom>Tracking Error</Typography>
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} className="cd-table-container">
           <Table>
             <TableHead>
               <TableRow>
@@ -108,7 +130,7 @@ const CorrelationDiversification = ({ settings, onUpdate, apiResponse }) => {
   };
 
   return (
-    <Card sx={{ mt: 2 }}>
+    <Card className="cd-card">
       <CardContent>
         <Typography variant="h6" gutterBottom>
           Correlation & Diversification Analysis
@@ -117,7 +139,7 @@ const CorrelationDiversification = ({ settings, onUpdate, apiResponse }) => {
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1">Select Measures</Typography>
-            <FormGroup row>
+            <FormGroup row className="cd-form-group">
               {['correlation_coefficient', 'r_squared', 'tracking_error'].map(measure => (
                 <FormControlLabel
                   key={measure}
@@ -125,31 +147,39 @@ const CorrelationDiversification = ({ settings, onUpdate, apiResponse }) => {
                     <Checkbox
                       checked={safeSettings.measures.includes(measure)}
                       onChange={() => handleToggleMeasure(measure)}
+                      className="cd-checkbox"
                     />
                   }
                   label={measure.replace(/_/g, ' ').toUpperCase()}
+                  className="cd-form-control-label"
                 />
               ))}
             </FormGroup>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" className="cd-form-control">
               <InputLabel>Benchmark</InputLabel>
               <Select
                 value={safeSettings.benchmark}
                 onChange={e => handleChange('benchmark', e.target.value)}
+                className="cd-select"
+                placeholder="Select benchmark"
               >
                 <MenuItem value="SPY">SPY</MenuItem>
+                <MenuItem value="QQQ">QQQ</MenuItem>
+                <MenuItem value="DIA">DIA</MenuItem>
                 {/* Add other benchmark options if available */}
               </Select>
             </FormControl>
 
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" className="cd-form-control">
               <InputLabel>Correlation Method</InputLabel>
               <Select
                 value={safeSettings.correlation_method}
                 onChange={e => handleChange('correlation_method', e.target.value)}
+                className="cd-select"
+                placeholder="Select correlation method"
               >
                 {['pearson', 'spearman', 'kendall'].map(method => (
                   <MenuItem key={method} value={method}>
@@ -160,6 +190,8 @@ const CorrelationDiversification = ({ settings, onUpdate, apiResponse }) => {
             </FormControl>
           </Grid>
         </Grid>
+
+        <Divider className="cd-divider" />
 
         {renderResults()}
       </CardContent>

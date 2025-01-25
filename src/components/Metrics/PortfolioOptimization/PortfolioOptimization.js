@@ -22,6 +22,7 @@ import {
   Select,
   MenuItem
 } from '@mui/material';
+import './PortfolioOptimization.css';
 
 const PortfolioOptimization = ({ settings, onUpdate, apiResponse }) => {
   const safeSettings = {
@@ -69,11 +70,11 @@ const PortfolioOptimization = ({ settings, onUpdate, apiResponse }) => {
       apiResponse.metrics.portfolio_optimization;
 
     return (
-      <Box sx={{ mt: 4 }}>
+      <Box className="po-results">
         <Typography variant="h6" gutterBottom>Portfolio Optimization Results</Typography>
 
         <Typography variant="subtitle1" gutterBottom>Optimal Allocation</Typography>
-        <TableContainer component={Paper} sx={{ mb: 4, maxHeight: 400 }}>
+        <TableContainer component={Paper} className="po-table-container">
           <Table stickyHeader>
             <TableHead>
               <TableRow>
@@ -93,22 +94,22 @@ const PortfolioOptimization = ({ settings, onUpdate, apiResponse }) => {
         </TableContainer>
 
         <Typography variant="subtitle1" gutterBottom>Objective Value</Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
+        <Typography variant="body1" className="po-objective-value">
           {objective_value.toFixed(6)}
         </Typography>
 
         <Typography variant="subtitle1" gutterBottom>Goal</Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          {goal}
+        <Typography variant="body1" className="po-goal">
+          {goal.replace(/_/g, ' ').toUpperCase()}
         </Typography>
 
         <Typography variant="subtitle1" gutterBottom>Rebalance Frequency</Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          {rebalance_frequency}
+        <Typography variant="body1" className="po-rebalance-frequency">
+          {rebalance_frequency.replace(/_/g, ' ').toUpperCase()}
         </Typography>
 
         <Typography variant="subtitle1" gutterBottom>Note on Transaction Costs</Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
+        <Typography variant="body1" className="po-transaction-note">
           {note_on_transaction_costs}
         </Typography>
       </Box>
@@ -116,14 +117,14 @@ const PortfolioOptimization = ({ settings, onUpdate, apiResponse }) => {
   };
 
   return (
-    <Card sx={{ mt: 2 }}>
+    <Card className="po-card">
       <CardContent>
         <Typography variant="h6" gutterBottom>Portfolio Optimization Configuration</Typography>
 
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1">Select Measures</Typography>
-            <FormGroup row>
+            <FormGroup row className="po-form-group">
               {['optimal_allocation'].map(measure => (
                 <FormControlLabel
                   key={measure}
@@ -131,20 +132,24 @@ const PortfolioOptimization = ({ settings, onUpdate, apiResponse }) => {
                     <Checkbox
                       checked={safeSettings.measures.includes(measure)}
                       onChange={() => handleToggleMeasure(measure)}
+                      className="po-checkbox"
                     />
                   }
-                  label={measure.toUpperCase()}
+                  label={measure.replace(/_/g, ' ').toUpperCase()}
+                  className="po-form-control-label"
                 />
               ))}
             </FormGroup>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" className="po-form-control">
               <InputLabel>Goal</InputLabel>
               <Select
                 value={safeSettings.goal}
                 onChange={e => handleValueChange('goal', e.target.value)}
+                className="po-select"
+                placeholder="Select goal"
               >
                 {['maximize_return', 'minimize_risk', 'maximize_sharpe_ratio'].map(goal => (
                   <MenuItem key={goal} value={goal}>
@@ -161,6 +166,8 @@ const PortfolioOptimization = ({ settings, onUpdate, apiResponse }) => {
               value={safeSettings.target_volatility}
               onChange={e => handleValueChange('target_volatility', parseFloat(e.target.value))}
               margin="normal"
+              className="po-text-field"
+              placeholder="Enter target volatility"
               inputProps={{ min: 0, max: 1, step: 0.01 }}
             />
 
@@ -171,6 +178,8 @@ const PortfolioOptimization = ({ settings, onUpdate, apiResponse }) => {
               value={safeSettings.min_return_constraint}
               onChange={e => handleValueChange('min_return_constraint', parseFloat(e.target.value))}
               margin="normal"
+              className="po-text-field"
+              placeholder="Enter minimum return constraint"
               inputProps={{ min: 0, max: 1, step: 0.01 }}
             />
 
@@ -181,6 +190,8 @@ const PortfolioOptimization = ({ settings, onUpdate, apiResponse }) => {
               value={safeSettings.constraints.min_allocation}
               onChange={e => handleConstraintsChange('min_allocation', parseFloat(e.target.value))}
               margin="normal"
+              className="po-text-field"
+              placeholder="Enter minimum allocation"
               inputProps={{ min: 0, max: 1, step: 0.01 }}
             />
 
@@ -191,6 +202,8 @@ const PortfolioOptimization = ({ settings, onUpdate, apiResponse }) => {
               value={safeSettings.constraints.max_allocation}
               onChange={e => handleConstraintsChange('max_allocation', parseFloat(e.target.value))}
               margin="normal"
+              className="po-text-field"
+              placeholder="Enter maximum allocation"
               inputProps={{ min: 0, max: 1, step: 0.01 }}
             />
 
@@ -199,9 +212,12 @@ const PortfolioOptimization = ({ settings, onUpdate, apiResponse }) => {
                 <Checkbox
                   checked={safeSettings.include_transaction_costs}
                   onChange={e => handleValueChange('include_transaction_costs', e.target.checked)}
+                  className="po-checkbox"
                 />
               }
               label="Include Transaction Costs"
+              className="po-form-control-label"
+              sx={{ mt: 2 }}
             />
 
             {safeSettings.include_transaction_costs && (
@@ -212,25 +228,31 @@ const PortfolioOptimization = ({ settings, onUpdate, apiResponse }) => {
                 value={safeSettings.transaction_costs}
                 onChange={e => handleValueChange('transaction_costs', parseFloat(e.target.value))}
                 margin="normal"
+                className="po-text-field"
+                placeholder="Enter transaction costs"
                 inputProps={{ min: 0, max: 1, step: 0.01 }}
               />
             )}
 
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" className="po-form-control">
               <InputLabel>Rebalance Frequency</InputLabel>
               <Select
                 value={safeSettings.rebalance_frequency}
                 onChange={e => handleValueChange('rebalance_frequency', e.target.value)}
+                className="po-select"
+                placeholder="Select rebalance frequency"
               >
                 {['daily', 'weekly', 'monthly', 'quarterly'].map(frequency => (
                   <MenuItem key={frequency} value={frequency}>
-                    {frequency.toUpperCase()}
+                    {frequency.replace(/_/g, ' ').toUpperCase()}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </Grid>
         </Grid>
+
+        <Divider className="po-divider" />
 
         {renderResults()}
       </CardContent>

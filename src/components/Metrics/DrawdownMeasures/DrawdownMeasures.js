@@ -1,5 +1,24 @@
 import React from 'react';
-import { Card, CardContent, Typography, Checkbox, FormControlLabel, TextField, Grid, FormGroup, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Divider, Box } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Checkbox,
+  FormControlLabel,
+  TextField,
+  Grid,
+  FormGroup,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Divider,
+  Box
+} from '@mui/material';
+import './DrawdownMeasures.css';
 
 const DrawdownMeasures = ({ settings, onUpdate, apiResponse }) => {
   const safeSettings = {
@@ -28,11 +47,11 @@ const DrawdownMeasures = ({ settings, onUpdate, apiResponse }) => {
     const metrics = safeSettings.measures;
 
     return (
-      <Box sx={{ mt: 4 }}>
+      <Box className="dm-results">
         <Typography variant="h6" gutterBottom>Drawdown Analysis Results</Typography>
 
         <Typography variant="subtitle1" gutterBottom>Per Security Metrics</Typography>
-        <TableContainer component={Paper} sx={{ mb: 4, maxHeight: 400 }}>
+        <TableContainer component={Paper} className="dm-table-container">
           <Table stickyHeader>
             <TableHead>
               <TableRow>
@@ -62,7 +81,7 @@ const DrawdownMeasures = ({ settings, onUpdate, apiResponse }) => {
         </TableContainer>
 
         <Typography variant="subtitle1" gutterBottom>Portfolio Metrics</Typography>
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} className="dm-table-container">
           <Table>
             <TableHead>
               <TableRow>
@@ -93,14 +112,14 @@ const DrawdownMeasures = ({ settings, onUpdate, apiResponse }) => {
   };
 
   return (
-    <Card sx={{ mt: 2 }}>
+    <Card className="dm-card">
       <CardContent>
         <Typography variant="h6" gutterBottom>Drawdown Measures Configuration</Typography>
 
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1">Select Measures</Typography>
-            <FormGroup row>
+            <FormGroup row className="dm-form-group">
               {['mdd', 'average_drawdown', 'recovery_time'].map(measure => (
                 <FormControlLabel
                   key={measure}
@@ -108,9 +127,11 @@ const DrawdownMeasures = ({ settings, onUpdate, apiResponse }) => {
                     <Checkbox
                       checked={safeSettings.measures.includes(measure)}
                       onChange={() => handleToggleMeasure(measure)}
+                      className="dm-checkbox"
                     />
                   }
                   label={measure.replace(/_/g, ' ').toUpperCase()}
+                  className="dm-form-control-label"
                 />
               ))}
             </FormGroup>
@@ -124,6 +145,8 @@ const DrawdownMeasures = ({ settings, onUpdate, apiResponse }) => {
               value={safeSettings.rolling_drawdown_window}
               onChange={e => handleValueChange('rolling_drawdown_window', parseInt(e.target.value))}
               margin="normal"
+              className="dm-text-field"
+              placeholder="Enter rolling window"
               inputProps={{ min: 1 }}
             />
             
@@ -132,13 +155,17 @@ const DrawdownMeasures = ({ settings, onUpdate, apiResponse }) => {
                 <Checkbox
                   checked={safeSettings.event_highlighting}
                   onChange={e => handleValueChange('event_highlighting', e.target.checked)}
+                  className="dm-checkbox"
                 />
               }
               label="Event Highlighting"
+              className="dm-form-control-label"
               sx={{ mt: 2 }}
             />
           </Grid>
         </Grid>
+
+        <Divider className="dm-divider" />
 
         {renderResults()}
       </CardContent>

@@ -11,7 +11,8 @@ import TailRiskMeasures from '../../components/Metrics/TailRiskMeasures/TailRisk
 import RiskAdjustedPerformance from '../../components/Metrics/RiskAdjustedPerformance/RiskAdjustedPerformance';
 import DistributionMeasures from '../../components/Metrics/DistributionMeasures/DistributionMeasures';
 import PortfolioOptimization from '../../components/Metrics/PortfolioOptimization/PortfolioOptimization';
-import { Box, Card, Typography, Button, Alert, CircularProgress, CardContent } from '@mui/material';
+import { Box, Card, Button, Snackbar, CircularProgress, Alert } from '@mui/material';
+import './Insights.css';
 
 const DEFAULT_METRICS_CONFIG = {
   volatility_measures: {
@@ -66,7 +67,7 @@ const DEFAULT_METRICS_CONFIG = {
   },
   portfolio_optimization: {
     enable: false,
-    measures: ['optimal_allocation'],
+    measures: [],
     goal: 'maximize_return',
     constraints: {
       min_allocation: 0.05,
@@ -88,6 +89,9 @@ const Insights = () => {
   const [apiResponse, setApiResponse] = useState(null);
   const [apiError, setApiError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const [config, setConfig] = useState({
     timeframe: {
@@ -107,6 +111,19 @@ const Insights = () => {
   useEffect(() => {
     if (!isAuthLoading && !accessToken) navigate('/login');
   }, [accessToken, isAuthLoading, navigate]);
+
+  useEffect(() => {
+    if (apiResponse) {
+      setSnackbarSeverity('success');
+      setSnackbarMessage('Analysis successful!');
+      setSnackbarOpen(true);
+    }
+    if (apiError) {
+      setSnackbarSeverity('error');
+      setSnackbarMessage(apiError);
+      setSnackbarOpen(true);
+    }
+  }, [apiResponse, apiError]);
 
   const handleMetricToggle = (metricKey) => {
     setConfig(prev => ({
@@ -153,7 +170,7 @@ const Insights = () => {
         if (metric.enable) {
           acc[metricKey] = {
             enable: true,
-            ...metric // Spread all properties of the metric
+            ...metric
           };
         }
         return acc;
@@ -172,19 +189,24 @@ const Insights = () => {
     }
   };
 
-  return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3, height: '100vh', bgcolor: 'background.default' }}>
-      <Card sx={{ width: '100%', maxWidth: 1200, maxHeight: '95vh', display: 'flex', flexDirection: 'column' }}>
-        <CardContent sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
-          <Typography variant="h4" align="center" gutterBottom>
-            Portfolio Insights
-          </Typography>
-          
-          {apiResponse && <Alert severity="success" sx={{ mb: 2 }}>Analysis successful!</Alert>}
-          {apiError && <Alert severity="error" sx={{ mb: 2 }}>{apiError}</Alert>}
-        </CardContent>
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
 
-        <Box sx={{ flex: 1, overflowY: 'auto', p: 3 }}>
+  return (
+    <Box className="insights-container">
+      <Card className="insights-card">
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={3000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        >
+          <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} className="insights-alert">
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+        <Box className="insights-content">
           <GlobalSettings
             timeframe={config.timeframe}
             resolution={config.resolution}
@@ -199,6 +221,7 @@ const Insights = () => {
           <MetricCheckboxes
             metrics={config.metrics}
             onToggle={handleMetricToggle}
+            className="insights-checkbox"
           />
 
           {config.metrics.volatility_measures.enable && (
@@ -258,14 +281,15 @@ const Insights = () => {
           )}
         </Box>
 
-        <Box sx={{ p: 3, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
+        <Box className="insights-footer">
           <Button
             fullWidth
             variant="contained"
             size="large"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            startIcon={isSubmitting && <CircularProgress size={24} />}
+            startIcon={isSubmitting && <CircularProgress size={24} className="button-spinner" />}
+            className="insights-button"
           >
             {isSubmitting ? 'Processing...' : 'Run Analysis'}
           </Button>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormGroup, Card, CardContent, Typography, Checkbox, FormControlLabel, TextField, Select, MenuItem, Grid, FormControl, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Divider, Box } from '@mui/material';
+import './VolatilityMeasures.css';
 
 const VolatilityMeasures = ({ settings, onUpdate, apiResponse }) => {
   const safeSettings = {
@@ -47,11 +48,11 @@ const VolatilityMeasures = ({ settings, onUpdate, apiResponse }) => {
     ])];
 
     return (
-      <Box sx={{ mt: 4 }}>
+      <Box className="vm-results">
         <Typography variant="h6" gutterBottom>Analysis Results</Typography>
 
         <Typography variant="subtitle1" gutterBottom>Per Security Metrics</Typography>
-        <TableContainer component={Paper} sx={{ mb: 4, maxHeight: 400 }}>
+        <TableContainer component={Paper} className="vm-table-container">
           <Table stickyHeader>
             <TableHead>
               <TableRow>
@@ -77,7 +78,7 @@ const VolatilityMeasures = ({ settings, onUpdate, apiResponse }) => {
         </TableContainer>
 
         <Typography variant="subtitle1" gutterBottom>Portfolio Metrics</Typography>
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} className="vm-table-container">
           <Table>
             <TableHead>
               <TableRow>
@@ -104,14 +105,14 @@ const VolatilityMeasures = ({ settings, onUpdate, apiResponse }) => {
   };
 
   return (
-    <Card sx={{ mt: 2 }}>
+    <Card className="vm-card">
       <CardContent>
         <Typography variant="h6" gutterBottom>Volatility Measures Configuration</Typography>
 
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1">Select Metrics</Typography>
-            <FormGroup row>
+            <FormGroup row className="vm-form-group">
               {['standard_deviation', 'beta', 'var', 'es'].map(measure => (
                 <FormControlLabel
                   key={measure}
@@ -119,9 +120,11 @@ const VolatilityMeasures = ({ settings, onUpdate, apiResponse }) => {
                     <Checkbox
                       checked={safeSettings.measures.includes(measure)}
                       onChange={() => handleToggleMeasure(measure)}
+                      className="vm-checkbox"
                     />
                   }
                   label={measure.replace(/_/g, ' ').toUpperCase()}
+                  className="vm-form-control-label"
                 />
               ))}
             </FormGroup>
@@ -135,12 +138,16 @@ const VolatilityMeasures = ({ settings, onUpdate, apiResponse }) => {
               value={safeSettings.rolling_window}
               onChange={e => handleChange('rolling_window', parseInt(e.target.value))}
               margin="normal"
+              className="vm-text-field"
+              placeholder="Enter rolling window"
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" className="vm-form-control">
               <InputLabel>Historical Period</InputLabel>
               <Select
                 value={safeSettings.historical_period}
                 onChange={e => handleChange('historical_period', e.target.value)}
+                className="vm-select"
+                placeholder="Select historical period"
               >
                 {['1Y', '2Y', '5Y'].map(period => (
                   <MenuItem key={period} value={period}>{period}</MenuItem>
@@ -150,7 +157,7 @@ const VolatilityMeasures = ({ settings, onUpdate, apiResponse }) => {
           </Grid>
         </Grid>
 
-        <Divider sx={{ my: 2 }} />
+        <Divider className="vm-divider" />
 
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
@@ -162,12 +169,16 @@ const VolatilityMeasures = ({ settings, onUpdate, apiResponse }) => {
               onChange={e => handleVarEsChange('confidence_level', parseFloat(e.target.value))}
               inputProps={{ min: 0, max: 1, step: 0.01 }}
               margin="normal"
+              className="vm-text-field"
+              placeholder="Enter confidence level"
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" className="vm-form-control">
               <InputLabel>Calculation Method</InputLabel>
               <Select
                 value={safeSettings.var_es_settings.method}
                 onChange={e => handleVarEsChange('method', e.target.value)}
+                className="vm-select"
+                placeholder="Select calculation method"
               >
                 {['historical', 'parametric', 'monte_carlo'].map(method => (
                   <MenuItem key={method} value={method}>{method.toUpperCase()}</MenuItem>
@@ -183,6 +194,8 @@ const VolatilityMeasures = ({ settings, onUpdate, apiResponse }) => {
               value={safeSettings.var_es_settings.resolution}
               onChange={e => handleVarEsChange('resolution', e.target.value)}
               margin="normal"
+              className="vm-text-field"
+              placeholder="Enter data resolution"
             />
             <TextField
               label="Analysis Period"
@@ -190,6 +203,8 @@ const VolatilityMeasures = ({ settings, onUpdate, apiResponse }) => {
               value={safeSettings.var_es_settings.periods}
               onChange={e => handleVarEsChange('periods', e.target.value)}
               margin="normal"
+              className="vm-text-field"
+              placeholder="Enter analysis period"
             />
           </Grid>
         </Grid>

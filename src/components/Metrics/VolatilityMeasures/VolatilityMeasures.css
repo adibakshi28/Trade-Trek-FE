@@ -1,51 +1,104 @@
-/* src/components/metrics/VolatilityMeasures/VolatilityMeasures.css */
+.vm-card {
+  margin-top: 16px !important;
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+}
 
-.metric-card {
-    border: 1px solid #ccc;
-    padding: 15px;
-    border-radius: 4px;
-  }
-  
-  .metric-card h2 {
-    margin-bottom: 10px;
-  }
-  
-  .metric-section {
-    margin-bottom: 15px;
-  }
-  
-  .metric-section label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .metric-section input[type='text'],
-  .metric-section input[type='number'],
-  .metric-section select {
-    width: 100%;
-    padding: 5px;
-    font-size: 14px;
-  }
-  
-  .measures-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .measure-label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .var-es-settings {
-    border-top: 1px solid #ddd;
-    padding-top: 10px;
-  }
-  
-  .var-es-settings h3 {
-    margin-bottom: 10px;
-  }
-  
+.vm-form-group {
+  color: var(--color-text-primary) !important;
+}
+
+.vm-form-control-label {
+  color: var(--color-text-primary) !important;
+}
+
+.vm-checkbox {
+  color: var(--color-text-primary) !important;
+}
+
+.vm-text-field {
+  color: var(--color-text-primary) !important;
+}
+
+.vm-text-field::placeholder {
+  color: var(--color-text-primary) !important;
+}
+
+.vm-select {
+  color: var(--color-text-primary) !important;
+}
+
+.vm-select .MuiSvgIcon-root {
+  color: var(--color-text-primary) !important;
+}
+
+.vm-form-control .MuiInputLabel-root {
+  color: var(--color-text-primary) !important;
+}
+
+.vm-form-control .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-border-subtle) !important;
+}
+
+.vm-form-control .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+.vm-form-control .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-primary) !important;
+}
+
+.vm-text-field:hover,
+.vm-select:hover {
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+.vm-checkbox:hover {
+  box-shadow: 0 0 8px var(--color-primary) !important;
+}
+
+.vm-divider {
+  margin: 16px 0 !important;
+  background-color: var(--color-border-subtle) !important;
+}
+
+.vm-results {
+  margin-top: 16px !important;
+  color: var(--color-text-primary) 1 !important;
+}
+
+.vm-table-container {
+  margin-bottom: 16px !important;
+}
+
+.vm-table-container .MuiTableCell-root {
+  color: var(--color-text-primary) !important;
+}
+
+.vm-table-container .MuiTableHead-root .MuiTableCell-root {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+  font-weight: bold !important;
+}
+
+.vm-table-container .MuiTableBody-root .MuiTableCell-root {
+  border-color: var(--color-border-subtle) !important;
+}
+
+.vm-table-container .MuiTableRow-root:hover {
+  background-color: var(--color-border-subtle) !important;
+}
+
+.vm-select .MuiSelect-select::placeholder {
+  color: var(--color-text-primary) !important;
+}
+
+.vm-table-container .MuiTableBody-root .MuiTableRow-root:nth-child(even) {
+  background-color: var(--color-surface);
+}
+
+.vm-table-container .MuiTableBody-root .MuiTableRow-root:nth-child(odd) {
+  background-color: var(--color-surface-lite); /* Red for odd rows */
+}

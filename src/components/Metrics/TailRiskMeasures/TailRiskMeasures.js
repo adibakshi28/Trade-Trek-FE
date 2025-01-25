@@ -1,5 +1,28 @@
 import React from 'react';
-import { Card, CardContent, Typography, Checkbox, FormControlLabel, TextField, Grid, FormGroup, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Divider, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Checkbox,
+  FormControlLabel,
+  TextField,
+  Grid,
+  FormGroup,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Divider,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
+} from '@mui/material';
+import './TailRiskMeasures.css';
 
 const TailRiskMeasures = ({ settings, onUpdate, apiResponse }) => {
   const safeSettings = {
@@ -28,11 +51,11 @@ const TailRiskMeasures = ({ settings, onUpdate, apiResponse }) => {
     const metrics = safeSettings.measures;
 
     return (
-      <Box sx={{ mt: 4 }}>
+      <Box className="tr-results">
         <Typography variant="h6" gutterBottom>Tail Risk Analysis Results</Typography>
 
         <Typography variant="subtitle1" gutterBottom>Per Security Metrics</Typography>
-        <TableContainer component={Paper} sx={{ mb: 4, maxHeight: 400 }}>
+        <TableContainer component={Paper} className="tr-table-container">
           <Table stickyHeader>
             <TableHead>
               <TableRow>
@@ -60,7 +83,7 @@ const TailRiskMeasures = ({ settings, onUpdate, apiResponse }) => {
         </TableContainer>
 
         <Typography variant="subtitle1" gutterBottom>Portfolio Metrics</Typography>
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} className="tr-table-container">
           <Table>
             <TableHead>
               <TableRow>
@@ -89,14 +112,14 @@ const TailRiskMeasures = ({ settings, onUpdate, apiResponse }) => {
   };
 
   return (
-    <Card sx={{ mt: 2 }}>
+    <Card className="tr-card">
       <CardContent>
         <Typography variant="h6" gutterBottom>Tail Risk Configuration</Typography>
 
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1">Select Measures</Typography>
-            <FormGroup row>
+            <FormGroup row className="tr-form-group">
               {['skewness', 'kurtosis'].map(measure => (
                 <FormControlLabel
                   key={measure}
@@ -104,9 +127,11 @@ const TailRiskMeasures = ({ settings, onUpdate, apiResponse }) => {
                     <Checkbox
                       checked={safeSettings.measures.includes(measure)}
                       onChange={() => handleToggleMeasure(measure)}
+                      className="tr-checkbox"
                     />
                   }
                   label={measure.toUpperCase()}
+                  className="tr-form-control-label"
                 />
               ))}
             </FormGroup>
@@ -120,14 +145,18 @@ const TailRiskMeasures = ({ settings, onUpdate, apiResponse }) => {
               value={safeSettings.threshold_percentile}
               onChange={e => handleValueChange('threshold_percentile', parseFloat(e.target.value))}
               margin="normal"
+              className="tr-text-field"
+              placeholder="Enter threshold percentile"
               inputProps={{ min: 0, max: 1, step: 0.01 }}
             />
             
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" className="tr-form-control">
               <InputLabel>Distribution Model</InputLabel>
               <Select
                 value={safeSettings.distribution_model}
                 onChange={e => handleValueChange('distribution_model', e.target.value)}
+                className="tr-select"
+                placeholder="Select distribution model"
               >
                 {['empirical', 'normal', 'student-t'].map(model => (
                   <MenuItem key={model} value={model}>
@@ -138,6 +167,8 @@ const TailRiskMeasures = ({ settings, onUpdate, apiResponse }) => {
             </FormControl>
           </Grid>
         </Grid>
+
+        <Divider className="tr-divider" />
 
         {renderResults()}
       </CardContent>

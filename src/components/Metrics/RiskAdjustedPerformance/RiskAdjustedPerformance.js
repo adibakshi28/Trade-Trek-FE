@@ -1,5 +1,28 @@
 import React from 'react';
-import { Card, CardContent, Typography, Checkbox, FormControlLabel, TextField, Grid, FormGroup, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Divider, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Checkbox,
+  FormControlLabel,
+  TextField,
+  Grid,
+  FormGroup,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Divider,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
+} from '@mui/material';
+import './RiskAdjustedPerformance.css';
 
 const RiskAdjustedPerformance = ({ settings, onUpdate, apiResponse }) => {
   const safeSettings = {
@@ -32,19 +55,21 @@ const RiskAdjustedPerformance = ({ settings, onUpdate, apiResponse }) => {
     const measures = safeSettings.measures;
 
     return (
-      <Box sx={{ mt: 4 }}>
+      <Box className="rp-results">
         <Typography variant="h6" gutterBottom>Risk Adjusted Performance Results</Typography>
 
         {Object.entries(per_ticker).map(([ticker, data]) => (
-          <Box key={ticker} sx={{ mb: 4 }}>
+          <Box key={ticker} className="rp-ticker-section">
             <Typography variant="subtitle1" gutterBottom>{ticker}</Typography>
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} className="rp-table-container">
               <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell>Period</TableCell>
                     {measures.map(measure => (
-                      <TableCell key={measure}>{measure.replace(/_/g, ' ').toUpperCase()}</TableCell>
+                      <TableCell key={measure}>
+                        {measure.replace(/_/g, ' ').toUpperCase()}
+                      </TableCell>
                     ))}
                   </TableRow>
                 </TableHead>
@@ -65,14 +90,16 @@ const RiskAdjustedPerformance = ({ settings, onUpdate, apiResponse }) => {
           </Box>
         ))}
 
-        <Typography variant="subtitle1" gutterBottom sx={{ mt: 4 }}>Portfolio Performance</Typography>
-        <TableContainer component={Paper}>
+        <Typography variant="subtitle1" gutterBottom className="rp-portfolio-title">Portfolio Performance</Typography>
+        <TableContainer component={Paper} className="rp-table-container">
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Period</TableCell>
                 {measures.map(measure => (
-                  <TableCell key={measure}>{measure.replace(/_/g, ' ').toUpperCase()}</TableCell>
+                  <TableCell key={measure}>
+                    {measure.replace(/_/g, ' ').toUpperCase()}
+                  </TableCell>
                 ))}
               </TableRow>
             </TableHead>
@@ -95,14 +122,14 @@ const RiskAdjustedPerformance = ({ settings, onUpdate, apiResponse }) => {
   };
 
   return (
-    <Card sx={{ mt: 2 }}>
+    <Card className="rp-card">
       <CardContent>
         <Typography variant="h6" gutterBottom>Risk Adjusted Performance Settings</Typography>
 
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1">Select Measures</Typography>
-            <FormGroup row>
+            <FormGroup row className="rp-form-group">
               {['sharpe_ratio', 'information_ratio'].map(measure => (
                 <FormControlLabel
                   key={measure}
@@ -110,9 +137,11 @@ const RiskAdjustedPerformance = ({ settings, onUpdate, apiResponse }) => {
                     <Checkbox
                       checked={safeSettings.measures.includes(measure)}
                       onChange={() => handleToggleMeasure(measure)}
+                      className="rp-checkbox"
                     />
                   }
                   label={measure.replace(/_/g, ' ').toUpperCase()}
+                  className="rp-form-control-label"
                 />
               ))}
             </FormGroup>
@@ -124,22 +153,27 @@ const RiskAdjustedPerformance = ({ settings, onUpdate, apiResponse }) => {
               value={safeSettings.risk_free_rate}
               onChange={e => handleValueChange('risk_free_rate', parseFloat(e.target.value))}
               margin="normal"
+              className="rp-text-field"
+              placeholder="Enter risk free rate"
               inputProps={{ step: 0.01 }}
             />
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" className="rp-form-control">
               <InputLabel>Comparison Periods</InputLabel>
               <Select
                 multiple
                 value={safeSettings.comparison_periods}
                 onChange={e => handleValueChange('comparison_periods', e.target.value)}
                 renderValue={(selected) => selected.join(', ')}
+                className="rp-select"
+                placeholder="Select comparison periods"
               >
                 {['1M', '1Y', '3Y'].map(period => (
                   <MenuItem key={period} value={period}>
-                    {period}
+                    <Checkbox checked={safeSettings.comparison_periods.includes(period)} className="rp-checkbox" />
+                    <Typography className="rp-menu-item-text">{period}</Typography>
                   </MenuItem>
                 ))}
               </Select>
@@ -152,6 +186,8 @@ const RiskAdjustedPerformance = ({ settings, onUpdate, apiResponse }) => {
               value={safeSettings.rolling_sharpe_window}
               onChange={e => handleValueChange('rolling_sharpe_window', parseInt(e.target.value))}
               margin="normal"
+              className="rp-text-field"
+              placeholder="Enter rolling Sharpe window"
               inputProps={{ min: 1 }}
             />
 
@@ -160,13 +196,17 @@ const RiskAdjustedPerformance = ({ settings, onUpdate, apiResponse }) => {
                 <Checkbox
                   checked={safeSettings.adjust_benchmark_weights}
                   onChange={e => handleValueChange('adjust_benchmark_weights', e.target.checked)}
+                  className="rp-checkbox"
                 />
               }
               label="Adjust Benchmark Weights"
+              className="rp-form-control-label"
               sx={{ mt: 2 }}
             />
           </Grid>
         </Grid>
+
+        <Divider className="rp-divider" />
 
         {renderResults()}
       </CardContent>

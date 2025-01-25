@@ -15,8 +15,13 @@ import {
   Divider,
   Box,
   Grid,
-  FormGroup
+  FormGroup,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
+import './DistributionMeasures.css';
 
 const DistributionMeasures = ({ settings, onUpdate, apiResponse }) => {
   const safeSettings = {
@@ -42,11 +47,11 @@ const DistributionMeasures = ({ settings, onUpdate, apiResponse }) => {
     if (!sectorData) return null;
 
     return (
-      <Box sx={{ mt: 4 }}>
+      <Box className="dist-results">
         <Typography variant="subtitle1" gutterBottom>
           Sector Distribution
         </Typography>
-        <TableContainer component={Paper} sx={{ mb: 4 }}>
+        <TableContainer component={Paper} className="dist-table-container">
           <Table>
             <TableHead>
               <TableRow>
@@ -72,14 +77,14 @@ const DistributionMeasures = ({ settings, onUpdate, apiResponse }) => {
     if (hhiValue === undefined || hhiValue === null) return null;
 
     return (
-      <Box sx={{ mt: 4 }}>
+      <Box className="dist-results">
         <Typography variant="subtitle1" gutterBottom>
           Herfindahl-Hirschman Index (HHI)
         </Typography>
         <Typography variant="body1">
           HHI: {hhiValue.toFixed(4)}
         </Typography>
-        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+        <Typography variant="body2" color="textSecondary" className="dist-hhi-description">
           The HHI measures portfolio concentration. A higher value indicates greater concentration.
         </Typography>
       </Box>
@@ -101,7 +106,7 @@ const DistributionMeasures = ({ settings, onUpdate, apiResponse }) => {
   };
 
   return (
-    <Card sx={{ mt: 2 }}>
+    <Card className="dist-card">
       <CardContent>
         <Typography variant="h6" gutterBottom>
           Distribution Analysis
@@ -110,7 +115,7 @@ const DistributionMeasures = ({ settings, onUpdate, apiResponse }) => {
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1">Select Measures</Typography>
-            <FormGroup>
+            <FormGroup row className="dist-form-group">
               {['sector_distribution', 'hhi'].map((measure) => (
                 <FormControlLabel
                   key={measure}
@@ -118,9 +123,11 @@ const DistributionMeasures = ({ settings, onUpdate, apiResponse }) => {
                     <Checkbox
                       checked={safeSettings.measures.includes(measure)}
                       onChange={() => handleToggleMeasure(measure)}
+                      className="dist-checkbox"
                     />
                   }
                   label={measure.replace(/_/g, ' ').toUpperCase()}
+                  className="dist-form-control-label"
                 />
               ))}
             </FormGroup>
@@ -134,9 +141,11 @@ const DistributionMeasures = ({ settings, onUpdate, apiResponse }) => {
                   onChange={(e) =>
                     handleToggleSetting('sector_breakdown', e.target.checked)
                   }
+                  className="dist-checkbox"
                 />
               }
               label="Enable Sector Breakdown"
+              className="dist-form-control-label"
             />
             <FormControlLabel
               control={
@@ -145,12 +154,17 @@ const DistributionMeasures = ({ settings, onUpdate, apiResponse }) => {
                   onChange={(e) =>
                     handleToggleSetting('hhi_analysis', e.target.checked)
                   }
+                  className="dist-checkbox"
                 />
               }
               label="Enable HHI Analysis"
+              className="dist-form-control-label"
+              sx={{ mt: 2 }}
             />
           </Grid>
         </Grid>
+
+        <Divider className="dist-divider" />
 
         {renderResults()}
       </CardContent>

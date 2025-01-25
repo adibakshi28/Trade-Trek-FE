@@ -1,57 +1,115 @@
-/* src/components/metrics/PortfolioOptimization/PortfolioOptimization.css */
+.po-card {
+  margin-top: 16px !important;
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+}
 
-.metric-card {
-    border: 1px solid #ccc;
-    padding: 15px;
-    border-radius: 4px;
-  }
-  
-  .metric-card h2 {
-    margin-bottom: 10px;
-  }
-  
-  .metric-section {
-    margin-bottom: 15px;
-  }
-  
-  .metric-section label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .metric-section input[type='text'],
-  .metric-section input[type='number'],
-  .metric-section select {
-    width: 100%;
-    padding: 5px;
-    font-size: 14px;
-  }
-  
-  .measures-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .measure-label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .constraints {
-    display: flex;
-    gap: 20px;
-  }
-  
-  .constraint-item {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-  
-  .constraint-item label {
-    margin-bottom: 5px;
-  }
-  
+.po-form-group {
+  color: var(--color-text-primary) !important;
+}
+
+.po-form-control-label {
+  color: var(--color-text-primary) !important;
+}
+
+.po-checkbox {
+  color: var(--color-text-primary) !important;
+}
+
+.po-text-field {
+  color: var(--color-text-primary) !important;
+}
+
+.po-text-field::placeholder {
+  color: var(--color-text-primary) !important;
+}
+
+.po-select {
+  color: var(--color-text-primary) !important;
+}
+
+.po-select .MuiSvgIcon-root {
+  color: var(--color-text-primary) !important;
+}
+
+.po-form-control .MuiInputLabel-root {
+  color: var(--color-text-primary) !important;
+}
+
+.po-form-control .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-border-subtle) !important;
+}
+
+.po-form-control .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+.po-form-control .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-primary) !important;
+}
+
+.po-text-field:hover,
+.po-select:hover {
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+.po-checkbox:hover {
+  box-shadow: 0 0 8px var(--color-primary) !important;
+}
+
+.po-divider {
+  margin: 16px 0 !important;
+  background-color: var(--color-border-subtle) !important;
+}
+
+.po-results {
+  margin-top: 16px !important;
+  color: var(--color-text-primary) !important;
+}
+
+.po-objective-value,
+.po-goal,
+.po-rebalance-frequency {
+  margin-bottom: 16px !important;
+  color: var(--color-text-primary) !important;
+}
+
+.po-transaction-note {
+  color: var(--color-text-secondary) !important;
+}
+
+.po-table-container {
+  margin-bottom: 16px !important;
+}
+
+.po-table-container .MuiTableCell-root {
+  color: var(--color-text-primary) !important;
+}
+
+.po-table-container .MuiTableHead-root .MuiTableCell-root {
+  background-color: var(--color-surface-lite) !important;
+  color: var(--color-text-primary) !important;
+  font-weight: bold !important;
+}
+
+.po-table-container .MuiTableBody-root .MuiTableCell-root {
+  border-color: var(--color-border-subtle) !important;
+}
+
+.po-table-container .MuiTableRow-root:hover {
+  background-color: var(--color-border-subtle) !important;
+}
+
+.po-select .MuiSelect-select::placeholder {
+  color: var(--color-text-primary) !important;
+}
+
+.po-table-container .MuiTableBody-root .MuiTableRow-root:nth-child(even) {
+  background-color: var(--color-surface-lite) !important;
+}
+
+.po-table-container .MuiTableBody-root .MuiTableRow-root:nth-child(odd) {
+  background-color: var(--color-surface) !important;
+}
