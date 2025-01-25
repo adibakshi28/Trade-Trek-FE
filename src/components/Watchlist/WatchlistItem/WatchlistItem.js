@@ -5,7 +5,9 @@ import './WatchlistItem.css';
 import { Box, Typography, IconButton, Button, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import TimelineIcon from '@mui/icons-material/Timeline'; // Graph icon
+import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
+import InsightsIcon from '@mui/icons-material/Insights';
+import { useNavigate } from 'react-router-dom';
 
 function WatchlistItem({
   symbol,
@@ -15,9 +17,10 @@ function WatchlistItem({
   priceDirection,
   onDelete,
   onTrade,
-  onShowPlot,    // new
+  onShowPlot,
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const navigate = useNavigate();
 
   // Day-change color
   const isDayChangePositive = change >= 0;
@@ -53,6 +56,10 @@ function WatchlistItem({
     }
   };
 
+  const handleStockDetailClick = () => {
+    navigate(`/stock/${symbol}`);
+  };
+
   return (
     <Box className="watchlist-item">
       {/* Left Section: Ticker and Name */}
@@ -77,6 +84,17 @@ function WatchlistItem({
 
       {/* Action Buttons (Visible on Hover) */}
       <Box className="watchlist-item__actions">
+        {/* Stock Analytics icon */}
+        <Tooltip title={"Analyze instrument data and news"} placement="top">
+            <IconButton
+                aria-label={`analyze ${symbol}`}
+                className="watchlist-item__analyze-button"
+                onClick={handleStockDetailClick}
+              >
+                <InsightsIcon fontSize="custom" />
+              </IconButton>
+          </Tooltip>
+
         {/* Graph/Plot icon */}
         <Tooltip title={"Plot instrument price and volume"} placement="top">
           <IconButton
@@ -84,7 +102,7 @@ function WatchlistItem({
               className="watchlist-item__plot-button"
               onClick={handlePlotClick}
             >
-              <TimelineIcon fontSize="custom" />
+              <CandlestickChartIcon fontSize="custom" />
             </IconButton>
         </Tooltip>
 

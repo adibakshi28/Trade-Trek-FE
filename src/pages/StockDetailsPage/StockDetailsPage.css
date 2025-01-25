@@ -1,0 +1,152 @@
+/* src/pages/StockDetailsPage/StockDetailsPage.css */
+
+/* Page Container */
+.page-container {
+    display: flex !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    background-color: transparent !important;
+  }
+  
+  /* Scrollable Card */
+  .scrollable-card {
+    min-width: 98.5vw !important;
+    max-width: 1200px !important;
+    height: 85vh !important;
+    overflow-y: auto !important;
+    padding: 10px !important;
+    background-color: transparent !important;
+    margin-top: 6vh !important;
+  }
+  
+  /* Header Section */
+  .header-section {
+    padding: 24px !important;
+    margin-bottom: 10px !important;
+    background-color: var(--color-surface-lite) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+  }
+  
+  /* Stock Avatar */
+  .stock-avatar {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  
+  /* Stock Name */
+  .stock-name {
+    font-weight: bold !important;
+    color: white !important;
+  }
+  
+  /* Stock Industry */
+  .stock-industry {
+    color: var(--color-text-secondary) !important;
+  }
+  
+  /* Stock Exchange */
+  .stock-exchange {
+    color: var(--color-text-secondary) !important;
+  }
+  
+  /* Quote Section */
+  .quote-section {
+    padding: 24px !important;
+    margin-bottom: 10px !important;
+    background-color: var(--color-surface) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+  }
+  
+  /* Section Title */
+  .section-title {
+    color: white !important;
+    font-weight: bold !important;
+    margin-bottom: 10px !important;
+  }
+  
+  /* Quote Text */
+  .quote-text {
+    color: white !important;
+  }
+  
+  /* Positive Change */
+  .positive-change {
+    color: green !important;
+  }
+  
+  /* Negative Change */
+  .negative-change {
+    color: red !important;
+  }
+  
+  /* Financials Section */
+  .financials-section {
+    padding: 24px !important;
+    margin-bottom: 10px !important;
+    background-color: var(--color-surface) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+  }
+  
+  /* Financials Text */
+  .financials-text {
+    color: white !important;
+  }
+  
+  /* News Section */
+  .news-section {
+    padding: 24px !important;
+    background-color: var(--color-surface) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+  }
+  
+  /* News Headline */
+  .news-headline {
+    color: var(--color-primary) !important;
+  }
+  
+  /* News Meta */
+  .news-meta {
+    color: var(--color-text-secondary) !important;
+  }
+  
+  /* News Summary */
+  .news-summary {
+    color: white !important;
+  }
+  
+  /* News List Item */
+  .news-list-item {
+    transition: background-color 0.3s ease !important;
+  }
+  
+  .news-list-item:hover {
+    background-color: var(--color-surface-lite) !important;
+  }
+  
+  /* News Divider */
+  .news-divider {
+    background-color: var(--color-text-secondary) !important;
+  }
+  
+  /* Loading Container */
+  .loading-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 300px !important;
+  }
+  
+  /* Error Container */
+  .error-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 5vh !important;
+    color: red !important;
+    height: 300px !important;
+  }
+  

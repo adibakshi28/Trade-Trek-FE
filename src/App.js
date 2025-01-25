@@ -24,6 +24,8 @@ import Insights from './pages/InsightsPage/Insights';
 import Social from './pages/SocialPage/Social';
 import Research from './pages/ResearchPage/Research';
 
+import StockDetailsPage from './pages/StockDetailsPage/StockDetailsPage';
+
 function App() {
   return (
     <AuthProvider>
@@ -48,6 +50,8 @@ function App() {
                       <Route path="/insights" element={<Insights />} />
                       <Route path="/social" element={<Social />} />
                       <Route path="/research" element={<Research />} />
+
+                      <Route path="/stock/:ticker" element={<StockDetailsPage />} />
 
                       <Route path="*" element={<Landing />} />
                     </Routes>

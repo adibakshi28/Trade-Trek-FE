@@ -86,7 +86,7 @@
   right: 1rem !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
-  gap: 1.5rem !important;
+  gap: 0.75rem !important;
   opacity: 0 !important;
   transition: opacity 0.3s ease !important;
 }
@@ -116,6 +116,18 @@
 }
 
 .watchlist-item__plot-button:hover {
+  transform: scale(1.2) !important;
+  box-shadow: 0 0 5px 2px var(--color-primary);
+}
+
+.watchlist-item__analyze-button {
+  color: var(--color-text-primary) !important;
+  transition: transform 0.2s ease !important;
+  font-size: 1.75rem !important;
+  padding: 5px !important;
+}
+
+.watchlist-item__analyze-button:hover {
   transform: scale(1.2) !important;
   box-shadow: 0 0 5px 2px var(--color-primary);
 }
