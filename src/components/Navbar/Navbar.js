@@ -102,11 +102,25 @@ function Navbar() {
               Transactions
             </Link>
             <Link
+              to="/insights"
+              className={`nav-link ${location.pathname === '/insights' ? 'active' : ''}`}
+              aria-label="Insights"
+            >
+              Insights
+            </Link>
+            <Link
               to="/social"
               className={`nav-link ${location.pathname === '/social' ? 'active' : ''}`}
               aria-label="Social"
             >
               Social
+            </Link>
+            <Link
+              to="/research"
+              className={`nav-link ${location.pathname === '/research' ? 'active' : ''}`}
+              aria-label="Research"
+            >
+              Research
             </Link>
           </Box>
         )}

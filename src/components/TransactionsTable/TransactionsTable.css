@@ -24,7 +24,7 @@
   .transactions-title {
     color: var(--color-text-primary) !important;
     text-align: center;
-    margin-bottom: 10px !important;
+    margin-bottom: 15px !important;
   }
   
   /* Skeleton Rows */
@@ -45,7 +45,7 @@
   /* Table Container */
   .transactions-table-container {
     width: 100%; /* Ensure full width */
-    height: 73.5vh !important;
+    height: 73vh !important;
     border-radius: 10px;
     overflow: auto;
     background-color: var(--color-surface) !important;

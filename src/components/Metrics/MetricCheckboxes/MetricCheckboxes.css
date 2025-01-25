@@ -1,0 +1,8 @@
+/* src/components/metrics/MetricCheckboxes/MetricCheckboxes.css */
+
+/* Currently, MUI handles most of the styling. Add custom styles here if needed. */
+
+/* Example: Adjust spacing between checkboxes */
+.MuiFormControlLabel-root {
+  margin-right: 16px;
+}

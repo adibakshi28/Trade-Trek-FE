@@ -20,7 +20,9 @@ import Contact from './pages/ContactPage/Contact';
 // Protected Routes
 import Dashboard from './pages/DashboardPage/Dashboard';
 import Transactions from './pages/TransactionsPage/Transactions';
+import Insights from './pages/InsightsPage/Insights';
 import Social from './pages/SocialPage/Social';
+import Research from './pages/ResearchPage/Research';
 
 function App() {
   return (
@@ -43,7 +45,9 @@ function App() {
 
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/transactions" element={<Transactions />} />
+                      <Route path="/insights" element={<Insights />} />
                       <Route path="/social" element={<Social />} />
+                      <Route path="/research" element={<Research />} />
 
                       <Route path="*" element={<Landing />} />
                     </Routes>

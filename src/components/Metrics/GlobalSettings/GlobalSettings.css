@@ -1,0 +1,17 @@
+/* src/components/metrics/GlobalSettings/GlobalSettings.css */
+
+/* Currently, MUI handles most of the styling. Add custom styles here if needed. */
+
+/* Example: Adjust date picker label */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 4px;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}

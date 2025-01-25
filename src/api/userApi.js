@@ -67,3 +67,9 @@ export const getUserPortfolioHistory = async () => {
   const response = await axiosClient.get('/user/portfolio/history');
   return response.data; 
 };
+
+// /user/metrics
+export const postUserMetrics = async (config) => {
+  const response = await axiosClient.post('/user/metrics', config);
+  return response.data;
+};

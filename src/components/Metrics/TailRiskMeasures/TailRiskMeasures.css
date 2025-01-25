@@ -1,0 +1,42 @@
+/* src/components/metrics/TailRisk/TailRisk.css */
+
+.metric-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 4px;
+  }
+  
+  .metric-card h2 {
+    margin-bottom: 10px;
+  }
+  
+  .metric-section {
+    margin-bottom: 15px;
+  }
+  
+  .metric-section label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .metric-section input[type='text'],
+  .metric-section input[type='number'],
+  .metric-section select {
+    width: 100%;
+    padding: 5px;
+    font-size: 14px;
+  }
+  
+  .measures-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .measure-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
