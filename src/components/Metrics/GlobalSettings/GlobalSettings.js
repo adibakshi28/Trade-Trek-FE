@@ -111,7 +111,7 @@ const GlobalSettings = ({
       </Grid>
 
       {/* Include Portfolio */}
-      <Grid item xs={12} sm={6} md={3} className="gs-grid-item">
+      {/* <Grid item xs={12} sm={6} md={3} className="gs-grid-item">
         <FormControlLabel
           control={
             <Checkbox
@@ -123,7 +123,7 @@ const GlobalSettings = ({
           label="Include Portfolio"
           className="gs-form-control-label"
         />
-      </Grid>
+      </Grid> */}
 
       {/* Include Benchmark Trend */}
       <Grid item xs={12} sm={6} md={3} className="gs-grid-item">

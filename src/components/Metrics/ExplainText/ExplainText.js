@@ -8,7 +8,7 @@ const ExplainText = ({ replyText, loading }) => {
     <Card className="itd-card">
       <CardContent className="itd-card-content">
         <Typography variant="h6" className="itd-title">
-          Insights
+            Analysis Report & Recommendations
         </Typography>
         <Divider className="itd-divider" />
         {loading ? (

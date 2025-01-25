@@ -4,6 +4,7 @@ import config from '../config';
 
 const axiosClient = axios.create({
   baseURL: config.apiBaseUrl,
+  timeout: 600000,
 });
 
 axiosClient.interceptors.request.use(

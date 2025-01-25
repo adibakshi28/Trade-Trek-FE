@@ -1,0 +1,75 @@
+/* src/components/Metrics/PortfolioDistributionChart/PortfolioDistributionChart.css */
+
+/* Container for the entire component */
+.portfolio-distribution-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px !important;
+    padding: 10px !important;
+    background-color: var(--color-bg) !important;
+    box-sizing: border-box !important;
+    border-radius: 8px !important;
+}
+
+/* Responsive layout for larger screens */
+@media (min-width: 960px) {
+    .portfolio-distribution-container {
+      flex-direction: row;
+    }
+}
+
+/* Styling for each chart card */
+.chart-card {
+    flex: 1 ;
+    background-color: var(--color-surface) !important;
+    color: var(--color-text-primary) !important;
+    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+    border-radius: 8px !important;
+    padding: 18px !important;
+    height: 32vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Styling for the chart title */
+.card-title {
+    text-align: center !important;
+    color: var(--color-text-primary) !important;
+    margin-bottom: 4px !important; /* Reduced margin-bottom for tighter spacing */
+    line-height: 0.75 !important;
+    font-weight: bold !important; /* Make the title bold for emphasis */
+}
+
+/* Container for the charts */
+.chart-container {
+    position: relative;
+    flex: 1 ;
+    padding: 5px !important;
+}
+
+/* Styling for "No data available" messages */
+.no-data {
+    color: var(--color-text-primary) !important;
+    text-align: center !important;
+    margin-top: auto !important;
+    margin-bottom: auto !important;
+}
+
+/* Styling for the loading state */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px !important;
+}
+
+/* Styling for the error state */
+.error-container {
+    padding: 16px !important;
+}
+
+/* Additional styling to ensure titles have reduced spacing and are prominent */
+.card-title {
+    margin-bottom: 4px !important;
+    /* If further reduction is needed, adjust the value */
+}

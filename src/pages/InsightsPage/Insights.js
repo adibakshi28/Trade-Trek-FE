@@ -4,7 +4,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { postUserMetrics } from '../../api/userApi';
-import { postMetricInsights } from '../../api/aiApi'; // Import the new API function
+import { postMetricInsights } from '../../api/aiApi'; 
+import PortfolioDistributionChart from '../../components/Metrics/PortfolioDistributionChart/PortfolioDistributionChart';
 import GlobalSettings from '../../components/Metrics/GlobalSettings/GlobalSettings';
 import MetricCheckboxes from '../../components/Metrics/MetricCheckboxes/MetricCheckboxes';
 import VolatilityMeasures from '../../components/Metrics/VolatilityMeasures/VolatilityMeasures';
@@ -14,14 +15,14 @@ import TailRiskMeasures from '../../components/Metrics/TailRiskMeasures/TailRisk
 import RiskAdjustedPerformance from '../../components/Metrics/RiskAdjustedPerformance/RiskAdjustedPerformance';
 import DistributionMeasures from '../../components/Metrics/DistributionMeasures/DistributionMeasures';
 import PortfolioOptimization from '../../components/Metrics/PortfolioOptimization/PortfolioOptimization';
-import ExplainText from '../../components/Metrics/ExplainText/ExplainText'; // Import the new component
+import ExplainText from '../../components/Metrics/ExplainText/ExplainText';
 import { Box, Card, Button, Snackbar, CircularProgress, Alert, Grid } from '@mui/material';
 import './Insights.css';
 
 const DEFAULT_METRICS_CONFIG = {
   volatility_measures: {
     enable: false,
-    measures: [],
+    measures: ['var'],
     rolling_window: 30,
     historical_period: '1Y',
     time_series: [],
@@ -34,44 +35,44 @@ const DEFAULT_METRICS_CONFIG = {
   },
   correlation_diversification: {
     enable: false,
-    measures: [],
+    measures: ['correlation_coefficient'],
     benchmark: 'SPY',
     correlation_method: 'pearson'
   },
   drawdown_measures: {
     enable: false,
-    measures: [],
+    measures: ['mdd'],
     rolling_drawdown_window: 30,
     event_highlighting: true,
     time_series: []
   },
   tail_risk: {
     enable: false,
-    measures: [],
+    measures: ['skewness'],
     threshold_percentile: 0.01,
     distribution_model: 'empirical',
     time_series: []
   },
   risk_adjusted_performance: {
     enable: false,
-    measures: [],
+    measures: ['sharpe_ratio'],
     benchmark: 'SPY',
     risk_free_rate: 0.03,
-    comparison_periods: ['1M', '1Y', '3Y'],
+    comparison_periods: ['1Y'],
     adjust_benchmark_weights: false,
     rolling_sharpe_window: 30,
     time_series: []
   },
   distribution: {
     enable: false,
-    measures: [],
-    sector_breakdown: true,
-    hhi_analysis: true,
+    measures: ['sector_distribution'],
+    sector_breakdown: false,
+    hhi_analysis: false,
     time_series: []
   },
   portfolio_optimization: {
     enable: false,
-    measures: [],
+    measures: ['optimal_allocation'],
     goal: 'maximize_return',
     constraints: {
       min_allocation: 0.05,
@@ -266,6 +267,10 @@ const Insights = () => {
       {/* Main Insights Card */}
       <Card className="insights-card">
         <Box className="insights-content">
+          <Box className="insights-chart">
+            <PortfolioDistributionChart />
+          </Box>
+
           <GlobalSettings
             timeframe={config.timeframe}
             resolution={config.resolution}
@@ -366,7 +371,7 @@ const Insights = () => {
                 className="insights-explain-button"
                 startIcon={isExplainLoading && <CircularProgress size={24} className="button-spinner" />}
               >
-                {isExplainLoading ? 'Explaining...' : 'EXPLAIN'}
+                {isExplainLoading ? 'Analyzing...' : 'Report & Recommendations'}
               </Button>
             </Grid>
           </Grid>
