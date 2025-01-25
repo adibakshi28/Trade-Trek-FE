@@ -8,7 +8,7 @@
   padding: 24px !important;
   background-color: var(--color-bg) !important;
   height: 90vh !important;
-  margin-top: 6vh !important;
+  margin-top: 7vh !important;
   box-sizing: border-box;
   overflow: hidden; /* Prevent scrollbar from the container */
 }
