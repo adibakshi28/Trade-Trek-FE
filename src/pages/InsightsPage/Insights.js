@@ -1,7 +1,10 @@
+// src/pages/Insights/Insights.js
+
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { postUserMetrics } from '../../api/userApi';
+import { postMetricInsights } from '../../api/aiApi'; // Import the new API function
 import GlobalSettings from '../../components/Metrics/GlobalSettings/GlobalSettings';
 import MetricCheckboxes from '../../components/Metrics/MetricCheckboxes/MetricCheckboxes';
 import VolatilityMeasures from '../../components/Metrics/VolatilityMeasures/VolatilityMeasures';
@@ -11,7 +14,8 @@ import TailRiskMeasures from '../../components/Metrics/TailRiskMeasures/TailRisk
 import RiskAdjustedPerformance from '../../components/Metrics/RiskAdjustedPerformance/RiskAdjustedPerformance';
 import DistributionMeasures from '../../components/Metrics/DistributionMeasures/DistributionMeasures';
 import PortfolioOptimization from '../../components/Metrics/PortfolioOptimization/PortfolioOptimization';
-import { Box, Card, Button, Snackbar, CircularProgress, Alert } from '@mui/material';
+import ExplainText from '../../components/Metrics/ExplainText/ExplainText'; // Import the new component
+import { Box, Card, Button, Snackbar, CircularProgress, Alert, Grid } from '@mui/material';
 import './Insights.css';
 
 const DEFAULT_METRICS_CONFIG = {
@@ -93,6 +97,11 @@ const Insights = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
+  // New state variables for Insights
+  const [insightsReply, setInsightsReply] = useState(null);
+  const [isExplainLoading, setIsExplainLoading] = useState(false);
+  const [explainError, setExplainError] = useState(null);
+
   const [config, setConfig] = useState({
     timeframe: {
       start_date: '2023-01-01',
@@ -123,7 +132,17 @@ const Insights = () => {
       setSnackbarMessage(apiError);
       setSnackbarOpen(true);
     }
-  }, [apiResponse, apiError]);
+    if (insightsReply) {
+      setSnackbarSeverity('success');
+      setSnackbarMessage('Insights retrieved successfully!');
+      setSnackbarOpen(true);
+    }
+    if (explainError) {
+      setSnackbarSeverity('error');
+      setSnackbarMessage(explainError);
+      setSnackbarOpen(true);
+    }
+  }, [apiResponse, apiError, insightsReply, explainError]);
 
   const handleMetricToggle = (metricKey) => {
     setConfig(prev => ({
@@ -182,6 +201,9 @@ const Insights = () => {
       const response = await postUserMetrics(payload);
       setApiResponse(response);
       setApiError(null);
+      // Reset insightsReply when new analysis is run
+      setInsightsReply(null);
+      setExplainError(null);
     } catch (error) {
       setApiError(error.response?.data?.message || error.message || 'An error occurred');
     } finally {
@@ -189,23 +211,60 @@ const Insights = () => {
     }
   };
 
+  const handleExplain = async () => {
+    setIsExplainLoading(true);
+    setExplainError(null);
+    setInsightsReply(''); // Initialize as empty string to render the ExplainText card with loading
+
+    try {
+      const metricConfig = {
+        timeframe: config.timeframe,
+        resolution: config.resolution,
+        benchmark: config.benchmark,
+        metrics: Object.keys(config.metrics).reduce((acc, metricKey) => {
+          const metric = config.metrics[metricKey];
+          if (metric.enable) {
+            acc[metricKey] = {
+              enable: true,
+              ...metric
+            };
+          }
+          return acc;
+        }, {}),
+        settings: config.settings
+      };
+      const response = await postMetricInsights(metricConfig);
+      setInsightsReply(response.reply);
+    } catch (error) {
+      setExplainError(error.response?.data?.message || error.message || 'An error occurred while fetching insights');
+      setInsightsReply(null); // Optionally hide the ExplainText card if there's an error
+    } finally {
+      setIsExplainLoading(false);
+    }
+  };
+
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
 
+  // Determine if at least one metric is enabled
+  const isAnyMetricEnabled = Object.values(config.metrics).some(metric => metric.enable);
+
   return (
-    <Box className="insights-container">
+    <Box className={`insights-container ${insightsReply !== null ? 'with-insights' : ''}`}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} className="insights-alert">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+
+      {/* Main Insights Card */}
       <Card className="insights-card">
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={3000}
-          onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        >
-          <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} className="insights-alert">
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
         <Box className="insights-content">
           <GlobalSettings
             timeframe={config.timeframe}
@@ -281,20 +340,44 @@ const Insights = () => {
           )}
         </Box>
 
+        {/* Footer with Run Analysis and EXPLAIN buttons */}
         <Box className="insights-footer">
-          <Button
-            fullWidth
-            variant="contained"
-            size="large"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            startIcon={isSubmitting && <CircularProgress size={24} className="button-spinner" />}
-            className="insights-button"
-          >
-            {isSubmitting ? 'Processing...' : 'Run Analysis'}
-          </Button>
+          <Grid container spacing={6}>
+            <Grid item xs={12} sm={6}>
+              <Button
+                fullWidth
+                variant="contained"
+                size="large"
+                onClick={handleSubmit}
+                disabled={isSubmitting || !isAnyMetricEnabled}
+                startIcon={isSubmitting && <CircularProgress size={24} className="button-spinner" />}
+                className="insights-button"
+              >
+                {isSubmitting ? 'Processing...' : 'Run Analysis'}
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Button
+                fullWidth
+                variant="outlined"
+                size="large"
+                onClick={handleExplain}
+                disabled={!isAnyMetricEnabled || isExplainLoading}
+                className="insights-explain-button"
+                startIcon={isExplainLoading && <CircularProgress size={24} className="button-spinner" />}
+              >
+                {isExplainLoading ? 'Explaining...' : 'EXPLAIN'}
+              </Button>
+            </Grid>
+          </Grid>
         </Box>
       </Card>
+
+      {/* Insights Reply Card */}
+      {/* Render ExplainText when the user has clicked EXPLAIN */}
+      {insightsReply !== null && (
+        <ExplainText replyText={insightsReply} loading={isExplainLoading} />
+      )}
     </Box>
   );
 };

@@ -1,0 +1,98 @@
+.itd-card-content {
+    flex: 1;
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 16px !important; /* Adjust padding */
+  }
+  
+  .itd-title {
+    color: var(--color-text-primary) !important;
+    font-weight: bold !important; /* Make title bold */
+    text-align: center; /* Center the title */
+    margin-bottom: 12px !important; /* Space between title and divider */
+  }
+  
+  .itd-divider {
+    background-color: var(--color-border-subtle) !important;
+    margin-bottom: 16px; /* Space below the divider */
+  }
+
+  .skeleton-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Spacing between skeleton lines */
+    padding: 8px;
+  }
+  
+  .skeleton-title {
+    margin: 0 auto; /* Center align title skeleton */
+  }
+  
+  .skeleton-line {
+    margin: 0 auto; /* Center align content skeleton */
+    border-radius: 4px; /* Add slight rounding for better aesthetics */
+  }
+  
+  .itd-markdown {
+    color: var(--color-text-primary) !important;
+    white-space: pre-wrap;
+    line-height: 1.4 !important; /* Reduced line height for compactness */
+  }
+  
+  /* Style markdown lists */
+  .itd-markdown ul {
+    list-style-type: disc;
+    padding-left: 20px !important;
+    margin-top: 4px !important; /* Reduced margin */
+    margin-bottom: 4px !important; /* Reduced margin */
+  }
+  
+  .itd-markdown li {
+    margin-bottom: 4px !important; /* Reduced space between list items */
+  }
+  
+  /* Style markdown headings */
+  .itd-markdown h1,
+  .itd-markdown h2,
+  .itd-markdown h3,
+  .itd-markdown h4,
+  .itd-markdown h5,
+  .itd-markdown h6 {
+    margin-top: 12px !important; /* Reduced margin above headings */
+    margin-bottom: 8px !important; /* Reduced margin below headings */
+    line-height: 1.2 !important; /* Adjusted line height */
+  }
+  
+  /* Blockquote styling */
+  .itd-markdown blockquote {
+    border-left: 4px solid var(--color-border-subtle) !important;
+    padding-left: 12px !important; /* Adjusted padding */
+    color: var(--color-text-secondary) !important;
+    margin: 8px 0 !important; /* Reduced margin for blockquotes */
+  }
+  
+  /* Table adjustments */
+  .itd-markdown table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0; /* Adjusted margin */
+  }
+  
+  .itd-markdown th,
+  .itd-markdown td {
+    border: 1px solid var(--color-border-subtle) !important;
+    padding: 6px !important; /* Adjusted padding for compact tables */
+    text-align: left;
+  }
+  
+  /* Paragraph spacing */
+  .itd-markdown p {
+    margin: 8px 0 !important; /* Reduced paragraph spacing */
+  }
+  
+  /* Horizontal rule adjustments */
+  .itd-markdown hr {
+    border: none;
+    border-top: 1px solid var(--color-border-subtle) !important;
+    margin: 12px 0 !important; /* Adjusted spacing for horizontal rules */
+  }
+  
