@@ -379,9 +379,8 @@ const Insights = () => {
       </Card>
 
       {/* Insights Reply Card */}
-      {/* Render ExplainText when the user has clicked EXPLAIN */}
       {insightsReply !== null && (
-        <ExplainText replyText={insightsReply} loading={isExplainLoading} />
+        <ExplainText replyText={insightsReply} loading={isExplainLoading} heading={'Portfolio Analysis Report & Recommendations'}/>
       )}
     </Box>
   );

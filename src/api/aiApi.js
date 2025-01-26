@@ -14,3 +14,10 @@ export const postMetricInsights = async (config) => {
   const response = await axiosClient.post('/ai/metric-insights', config);
   return response.data;
 };
+
+
+// /ai/stock-insights
+export const postStockInsights = async (config) => {
+  const response = await axiosClient.post('/ai/stock-insights', config);
+  return response.data;
+};

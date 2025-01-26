@@ -3,12 +3,12 @@ import { Card, CardContent, Typography, Divider, Skeleton } from '@mui/material'
 import ReactMarkdown from 'react-markdown';
 import './ExplainText.css';
 
-const ExplainText = ({ replyText, loading }) => {
+const ExplainText = ({ replyText, loading, heading }) => {
   return (
     <Card className="itd-card">
       <CardContent className="itd-card-content">
         <Typography variant="h6" className="itd-title">
-            Analysis Report & Recommendations
+            {heading ? heading : 'Analysis Report & Recommendations'} 
         </Typography>
         <Divider className="itd-divider" />
         {loading ? (

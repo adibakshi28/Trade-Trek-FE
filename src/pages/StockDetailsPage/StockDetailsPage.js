@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getStockInfo, getStockHistorical } from '../../api/stockApi';
+import { postStockInsights } from '../../api/aiApi';
 import {
   Box,
   Typography,
@@ -9,7 +10,10 @@ import {
   Avatar,
   Grid,
   Paper,
-  Chip
+  Chip,
+  Button,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import {
@@ -24,6 +28,7 @@ import {
   Filler,
 } from 'chart.js';
 import { format } from 'date-fns';
+import ExplainText from '../../components/Metrics/ExplainText/ExplainText';
 import './StockDetailsPage.css';
 
 ChartJS.register(
@@ -43,6 +48,12 @@ const StockDetailsPage = () => {
   const [historicalData, setHistoricalData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [insightsReply, setInsightsReply] = useState(null);
+  const [isExplainLoading, setIsExplainLoading] = useState(false);
+  const [explainError, setExplainError] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const fetchStockData = async () => {
     try {
@@ -77,6 +88,47 @@ const StockDetailsPage = () => {
     };
     fetchData();
   }, [ticker]);
+
+  useEffect(() => {
+    if (insightsReply) {
+      setSnackbarSeverity('success');
+      setSnackbarMessage('Stock analysis report generated successfully!');
+      setSnackbarOpen(true);
+    }
+    if (explainError) {
+      setSnackbarSeverity('error');
+      setSnackbarMessage(explainError);
+      setSnackbarOpen(true);
+    }
+  }, [insightsReply, explainError]);
+
+  const handleExplain = async () => {
+    setIsExplainLoading(true);
+    setExplainError(null);
+    setInsightsReply('');
+
+    try {
+      const response = await postStockInsights({
+        ticker: ticker,
+        context: {
+          profile: stockData?.profile,
+          financials: stockData?.financials,
+          historical: historicalData,
+          quote: stockData?.quote
+        }
+      });
+      setInsightsReply(response.reply);
+    } catch (error) {
+      setExplainError(error.response?.data?.message || error.message || 'Failed to generate insights');
+      setInsightsReply(null);
+    } finally {
+      setIsExplainLoading(false);
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
 
   if (loading) {
     return (
@@ -192,215 +244,252 @@ const StockDetailsPage = () => {
 
   return (
     <Box className="container">
-      {/* Header Section */}
-      <Paper className="header-card">
-        <Box className="company-info">
-          <Avatar src={profile.logo} className="company-logo" />
-          <Box>
-            <Typography variant="h3" className="company-name">
-              {profile.name} ({profile.ticker})
-            </Typography>
-            <Typography variant="subtitle1" className="industry">
-              {profile.finnhubIndustry}
-            </Typography>
-            <Chip label={profile.exchange} className="exchange-chip" />
-          </Box>
-        </Box>
-        
-        <Box className="price-section">
-          <Typography variant="h2" className="price">
-            ${quote.c.toFixed(2)}
-          </Typography>
-          <Chip
-            label={`${quote.d >= 0 ? '+' : ''}${quote.d.toFixed(2)} (${quote.dp.toFixed(2)}%)`}
-            className={`change-chip ${quote.d >= 0 ? 'positive' : 'negative'}`}
-          />
-        </Box>
-      </Paper>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
 
-      {/* Stats Grid */}
-      <Grid container spacing={2} className="stats-grid">
-        {[
-          { label: 'Open', value: `$${quote.o}` },
-          { label: 'Previous Close', value: `$${quote.pc}` },
-          { label: 'Day High', value: `$${quote.h}` },
-          { label: 'Day Low', value: `$${quote.l}` },
-          { label: 'Market Cap', value: `$${formatNumber(financials.marketCapitalization)}` },
-          { label: 'Volume', value: formatNumber(quote.v) },
-        ].map((stat, i) => (
-          <Grid item xs={6} md={4} lg={2} key={i}>
-            <Paper className="stat-card">
-              <Typography variant="body2" className="stat-label">
-                {stat.label}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={insightsReply ? 8 : 12}>
+          <Paper className="header-card">
+            <Box className="company-info">
+              <Avatar src={profile.logo} className="company-logo" />
+              <Box>
+                <Typography variant="h3" className="company-name">
+                  {profile.name} ({profile.ticker})
+                </Typography>
+                <Typography variant="subtitle1" className="industry">
+                  {profile.finnhubIndustry}
+                </Typography>
+                <Chip label={profile.exchange} className="exchange-chip" />
+              </Box>
+            </Box>
+            
+            <Box className="price-section">
+              <Typography variant="h2" className="price">
+                ${quote.c.toFixed(2)}
               </Typography>
-              <Typography variant="h6" className="stat-value">
-                {stat.value}
-              </Typography>
-            </Paper>
+              <Chip
+                label={`${quote.d >= 0 ? '+' : ''}${quote.d.toFixed(2)} (${quote.dp.toFixed(2)}%)`}
+                className={`change-chip ${quote.d >= 0 ? 'positive' : 'negative'}`}
+              />
+            </Box>
+          </Paper>
+
+          <Grid container spacing={2} className="stats-grid">
+            {[
+              { label: 'Open', value: `$${quote.o}` },
+              { label: 'Previous Close', value: `$${quote.pc}` },
+              { label: 'Day High', value: `$${quote.h}` },
+              { label: 'Day Low', value: `$${quote.l}` },
+              { label: 'Market Cap (M)', value: `$${formatNumber(financials.marketCapitalization)}` },
+              { label: 'Volume', value: formatNumber(quote.v) },
+            ].map((stat, i) => (
+              <Grid item xs={6} md={4} lg={2} key={i}>
+                <Paper className="stat-card">
+                  <Typography variant="body2" className="stat-label">
+                    {stat.label}
+                  </Typography>
+                  <Typography variant="h6" className="stat-value">
+                    {stat.value}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
           </Grid>
-        ))}
+
+          <Paper className="chart-card">
+            <Typography variant="h5" className="section-title">
+              Past Year Performance
+            </Typography>
+            <Box className="chart-container">
+              {historicalData.length > 0 ? (
+                <Line data={chartData} options={chartOptions} />
+              ) : (
+                <Typography variant="body1" className="no-data">
+                  Historical data unavailable
+                </Typography>
+              )}
+            </Box>
+          </Paper>
+
+          <Paper className="financials-card">
+            <Typography variant="h5" className="section-title">
+              Key Financial Metrics
+            </Typography>
+            
+            <Box className="metric-category">
+              <Typography variant="subtitle1" className="category-title">
+                Valuation Multiples
+              </Typography>
+              <Grid container spacing={2}>
+                {[
+                  { key: 'peTTM', label: 'P/E Ratio (TTM)', type: 'ratio' },
+                  { key: 'dividendYieldIndicatedAnnual', label: 'Dividend Yield', type: 'percentage' },
+                  { key: 'pbQuarterly', label: 'Price/Book', type: 'ratio' },
+                  { key: 'psTTM', label: 'Price/Sales', type: 'ratio' },
+                ].map(({ key, label, type }) => (
+                  <Grid item xs={6} md={3} key={key}>
+                    <Paper className="metric-card">
+                      <Typography variant="body2" className="metric-label">
+                        {label}
+                      </Typography>
+                      <Typography variant="h6" className="metric-value">
+                        {formatFinancialValue(key, financials[key])}
+                        {type === 'percentage' && '%'}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+
+            <Box className="metric-category">
+              <Typography variant="subtitle1" className="category-title">
+                Profitability
+              </Typography>
+              <Grid container spacing={2}>
+                {[
+                  { key: 'roeTTM', label: 'Return on Equity', type: 'percentage' },
+                  { key: 'netProfitMarginTTM', label: 'Net Profit Margin', type: 'percentage' },
+                  { key: 'operatingMarginTTM', label: 'Operating Margin', type: 'percentage' },
+                ].map(({ key, label, type }) => (
+                  <Grid item xs={6} md={4} key={key}>
+                    <Paper className="metric-card">
+                      <Typography variant="body2" className="metric-label">
+                        {label}
+                      </Typography>
+                      <Typography variant="h6" className="metric-value">
+                        {formatFinancialValue(key, financials[key])}%
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+
+            <Box className="metric-category">
+              <Typography variant="subtitle1" className="category-title">
+                Growth
+              </Typography>
+              <Grid container spacing={2}>
+                {[
+                  { key: 'revenueGrowthTTMYoy', label: 'Revenue Growth (YoY)', type: 'percentage' },
+                  { key: 'epsGrowthTTMYoy', label: 'EPS Growth (YoY)', type: 'percentage' },
+                  { key: 'dividendGrowthRate5Y', label: 'Dividend Growth (5Y)', type: 'percentage' },
+                ].map(({ key, label, type }) => (
+                  <Grid item xs={6} md={4} key={key}>
+                    <Paper className="metric-card">
+                      <Typography variant="body2" className="metric-label">
+                        {label}
+                      </Typography>
+                      <Typography variant="h6" className={`metric-value ${getTrendClass(financials[key])}`}>
+                        {formatFinancialValue(key, financials[key])}%
+                        {renderTrendArrow(financials[key])}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+
+            <Box className="metric-category">
+              <Typography variant="subtitle1" className="category-title">
+                Financial Health
+              </Typography>
+              <Grid container spacing={2}>
+                {[
+                  { key: 'totalDebt/totalEquityQuarterly', label: 'Debt/Equity Ratio', type: 'ratio' },
+                  { key: 'currentRatioQuarterly', label: 'Current Ratio', type: 'ratio' },
+                  { key: 'beta', label: 'Beta (Volatility)', type: 'raw' },
+                ].map(({ key, label, type }) => (
+                  <Grid item xs={6} md={4} key={key}>
+                    <Paper className="metric-card">
+                      <Typography variant="body2" className="metric-label">
+                        {label}
+                      </Typography>
+                      <Typography variant="h6" className="metric-value">
+                        {type === 'percentage' ? `${financials[key]}%` : financials[key]}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          </Paper>
+
+          <Paper className="insights-action-card">
+            <Button
+              fullWidth
+              variant="outlined"
+              size="large"
+              onClick={handleExplain}
+              disabled={isExplainLoading}
+              className="generate-report-button"
+              startIcon={isExplainLoading && <CircularProgress size={24} className="button-spinner" />}
+            >
+              {isExplainLoading ? 'Analyzing...' : `Analyze ${ticker}`}
+            </Button>
+          </Paper>
+
+          <Paper className="news-card">
+            <Typography variant="h5" className="section-title">
+              Latest News
+            </Typography>
+            <Box className="news-grid">
+              {news.map((article) => (
+                <a href={article.url} key={article.id} className="news-article-link" target="_blank" rel="noopener noreferrer">
+                  <Paper className="news-article" style={{ 
+                    backgroundImage: `linear-gradient(to bottom, rgba(16, 19, 33, 0.7), rgba(16, 19, 33, 0.9)), url(${article.image || ''})`
+                  }}>
+                    <div className="news-content">
+                      <Typography variant="subtitle2" className="news-source">
+                        {article.source} • {format(new Date(article.datetime * 1000), 'MMM d, yyyy')}
+                      </Typography>
+                      <Typography variant="subtitle1" className="news-headline">
+                        {article.headline}
+                      </Typography>
+                      {article.summary && (
+                        <Typography variant="body2" className="news-summary">
+                          {article.summary}
+                        </Typography>
+                      )}
+                    </div>
+                  </Paper>
+                </a>
+              ))}
+            </Box>
+          </Paper>
+        </Grid>
+
+        {insightsReply !== null && (
+          <Grid item xs={12} md={4}>
+            <ExplainText 
+              replyText={insightsReply} 
+              loading={isExplainLoading}
+              heading={`${ticker} Analysis Report`}
+              sx={{
+                position: 'sticky',
+                height: 'calc(100vh - 40px)',
+                overflowY: 'hidden',
+                p: 2,
+                backgroundColor: 'background.paper',
+                borderRadius: 8
+              }}
+            />
+          </Grid>
+        )}
       </Grid>
-
-      {/* Chart Section */}
-      <Paper className="chart-card">
-        <Typography variant="h5" className="section-title">
-          Past Year Performance
-        </Typography>
-        <Box className="chart-container">
-          {historicalData.length > 0 ? (
-            <Line data={chartData} options={chartOptions} />
-          ) : (
-            <Typography variant="body1" className="no-data">
-              Historical data unavailable
-            </Typography>
-          )}
-        </Box>
-      </Paper>
-
-      {/* Enhanced Financial Metrics Section */}
-      <Paper className="financials-card">
-        <Typography variant="h5" className="section-title">
-          Key Financial Metrics
-        </Typography>
-        
-        {/* Valuation Metrics */}
-        <Box className="metric-category">
-          <Typography variant="subtitle1" className="category-title">
-            Valuation Multiples
-          </Typography>
-          <Grid container spacing={2}>
-            {[
-              { key: 'peTTM', label: 'P/E Ratio (TTM)', type: 'ratio' },
-              { key: 'dividendYieldIndicatedAnnual', label: 'Dividend Yield', type: 'percentage' },
-              { key: 'pbQuarterly', label: 'Price/Book', type: 'ratio' },
-              { key: 'psTTM', label: 'Price/Sales', type: 'ratio' },
-            ].map(({ key, label, type }) => (
-              <Grid item xs={6} md={3} key={key}>
-                <Paper className="metric-card">
-                  <Typography variant="body2" className="metric-label">
-                    {label}
-                  </Typography>
-                  <Typography variant="h6" className="metric-value">
-                    {formatFinancialValue(key, financials[key])}
-                    {type === 'percentage' && '%'}
-                  </Typography>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-
-        {/* Profitability Metrics */}
-        <Box className="metric-category">
-          <Typography variant="subtitle1" className="category-title">
-            Profitability
-          </Typography>
-          <Grid container spacing={2}>
-            {[
-              { key: 'roeTTM', label: 'Return on Equity', type: 'percentage' },
-              { key: 'netProfitMarginTTM', label: 'Net Profit Margin', type: 'percentage' },
-              { key: 'operatingMarginTTM', label: 'Operating Margin', type: 'percentage' },
-            ].map(({ key, label, type }) => (
-              <Grid item xs={6} md={4} key={key}>
-                <Paper className="metric-card">
-                  <Typography variant="body2" className="metric-label">
-                    {label}
-                  </Typography>
-                  <Typography variant="h6" className="metric-value">
-                    {formatFinancialValue(key, financials[key])}%
-                  </Typography>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-
-        {/* Growth Metrics */}
-        <Box className="metric-category">
-          <Typography variant="subtitle1" className="category-title">
-            Growth
-          </Typography>
-          <Grid container spacing={2}>
-            {[
-              { key: 'revenueGrowthTTMYoy', label: 'Revenue Growth (YoY)', type: 'percentage' },
-              { key: 'epsGrowthTTMYoy', label: 'EPS Growth (YoY)', type: 'percentage' },
-              { key: 'dividendGrowthRate5Y', label: 'Dividend Growth (5Y)', type: 'percentage' },
-            ].map(({ key, label, type }) => (
-              <Grid item xs={6} md={4} key={key}>
-                <Paper className="metric-card">
-                  <Typography variant="body2" className="metric-label">
-                    {label}
-                  </Typography>
-                  <Typography variant="h6" className={`metric-value ${getTrendClass(financials[key])}`}>
-                    {formatFinancialValue(key, financials[key])}%
-                    {renderTrendArrow(financials[key])}
-                  </Typography>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-
-        {/* Financial Health */}
-        <Box className="metric-category">
-          <Typography variant="subtitle1" className="category-title">
-            Financial Health
-          </Typography>
-          <Grid container spacing={2}>
-            {[
-              { key: 'totalDebt/totalEquityQuarterly', label: 'Debt/Equity Ratio', type: 'ratio' },
-              { key: 'currentRatioQuarterly', label: 'Current Ratio', type: 'ratio' },
-              { key: 'beta', label: 'Beta (Volatility)', type: 'raw' },
-            ].map(({ key, label, type }) => (
-              <Grid item xs={6} md={4} key={key}>
-                <Paper className="metric-card">
-                  <Typography variant="body2" className="metric-label">
-                    {label}
-                  </Typography>
-                  <Typography variant="h6" className="metric-value">
-                    {type === 'percentage' ? `${financials[key]}%` : financials[key]}
-                  </Typography>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      </Paper>
-
-      {/* News Section */}
-      <Paper className="news-card">
-        <Typography variant="h5" className="section-title">
-          Latest News
-        </Typography>
-        <Box className="news-grid">
-          {news.map((article) => (
-            <a href={article.url} key={article.id} className="news-article-link" target="_blank" rel="noopener noreferrer">
-              <Paper className="news-article" style={{ 
-                backgroundImage: `linear-gradient(to bottom, rgba(16, 19, 33, 0.7), rgba(16, 19, 33, 0.9)), url(${article.image || ''})`
-              }}>
-                <div className="news-content">
-                  <Typography variant="subtitle2" className="news-source">
-                    {article.source} • {format(new Date(article.datetime * 1000), 'MMM d, yyyy')}
-                  </Typography>
-                  <Typography variant="subtitle1" className="news-headline">
-                    {article.headline}
-                  </Typography>
-                  {article.summary && (
-                    <Typography variant="body2" className="news-summary">
-                      {article.summary}
-                    </Typography>
-                  )}
-                </div>
-              </Paper>
-            </a>
-          ))}
-        </Box>
-      </Paper>
     </Box>
   );
 };
 
-// Helper functions
 const formatNumber = (num) => {
   if (!num) return '-';
   return new Intl.NumberFormat('en-US', {
