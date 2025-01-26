@@ -1,152 +1,313 @@
-/* src/pages/StockDetailsPage/StockDetailsPage.css */
+/* StockDetailsPage.css */
 
-/* Page Container */
-.page-container {
-    display: flex !important;
-    justify-content: center !important;
-    padding: 0 !important;
-    background-color: transparent !important;
+.container {
+  width: 98vw !important;
+  margin: 7vh auto 0 !important;
+  padding: 0 1rem !important;
+  height: 87vh !important;
+  overflow-y: auto !important;
+  background: transparent !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Header Section */
+.header-card {
+  padding: 1rem !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+  margin: 2px 0 14px !important;
+  background: var(--color-surface) !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+}
+
+.company-info {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1.5rem !important;
+}
+
+.company-logo {
+  width: 100px !important;
+  height: 100px !important;
+  background: var(--color-surface-lite) !important;
+}
+
+.company-name {
+  font-weight: 700 !important;
+  margin-bottom: 0.25rem !important;
+  color: var(--color-text-primary) !important;
+}
+
+.industry {
+  color: var(--color-text-secondary) !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.exchange-chip {
+  background: var(--color-surface-lite) !important;
+  color: var(--color-text-primary) !important;
+  font-weight: 500 !important;
+}
+
+/* Price Section */
+.price-section {
+  text-align: right !important;
+}
+
+.price {
+  font-weight: 800 !important;
+  margin-bottom: 0.5rem !important;
+  color: var(--color-text-primary) !important;
+}
+
+.change-chip {
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.change-chip.positive {
+  background: rgba(98, 212, 159, 0.15) !important;
+  color: var(--color-success) !important;
+}
+
+.change-chip.negative {
+  background: rgba(229, 115, 115, 0.15) !important;
+  color: var(--color-error) !important;
+}
+
+/* Stats Grid */
+.stats-grid {
+  margin-bottom: 14px !important;
+}
+
+.stat-card {
+  padding: 0.25rem !important;
+  padding-left: 1rem !important;
+  border-radius: 8px !important;
+  transition: transform 0.2s !important;
+  background: var(--color-surface) !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px) !important;
+}
+
+.stat-label {
+  color: var(--color-text-secondary) !important;
+  margin-bottom: 0.25rem !important;
+  font-weight: 500 !important;
+}
+
+.stat-value {
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+}
+
+.section-title {
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Chart Section */
+.chart-card {
+  padding: 1rem !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+  margin-bottom: 14px !important;
+  border-radius: 8px !important;
+  background: var(--color-surface) !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+}
+
+.chart-container {
+  height: 300px !important;
+  margin-top: 0.5rem !important;
+}
+
+/* Financial Metrics Section */
+.financials-card {
+  padding: 1rem !important;
+  margin-bottom: 14px !important;
+  background: var(--color-surface) !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+  border-radius: 8px !important;
+}
+
+.metric-category {
+  margin-bottom: 0 !important;
+}
+
+.category-title {
+  color: var(--color-text-primary) !important;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.5rem !important;
+  font-size: 1.1rem !important;
+  font-weight: 400 !important;
+  padding-bottom: 0 !important;
+  border-bottom: 1px solid var(--color-border-subtle) !important;
+}
+
+.metric-card {
+  padding: 0.25rem !important;
+  background: var(--color-surface-lite) !important;
+  border-radius: 8px !important;
+  transition: transform 0.2s ease !important;
+  border: 1px solid var(--color-border-subtle) !important;
+}
+
+.metric-card:hover {
+  transform: translateY(-3px) !important;
+}
+
+.metric-label {
+  color: var(--color-text-secondary) !important;
+  margin-bottom: 0.1rem !important;
+  font-size: 0.95rem !important;
+}
+
+.metric-value {
+  color: var(--color-text-primary) !important;
+  font-weight: 600 !important;
+  font-size: 1.2rem !important;
+}
+
+.positive-trend {
+  color: var(--color-success) !important;
+}
+
+.negative-trend {
+  color: var(--color-error) !important;
+}
+
+.trend-arrow {
+  font-size: 0.8em !important;
+  margin-left: 0.3rem !important;
+}
+
+/* News Section */
+/* News Section with Images */
+.news-card {
+  padding: 2rem !important;
+  background: var(--color-surface) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+}
+
+.news-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+  gap: 1.5rem !important;
+  margin-top: 1.5rem !important;
+}
+
+.news-article-link {
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+.news-article {
+  padding: 1.5rem !important;
+  border-radius: 8px !important;
+  transition: transform 0.2s ease !important;
+  height: 250px !important;
+  background-size: cover !important;
+  background-position: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+}
+
+.news-article:hover {
+  transform: translateY(-3px) !important;
+}
+
+.news-content {
+  position: relative !important;
+  z-index: 1 !important;
+  overflow-y: auto !important;
+}
+
+.news-source {
+  color: var(--color-text-secondary) !important;
+  font-size: 0.8rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.news-headline {
+  color: var(--color-text-primary) !important;
+  margin-bottom: 0.75rem !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+}
+
+.news-summary {
+  color: var(--color-text-secondary) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.5 !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+/* Loading and Error States */
+.loading-container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 80vh !important;
+}
+
+.error-container {
+  text-align: center !important;
+  padding: 4rem !important;
+  color: var(--color-error) !important;
+}
+
+.no-data {
+  text-align: center !important;
+  padding: 1rem !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+  color: var(--color-text-secondary) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-card {
+    flex-direction: column !important;
+    text-align: center !important;
   }
   
-  /* Scrollable Card */
-  .scrollable-card {
-    min-width: 98.5vw !important;
-    max-width: 1200px !important;
-    height: 85vh !important;
-    overflow-y: auto !important;
-    padding: 10px !important;
-    background-color: transparent !important;
-    margin-top: 6vh !important;
+  .company-info {
+    flex-direction: column !important;
+    text-align: center !important;
   }
   
-  /* Header Section */
-  .header-section {
-    padding: 24px !important;
-    margin-bottom: 10px !important;
-    background-color: var(--color-surface-lite) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+  .price-section {
+    text-align: center !important;
+    width: 100% !important;
   }
   
-  /* Stock Avatar */
-  .stock-avatar {
-    width: 80px !important;
-    height: 80px !important;
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
   
-  /* Stock Name */
-  .stock-name {
-    font-weight: bold !important;
-    color: white !important;
+  .news-grid {
+    grid-template-columns: 1fr !important;
   }
   
-  /* Stock Industry */
-  .stock-industry {
-    color: var(--color-text-secondary) !important;
+  .metric-card {
+    padding: 1rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
   }
-  
-  /* Stock Exchange */
-  .stock-exchange {
-    color: var(--color-text-secondary) !important;
-  }
-  
-  /* Quote Section */
-  .quote-section {
-    padding: 24px !important;
-    margin-bottom: 10px !important;
-    background-color: var(--color-surface) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
-  }
-  
-  /* Section Title */
-  .section-title {
-    color: white !important;
-    font-weight: bold !important;
-    margin-bottom: 10px !important;
-  }
-  
-  /* Quote Text */
-  .quote-text {
-    color: white !important;
-  }
-  
-  /* Positive Change */
-  .positive-change {
-    color: green !important;
-  }
-  
-  /* Negative Change */
-  .negative-change {
-    color: red !important;
-  }
-  
-  /* Financials Section */
-  .financials-section {
-    padding: 24px !important;
-    margin-bottom: 10px !important;
-    background-color: var(--color-surface) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
-  }
-  
-  /* Financials Text */
-  .financials-text {
-    color: white !important;
-  }
-  
-  /* News Section */
-  .news-section {
-    padding: 24px !important;
-    background-color: var(--color-surface) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
-  }
-  
-  /* News Headline */
-  .news-headline {
-    color: var(--color-primary) !important;
-  }
-  
-  /* News Meta */
-  .news-meta {
-    color: var(--color-text-secondary) !important;
-  }
-  
-  /* News Summary */
-  .news-summary {
-    color: white !important;
-  }
-  
-  /* News List Item */
-  .news-list-item {
-    transition: background-color 0.3s ease !important;
-  }
-  
-  .news-list-item:hover {
-    background-color: var(--color-surface-lite) !important;
-  }
-  
-  /* News Divider */
-  .news-divider {
-    background-color: var(--color-text-secondary) !important;
-  }
-  
-  /* Loading Container */
-  .loading-container {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    height: 300px !important;
-  }
-  
-  /* Error Container */
-  .error-container {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    margin-top: 5vh !important;
-    color: red !important;
-    height: 300px !important;
-  }
-  
+}
