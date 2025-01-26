@@ -113,8 +113,8 @@ const StockDetailsPage = () => {
         context: {
           profile: stockData?.profile,
           financials: stockData?.financials,
-          historical: historicalData,
-          quote: stockData?.quote
+          quote: stockData?.quote,
+          news: stockData?.news
         }
       });
       setInsightsReply(response.reply);
