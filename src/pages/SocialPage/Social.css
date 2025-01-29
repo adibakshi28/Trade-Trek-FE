@@ -1,0 +1,109 @@
+/* src/pages/SocialPage/Social.css */
+.social-container {
+  background: var(--color-bg) !important;
+  min-height: 75vh !important;
+  display: grid !important;
+  gap: 2rem !important;
+  margin-top: 6vh !important;
+}
+
+.social-content {
+  display: grid !important;
+  grid-template-columns: 1fr 2fr !important;
+  gap: 0.5rem !important;
+  height: calc(100vh - 120px) !important;
+}
+
+.lists-section {
+  display: grid !important;
+  gap: 0.5rem !important;
+  align-content: start !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+  margin-left: 0.5rem !important;
+}
+
+.detail-section {
+  background: var(--color-surface) !important;
+  border-radius: 8px !important;
+  position: relative !important;
+  overflow-y: auto !important;
+  margin: 0.25rem !important;
+  margin-right: 0.75rem !important;
+
+  box-shadow: 0 0 5px 1px var(--color-text-secondary) !important;
+}
+
+.no-selection {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  color: var(--color-text-secondary) !important;
+}
+
+.no-selection-title {
+  font-weight: 600 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.no-selection-subtitle {
+  max-width: 300px !important;
+  line-height: 1.5 !important;
+}
+
+.loading-card {
+  background: var(--color-surface) !important;
+  border-radius: 8px !important;
+  padding: 2rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  border: 1px solid var(--color-border-subtle) !important;
+}
+
+.loading-text {
+  color: var(--color-text-secondary) !important;
+  font-size: 0.9rem !important;
+}
+
+.error-card {
+  background: var(--color-surface) !important;
+  border-radius: 8px !important;
+  padding: 1.5rem !important;
+  border: 1px solid var(--color-error) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .social-content {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+  }
+  
+  .lists-section {
+    padding-right: 0 !important;
+    height: auto !important;
+  }
+  
+  .detail-section {
+    min-height: 500px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .social-container {
+    padding: 1rem !important;
+  }
+  
+  .page-title {
+    font-size: 1.75rem !important;
+  }
+  
+  .detail-section {
+    padding: 1.5rem !important;
+  }
+}

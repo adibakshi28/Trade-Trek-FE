@@ -1,0 +1,499 @@
+/* src/components/Social/FriendDetails/FriendDetails.css */
+
+/* Root Container */
+.friend-details {
+  background: var(--color-surface) !important;
+  padding: 1rem !important;
+  border-radius: 8px !important;
+  color: var(--color-text-primary) !important;
+  display: grid !important;
+  gap: 1rem !important;
+  margin: 0.25rem !important;
+}
+
+/* Header Section */
+.friend-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding-bottom: 0.2rem !important;
+  border-bottom: 1px solid var(--color-border-subtle) !important;
+}
+
+/* Detail Title */
+.detail-title {
+  font-size: 1.75rem !important;
+  font-weight: 700 !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: var(--color-text-primary) !important;
+  margin: 0 !important;
+}
+
+/* Portfolio Stats */
+.portfolio-stats {
+  display: flex !important;
+  gap: 1rem !important;
+  flex-wrap: wrap !important;
+}
+
+/* Stat Item */
+.stat-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 0.75rem !important;
+  background: var(--color-surface-lite) !important;
+  border-radius: 8px !important;
+  flex-grow: 1 !important;
+  min-width: 150px !important;
+  transition: background 0.2s ease !important, box-shadow 0.2s ease !important;
+}
+
+.stat-item:hover {
+  background: var(--color-surface) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Stat Icon */
+.stat-icon {
+  font-size: 1.5rem !important;
+  padding: 0.5rem !important;
+  border-radius: 50% !important;
+  color: var(--color-text-primary) !important;
+}
+
+.stat-icon.positive {
+  color: var(--color-success) !important;
+  background: rgba(98, 212, 159, 0.1) !important;
+}
+
+.stat-icon.negative {
+  color: var(--color-error) !important;
+  background: rgba(229, 115, 115, 0.1) !important;
+}
+
+/* Stat Label and Value */
+.stat-label {
+  color: var(--color-text-secondary) !important;
+  font-size: 0.9rem !important;
+}
+
+.stat-value {
+  font-weight: 600 !important;
+  font-size: 1.2rem !important;
+}
+
+/* Positive and Negative Text */
+.positive {
+  color: var(--color-success) !important;
+}
+
+.negative {
+  color: var(--color-error) !important;
+}
+
+/* Portfolio Grid */
+.portfolio-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 1rem !important;
+}
+
+/* Portfolio Item */
+.portfolio-item {
+  background: var(--color-surface-lite) !important;
+  padding: 1rem !important;
+  border-radius: 8px !important;
+  border-left: 4px solid var(--color-primary) !important;
+  transition: transform 0.2s ease !important;
+}
+
+.portfolio-item:hover {
+  transform: translateY(-2px) !important;
+}
+
+/* Portfolio Item Title */
+.portfolio-item strong {
+  color: var(--color-text-secondary) !important;
+  font-size: 0.9rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  display: block !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Highlight Number */
+.highlight-number {
+  font-size: 1.4rem !important;
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Section Header */
+.section-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 1rem !important;
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+}
+
+/* Section Title */
+.section-title {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+  position: relative !important;
+  padding-left: 1rem !important;
+}
+
+.section-title::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 6px !important;
+  height: 50% !important;
+  background: var(--color-secondary) !important;
+  border-radius: 4px !important;
+}
+
+/* Controls */
+.controls {
+  display: flex !important;
+  gap: 0.5rem !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+}
+
+/* Transactions and Holdings Lists */
+.transactions-list,
+.holdings-list {
+  background: var(--color-surface-lite) !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--color-border-subtle) !important;
+  overflow: hidden !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Transaction Item */
+.transaction-item {
+  padding: 0.75rem !important;
+  transition: background 0.2s ease !important, box-shadow 0.2s ease !important;
+  background: var(--color-surface) !important;
+  margin: 0.25rem 0 !important;
+  border-radius: 8px !important;
+}
+
+.transaction-item:hover {
+  background: var(--color-surface-lite) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Direction Indicator */
+.direction-indicator {
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+}
+
+.direction-indicator.buy {
+  background: rgba(80, 135, 240, 0.15) !important;
+  color: var(--color-primary) !important;
+}
+
+.direction-indicator.sell {
+  background: rgba(242, 153, 74, 0.15) !important;
+  color: var(--color-secondary) !important;
+}
+
+/* Ticker and Quantity */
+.ticker {
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+}
+
+.quantity {
+  color: var(--color-text-secondary) !important;
+  font-size: 0.9rem !important;
+}
+
+/* Transaction Details */
+.transaction-details {
+  display: flex !important;
+  gap: 0.5rem !important;
+  align-items: center !important;
+  color: var(--color-text-secondary) !important;
+}
+
+.price {
+  color: var(--color-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+.date {
+  font-size: 0.9rem !important;
+}
+
+.filter-input {
+  /* width: 100% !important; */
+  max-width: 600px !important;
+  min-width: 125px !important;
+  background: var(--color-border-subtle);
+  border-radius: 5px !important;
+  overflow: hidden;
+  box-shadow: 0px 4px 10px var(--color-bg) !important;
+  margin: 0.5rem 0 !important;
+}
+
+.filter-input .MuiOutlinedInput-root {
+  border-radius: 5px !important;
+  padding-left: 0.5rem;
+}
+
+.filter-input .MuiOutlinedInput-notchedOutline {
+  border: none !important;
+}
+
+.filter-input:hover .MuiOutlinedInput-notchedOutline {
+  border: none !important;
+}
+
+.filter-input:focus-within {
+  box-shadow: 0 0 5px 2px var(--color-primary) !important;
+}
+
+.filter-input .MuiOutlinedInput-input {
+  color: var(--color-text-primary) !important;
+  font-size: 1rem !important;
+  padding: 0.75rem 0 !important;
+}
+
+.filter-input .MuiInputAdornment-root svg {
+  color: var(--color-text-secondary) !important;
+  font-size: 1.25rem !important;
+}
+
+/* Holding Header */
+.holding-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 0.75rem !important;
+  cursor: pointer !important;
+  transition: background 0.2s ease !important;
+  width: 100% !important;
+}
+
+.holding-header:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Ticker Name and PL Badge */
+.ticker-name {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  font-weight: 600 !important;
+}
+
+.pl-badge {
+  padding: 2px 8px !important;
+  border-radius: 12px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  margin-left: 0.5rem !important;
+}
+
+/* Holding Details Grid */
+.holding-details-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 0.5rem !important;
+  padding: 0.75rem !important;
+  background: rgba(0, 0, 0, 0.1) !important;
+  border-radius: 8px !important;
+  margin: 0.5rem 0.5rem 0.5rem !important;
+}
+
+/* Holding Metric */
+.holding-metric {
+  background: var(--color-surface) !important;
+  padding: 0.6rem !important;
+  border-radius: 6px !important;
+  text-align: center !important;
+}
+
+.holding-metric span {
+  display: block !important;
+  color: var(--color-text-secondary) !important;
+  font-size: 0.8rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.holding-metric strong {
+  color: var(--color-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+/* Diversification Summary */
+.diversification-summary {
+  display: flex !important;
+  gap: 1rem !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+}
+
+/* Diversification Item */
+.diversification-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  color: var(--color-text-secondary) !important;
+  font-size: 0.9rem !important;
+}
+
+.dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background: var(--color-primary) !important;
+}
+
+.dot.large {
+  width: 10px !important;
+  height: 10px !important;
+}
+
+.dot.medium {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+/* Loading State */
+.friend-details-loading {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 300px !important;
+}
+
+.circular-progress {
+  color: var(--color-primary) !important;
+  filter: drop-shadow(0 0 8px var(--color-primary)) !important;
+}
+
+/* Error Message */
+.error-message {
+  color: var(--color-error) !important;
+  padding: 1rem !important;
+  background: var(--color-surface-lite) !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+  border: 1px solid var(--color-error) !important;
+  margin: 1rem !important;
+}
+
+/* Pagination Styles */
+.pagination {
+  display: flex !important;
+  justify-content: center !important;
+  /* padding: 1rem 0 !important; */
+  margin: 1rem !important;
+}
+
+.MuiPaginationItem-root {
+  color: var(--color-text-secondary) !important;
+  border: 1px solid var(--color-border-subtle) !important;
+}
+
+.MuiPaginationItem-page.Mui-selected {
+  background: var(--color-primary) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+.MuiPaginationItem-page:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.MuiPaginationItem-previousNext {
+  border-color: var(--color-border-subtle) !important;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface) !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-lite) !important;
+  border-radius: 4px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-subtle) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .holding-details-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .portfolio-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .section-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+
+  .controls {
+    width: 100% !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  .portfolio-stats {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  .friend-details {
+    padding: 0.75rem !important;
+  }
+
+  .detail-title {
+    font-size: 1.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .holding-details-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .portfolio-item {
+    padding: 0.75rem !important;
+  }
+
+  .stat-item {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+}
