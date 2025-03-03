@@ -159,6 +159,46 @@
   gap: 16px;
 }
 
+
+/* Auth Buttons */
+.auth-button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  display: inline-block;
+}
+
+/* Login button: outlined style */
+.auth-button.login {
+  color: var(--color-primary);
+  background: transparent;
+  border: 2px solid var(--color-primary);
+}
+
+.auth-button.login:hover {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+/* Register button: filled style */
+.auth-button.register {
+  color: #fff;
+  background: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+.auth-button.register:hover {
+  background: transparent;
+  color: var(--color-primary);
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+
+
 /* Hide nav-links when not logged in */
 .nav-links:not(:empty) {
   display: flex;

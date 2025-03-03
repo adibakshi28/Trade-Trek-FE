@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { FiTrendingUp, FiActivity, FiShield, FiDollarSign, FiChevronDown, FiZap } from 'react-icons/fi';
 import './Landing.css';
 
 const screenshots = [
@@ -8,6 +9,39 @@ const screenshots = [
   '/ss/3.png',
   '/ss/4.png',
   '/ss/5.png',
+];
+
+const features = [
+  {
+    title: 'Neural Market Predictions',
+    description: 'Forecast market movements with precision using deep neural networks.',
+    icon: <FiTrendingUp size={32} />
+  },
+  {
+    title: 'Portfolio Genome Analysis',
+    description: 'Uncover hidden strengths and weaknesses in your portfolio.',
+    icon: <FiActivity size={32} />
+  },
+  {
+    title: 'Risk DNA Profiling',
+    description: 'Assess your unique risk profile with innovative AI algorithms.',
+    icon: <FiShield size={32} />
+  },
+  {
+    title: 'Liquid Asset Tracking',
+    description: 'Monitor asset liquidity in real time to seize trading opportunities.',
+    icon: <FiDollarSign size={32} />
+  },
+  {
+    title: 'Sentiment Horizon Scan',
+    description: 'Capture market sentiment trends to stay ahead of emerging shifts.',
+    icon: <FiChevronDown size={32} />
+  },
+  {
+    title: 'Quantum Trade Engine',
+    description: 'Experience ultra-fast trade execution with quantum-inspired algorithms.',
+    icon: <FiZap size={32} />
+  }
 ];
 
 function LandingPage() {
@@ -58,7 +92,7 @@ function LandingPage() {
             </Link>
           </div>
         </div>
-        <div className="scroll-indicator">
+        <div className="scroll-indicator" aria-hidden="true">
           <span></span>
         </div>
       </header>
@@ -84,11 +118,17 @@ function LandingPage() {
             className="slider-track"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
-            {screenshots.map((img, index) => (
-              <div className="slide" key={index}>
-                <img src={img} alt={`Feature ${index + 1}`} loading="lazy" />
-              </div>
-            ))}
+            {screenshots.map((img, index) => {
+              const isActive = index === currentIndex;
+              const activeStyle = isActive
+                ? { transform: `translate(${mousePos.x / 2}px, ${mousePos.y / 2}px) scale(1.05)` }
+                : {};
+              return (
+                <div className={`slide ${isActive ? 'active' : ''}`} key={index}>
+                  <img src={img} alt={`Feature ${index + 1}`} loading="lazy" style={activeStyle} />
+                </div>
+              );
+            })}
           </div>
           <div className="slider-nav">
             {screenshots.map((_, i) => (
@@ -107,41 +147,10 @@ function LandingPage() {
       <section className="features-section">
         <h2 className="section-title">Advanced Tools &amp; Features</h2>
         <div className="features-grid">
-          {[
-            {
-              title: 'Neural Market Predictions',
-              description:
-                'Forecast market movements with precision using deep neural networks.',
-            },
-            {
-              title: 'Portfolio Genome Analysis',
-              description:
-                'Uncover hidden strengths and weaknesses in your portfolio.',
-            },
-            {
-              title: 'Risk DNA Profiling',
-              description:
-                'Assess your unique risk profile with innovative AI algorithms.',
-            },
-            {
-              title: 'Liquid Asset Tracking',
-              description:
-                'Monitor asset liquidity in real time to seize trading opportunities.',
-            },
-            {
-              title: 'Sentiment Horizon Scan',
-              description:
-                'Capture market sentiment trends to stay ahead of emerging shifts.',
-            },
-            {
-              title: 'Quantum Trade Engine',
-              description:
-                'Experience ultra-fast trade execution with quantum-inspired algorithms.',
-            }
-          ].map((feature, index) => (
+          {features.map((feature, index) => (
             <div className="feature-card" key={index}>
-              <div className="feature-icon">
-                {/* Icon placeholder */}
+              <div className="feature-icon" aria-hidden="true">
+                {feature.icon}
               </div>
               <h3 className="feature-title">{feature.title}</h3>
               <p className="feature-description">{feature.description}</p>

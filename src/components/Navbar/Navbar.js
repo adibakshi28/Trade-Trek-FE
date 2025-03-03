@@ -379,14 +379,14 @@ function Navbar() {
             <Box className="auth-links">
               <Link
                 to="/login"
-                className={`nav-link ${location.pathname === '/login' ? 'active' : ''}`}
+                className="auth-button login"
                 aria-label="Login"
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className={`nav-link ${location.pathname === '/register' ? 'active' : ''}`}
+                className="auth-button register"
                 aria-label="Register"
               >
                 Register
