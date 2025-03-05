@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
 import { FiTrendingUp, FiActivity, FiShield, FiDollarSign, FiChevronDown, FiZap } from 'react-icons/fi';
 import './Landing.css';
 
@@ -45,8 +46,18 @@ const features = [
 ];
 
 function LandingPage() {
+  const { accessToken, isAuthLoading } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  // Redirect to dashboard if user is already logged in
+  useEffect(() => {
+    if (!isAuthLoading && accessToken) {
+      navigate('/dashboard');
+    }
+  }, [accessToken, isAuthLoading, navigate]);
 
   useEffect(() => {
     const interval = setInterval(() => {
