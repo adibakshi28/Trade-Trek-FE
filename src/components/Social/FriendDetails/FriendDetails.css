@@ -216,6 +216,7 @@
 .ticker {
   font-weight: 600 !important;
   color: var(--color-text-primary) !important;
+  margin: 5px !important;
 }
 
 .quantity {

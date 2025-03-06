@@ -24,6 +24,7 @@ import NotificationsDropdown from '../NotificationsDropdown/NotificationsDropdow
 
 import {
   getUserNotifications,
+  getRiskScore,
   markNotificationAsRead,
   acceptFriendRequest,
   declineFriendRequest,
@@ -52,6 +53,10 @@ function Navbar() {
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [errorNotifications, setErrorNotifications] = useState(false);
 
+  // State for Risk Profile
+  const [riskScore, setriskScore] = useState(null);
+  const [riskCategory, setRiskCategory] = useState('');
+
   // Fetch notifications on mount and when accessToken changes
   useEffect(() => {
     if (accessToken) {
@@ -61,7 +66,6 @@ function Navbar() {
       setUnreadCount(0);
       setLoadingNotifications(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]);
 
   const fetchNotifications = async () => {
@@ -79,6 +83,16 @@ function Navbar() {
     }
   };
 
+  const fetchRiskScore = async () => {
+    try {
+      const data = await getRiskScore();
+      setriskScore(data.risk_score);
+      setRiskCategory(data.risk_category || 'Moderate');
+    } catch (err) {
+      console.error('Error fetching risk score:', err);
+    }
+  };
+
   const handleNotificationsClick = (event) => {
     setNotificationsAnchorEl(event.currentTarget);
     fetchNotifications(); // Fetch notifications each time the icon is clicked
@@ -90,6 +104,7 @@ function Navbar() {
 
   const handleProfileClick = (event) => {
     setProfileAnchorEl(event.currentTarget);
+    fetchRiskScore(); // Fetch risk score each time the icon is clicked
   };
 
   const handleProfileClose = () => {
@@ -373,6 +388,8 @@ function Navbar() {
                 handleClose={handleProfileClose}
                 user={user}
                 handleLogout={handleLogout}
+                riskScore={riskScore}
+                riskCategory={riskCategory}
               />
             </Box>
           ) : (

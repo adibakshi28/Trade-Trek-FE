@@ -110,12 +110,64 @@ function LandingPage() {
 
       {/* Market Ticker */}
       <section className="market-ticker">
-        <div className="ticker">
-          <div className="ticker-item">BTC: $40,000</div>
-          <div className="ticker-item">ETH: $2,800</div>
-          <div className="ticker-item">NASDAQ: 14,000</div>
-          <div className="ticker-item">S&amp;P 500: 4,200</div>
-          <div className="ticker-item">DJIA: 35,000</div>
+        <div className="ticker-landing">
+          {/* Original Items */}
+          <div className="ticker-item">AAPL : 235.74</div>
+          <div className="ticker-item">BRK.B : 498.50</div>
+          <div className="ticker-item">COST : 1,047.75</div>
+          <div className="ticker-item">DHR : 210.56</div>
+          <div className="ticker-item">ETSY : 50.00</div>
+          <div className="ticker-item">F : 9.65</div>
+          <div className="ticker-item">GOOGL : 173.02</div>
+          <div className="ticker-item">HD : 386.35</div>
+          <div className="ticker-item">INTC : 20.81</div>
+          <div className="ticker-item">JNJ : 165.12</div>
+          <div className="ticker-item">KO : 70.08</div>
+          <div className="ticker-item">LMT : 460.42</div>
+          <div className="ticker-item">META : 656.47</div>
+          <div className="ticker-item">NFLX : 990.92</div>
+          <div className="ticker-item">NVDA : 117.30</div>
+          <div className="ticker-item">ORCL : 161.56</div>
+          <div className="ticker-item">PYPL : 69.50</div>
+          <div className="ticker-item">QCOM : 158.49</div>
+          <div className="ticker-item">RTX : 129.64</div>
+          <div className="ticker-item">SBUX : 111.69</div>
+          <div className="ticker-item">TSLA : 279.10</div>
+          <div className="ticker-item">UBER : 76.48</div>
+          <div className="ticker-item">V : 352.68</div>
+          <div className="ticker-item">WMT : 95.98</div>
+          <div className="ticker-item">XOM : 105.44</div>
+          <div className="ticker-item">YUM : 159.37</div>
+          <div className="ticker-item">ZBRA : 304.00</div>
+          
+          {/* Duplicated Items */}
+          <div className="ticker-item">AAPL : 235.74</div>
+          <div className="ticker-item">BRK.B : 498.50</div>
+          <div className="ticker-item">COST : 1,047.75</div>
+          <div className="ticker-item">DHR : 210.56</div>
+          <div className="ticker-item">ETSY : 50.00</div>
+          <div className="ticker-item">F : 9.65</div>
+          <div className="ticker-item">GOOGL : 173.02</div>
+          <div className="ticker-item">HD : 386.35</div>
+          <div className="ticker-item">INTC : 20.81</div>
+          <div className="ticker-item">JNJ : 165.12</div>
+          <div className="ticker-item">KO : 70.08</div>
+          <div className="ticker-item">LMT : 460.42</div>
+          <div className="ticker-item">META : 656.47</div>
+          <div className="ticker-item">NFLX : 990.92</div>
+          <div className="ticker-item">NVDA : 117.30</div>
+          <div className="ticker-item">ORCL : 161.56</div>
+          <div className="ticker-item">PYPL : 69.50</div>
+          <div className="ticker-item">QCOM : 158.49</div>
+          <div className="ticker-item">RTX : 129.64</div>
+          <div className="ticker-item">SBUX : 111.69</div>
+          <div className="ticker-item">TSLA : 279.10</div>
+          <div className="ticker-item">UBER : 76.48</div>
+          <div className="ticker-item">V : 352.68</div>
+          <div className="ticker-item">WMT : 95.98</div>
+          <div className="ticker-item">XOM : 105.44</div>
+          <div className="ticker-item">YUM : 159.37</div>
+          <div className="ticker-item">ZBRA : 304.00</div>
         </div>
       </section>
 

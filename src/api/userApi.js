@@ -231,3 +231,20 @@ export const getGroupLeaderboard = async (group_name) => {
   return response.data; 
 };
 
+// /user/risk-profile/questionnaire
+export const getRiskProfileQuestionnaire = async () => {
+  const response = await axiosClient.get('/user/risk-profile/questionnaire');
+  return response.data; 
+};
+
+// /user/risk-profile
+export const submitUserRiskProfile = async (questionnaire_result) => {
+  const response = await axiosClient.post('/user/risk-profile', questionnaire_result);
+  return response.data;
+};
+
+// /user/risk-score
+export const getRiskScore = async () => {
+  const response = await axiosClient.get('/user/risk-score');
+  return response.data; 
+};

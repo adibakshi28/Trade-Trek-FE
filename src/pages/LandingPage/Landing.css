@@ -168,18 +168,20 @@
 
 /* Market Ticker */
 .market-ticker {
+  overflow: hidden;
   padding: 1rem 2rem;
   background: rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 5px 2px var(--color-primary);
 }
 
-.ticker {
+.ticker-landing {
   display: flex;
   gap: 2rem;
   white-space: nowrap;
-  animation: ticker 15s linear infinite;
+  animation: ticker 25s linear infinite; 
   font-size: 1rem;
   color: var(--text-secondary);
+  width: max-content; 
 }
 
 .ticker-item {
@@ -187,8 +189,8 @@
 }
 
 @keyframes ticker {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); } 
 }
 
 /* Showcase Section */

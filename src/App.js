@@ -24,6 +24,8 @@ import Insights from './pages/InsightsPage/Insights';
 import Social from './pages/SocialPage/Social';
 import Research from './pages/ResearchPage/Research';
 
+import RiskProfile from './pages/RiskProfilePage/RiskProfile';
+
 import StockDetailsPage from './pages/StockDetailsPage/StockDetailsPage';
 
 function App() {
@@ -44,6 +46,8 @@ function App() {
 
                       <Route path="/faq" element={<FAQ />} />
                       <Route path="/contact" element={<Contact />} />
+
+                      <Route path="/risk-profile" element={<RiskProfile />} />
 
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/transactions" element={<Transactions />} />

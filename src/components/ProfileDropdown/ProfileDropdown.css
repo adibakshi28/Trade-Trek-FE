@@ -2,7 +2,7 @@
 
 /* Menu Paper Styling */
 .profile-paper {
-  width: 200px !important;
+  width: 250px !important;
   max-height: 400px !important;
   overflow-y: auto !important;
   background-color: var(--color-surface-lite) !important;
@@ -13,15 +13,25 @@
 }
 
 /* Profile Header */
-.profile-header {
+.profile-header-name {
   display: flex;
   justify-content: center !important;
-  padding: 5px !important;
+}
+
+.profile-header-username {
+  display: flex;
+  justify-content: center !important;
+  padding: 2px !important;
 }
 
 .profile-title {
   font-weight: bold !important;
   color: var(--color-text-primary) !important;
+}
+
+.username-title {
+  font-size: 0.9rem !important;
+  color: var(--color-text-secondary) !important;
 }
 
 /* Divider */
@@ -62,6 +72,55 @@
   background-color: var(--color-secondary) !important;
   color: var(--color-text-primary) !important;
   transform: scale(1.05);
+}
+
+/* Risk Score Section */
+.risk-section {
+  padding: 10px 16px !important;
+  background-color: var(--color-surface-lite-hover) !important;
+  border-radius: 8px !important;
+}
+
+.risk-label {
+  color: var(--color-text-secondary) !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.risk-display {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.risk-score {
+  font-weight: 700 !important;
+  color: var(--color-text-primary) !important;
+  font-size: 1.4rem !important;
+}
+
+.risk-category {
+  padding: 4px 8px !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  text-transform: capitalize !important;
+}
+
+/* Risk Category Colors */
+.risk-category.high {
+  background-color: #fce8e6 !important;
+  color: #c5221f !important;
+}
+
+.risk-category.moderate {
+  background-color: #fef7e6 !important;
+  color: #f9ab00 !important;
+}
+
+.risk-category.low {
+  background-color: #e8f6eb !important;
+  color: #188038 !important;
 }
 
 /* Responsive Design */
