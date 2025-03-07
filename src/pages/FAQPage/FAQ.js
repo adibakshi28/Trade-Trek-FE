@@ -12,10 +12,12 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import LinkParticles from '../../components/Particles/LinkParticles';
 
 function FAQ() {
   return (
     <Box className="faq-container">
+      <LinkParticles />
       <Box className="faq-card">
         <Box className="faq-header">
           <QuestionAnswerIcon className="faq-header-icon" />

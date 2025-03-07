@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import { motion } from 'framer-motion';
+import LinkParticles from '../../components/Particles/LinkParticles';
 import './Register.css';
 
 // Validation functions
@@ -147,6 +148,7 @@ function Register() {
       exit="exit"
     >
       <div className="register-container">
+        <LinkParticles />
         <Paper className="register-paper">
           <Box className="register-header">
             <PersonAddOutlinedIcon className="register-icon" />

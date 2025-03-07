@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { motion } from 'framer-motion';
+import LinkParticles from '../../components/Particles/LinkParticles';
 import './Login.css';
  
 // ✨ Animation Variants
@@ -107,6 +108,7 @@ function Login() {
       exit="exit"
     >
       <div className="login-container">
+        <LinkParticles />
         <Paper className="login-paper">
           <Box className="login-header">
             <LockOutlinedIcon className="login-icon" />

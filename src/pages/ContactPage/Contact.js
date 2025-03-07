@@ -10,10 +10,12 @@ import {
 import EmailIcon from '@mui/icons-material/Email';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import PersonIcon from '@mui/icons-material/Person';
+import LinkParticles from '../../components/Particles/LinkParticles';
 
 function Contact() {
   return (
     <Box className="contact-container">
+      <LinkParticles />
       <Box className="contact-card">
         <Box className="contact-header">
           <PersonIcon className="contact-icon" />
