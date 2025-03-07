@@ -2,13 +2,12 @@ import React, { useCallback } from 'react';
 import Particles from 'react-tsparticles';
 import { loadSlim } from 'tsparticles-slim';
 
-const MoneyParticles = () => {
-  // Initialize particles engine
+const MarketParticles = () => {
   const particlesInit = useCallback(async (engine) => {
     await loadSlim(engine);
   }, []);
 
-  // Particle configuration
+  // Stock market-themed particle configuration
   const particlesOptions = {
     background: {
       color: {
@@ -24,11 +23,11 @@ const MoneyParticles = () => {
         },
       },
       color: {
-        value: ['#8e2de2', '#4a00e0', '#0fdc70'],
+        value: ['#0fdc70', '#ff4444', '#f0f0f0'],
       },
       opacity: {
         value: 0.5,
-        random: false,
+        random: true,  // Mimics varying market transparency
       },
       size: {
         value: 3,
@@ -36,17 +35,17 @@ const MoneyParticles = () => {
       },
       move: {
         enable: true,
-        speed: 1,
+        speed: { min: 0.5, max: 2 }, 
         direction: 'none',
-        random: false,
+        random: true,
         straight: false,
         outModes: 'out',
       },
       links: {
         enable: true,
-        distance: 150,
+        distance: 150, 
         color: '#4a00e0',
-        opacity: 0.4,
+        opacity: 0.3,
         width: 1,
       },
     },
@@ -76,7 +75,7 @@ const MoneyParticles = () => {
 
   return (
     <Particles
-      id="tsparticles"
+      id="market-particles"
       init={particlesInit}
       options={particlesOptions}
       style={{
@@ -91,4 +90,4 @@ const MoneyParticles = () => {
   );
 };
 
-export default React.memo(MoneyParticles); // Memoize to prevent re-renders
+export default React.memo(MarketParticles);
