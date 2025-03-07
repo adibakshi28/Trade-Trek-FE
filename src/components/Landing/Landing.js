@@ -47,7 +47,7 @@ const features = [
   ];
 
 
-function LandingPage() {
+function Landing() {
   const { accessToken, isAuthLoading } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -220,4 +220,4 @@ function LandingPage() {
   );
 }
 
-export default LandingPage;
+export default Landing;
