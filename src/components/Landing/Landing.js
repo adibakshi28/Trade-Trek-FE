@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { FiTrendingUp, FiActivity, FiShield, FiDollarSign, FiChevronDown, FiZap } from 'react-icons/fi';
-import MoneyParticles from '../Particles/MoneyParticles';
+import LinkParticles from '../Particles/LinkParticles';
 import './Landing.css';
 
 const screenshots = [
@@ -67,7 +67,7 @@ function Landing() {
       {/* Hero Section */}
       <header className="hero-section">
         {/* Particle Background */}
-          <MoneyParticles />
+          <LinkParticles />
         <div className="hero-content">
           <h1 className="hero-title">
             Empower Your <span className="highlight">Trading Journey</span> with{' '}

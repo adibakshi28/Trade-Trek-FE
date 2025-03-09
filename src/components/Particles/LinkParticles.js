@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import Particles from 'react-tsparticles';
 import { loadSlim } from 'tsparticles-slim';
 
-const MoneyParticles = () => {
+const LinkParticles = () => {
   // Initialize particles engine
   const particlesInit = useCallback(async (engine) => {
     await loadSlim(engine);
@@ -17,14 +17,14 @@ const MoneyParticles = () => {
     },
     particles: {
       number: {
-        value: 50,
+        value: 60,
         density: {
           enable: true,
           value_area: 800,
         },
       },
       color: {
-        value: ['#8e2de2', '#4a00e0', '#0fdc70'],
+        value: ['#8e2de2', '#4a00e0', '#0fdc70', '#ff4444'],
       },
       opacity: {
         value: 0.5,
@@ -36,7 +36,7 @@ const MoneyParticles = () => {
       },
       move: {
         enable: true,
-        speed: 1,
+        speed: 1.5,
         direction: 'none',
         random: false,
         straight: false,
@@ -44,7 +44,7 @@ const MoneyParticles = () => {
       },
       links: {
         enable: true,
-        distance: 150,
+        distance: 200,
         color: '#4a00e0',
         opacity: 0.4,
         width: 1,
@@ -91,4 +91,4 @@ const MoneyParticles = () => {
   );
 };
 
-export default React.memo(MoneyParticles); // Memoize to prevent re-renders
+export default React.memo(LinkParticles); // Memoize to prevent re-renders
