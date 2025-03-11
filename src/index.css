@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@700&display=swap');
+
 :root {
   --color-bg: #101321; 
   --color-surface: #1f2339;
@@ -9,6 +11,9 @@
   --color-text-primary: #e6e9ef;
   --color-text-secondary: #a2a8c3; 
   --color-border-subtle: #3a3f5c;
+
+  --font-family-normal: 'Roboto', sans-serif;
+  --font-family-style: 'Orbitron', sans-serif;
 }
 
 
@@ -24,8 +29,10 @@
   --color-text-primary: #2d3447; 
   --color-text-secondary: #657488; 
   --color-border-subtle: #d0d8e5;
-}
 
+  --font-family-normal: 'Roboto', sans-serif;
+  --font-family-style: 'Orbitron', sans-serif;
+}
 
 body, #root {
   margin: 0;

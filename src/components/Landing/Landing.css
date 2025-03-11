@@ -15,6 +15,7 @@
     overflow-x: hidden;
     overflow-y: auto;
     max-height: 95vh;
+    font-family: var(--font-family-style) !important;
   }
   
   /* Hero Section */
